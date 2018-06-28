@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>添加系统角色</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css" />
+</head>
+
+<body>
+    <div class="wrap-container">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名：</label>
+                <div class="layui-input-block">
+                    <input maxlength="15" id='login_name' type="text" required lay-verify="required" placeholder="用来登录的名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名：</label>
+                <div class="layui-input-block">
+                    <input maxlength="15" id='nickname' type="text" required lay-verify="required" placeholder="姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">类型：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" id="role">
+                        <option value="1">辅助登记员</option>
+                        {% if session['role'] >2 %}
+                        <option value="2">宿舍管理员</option>
+                        <option value="3">系统管理员</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属园区：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" id='pid' lay-search>
+                        <option value="0">请选择所属园区</option>
+                        @foreach(var dorm in ViewBag.dorms) { 
+                            <option value="@dorm.Id">@dorm.Nickname</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话：</label>
+                <div class="layui-input-block">
+                    <input maxlength="11" id='phone' type="text" placeholder="联系电话" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-block">
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>7
+
+    <script src="/static/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+			layui.use(['form', 'jquery'], function() {
+				var form = layui.form;
+				var $ = layui.jquery;
+				form.render();
+				//监听提交
+				form.on('submit(formDemo)', function(data) {
+					if($('#login_name').val().trim().length < 4) {
+						layer.msg("用户名必须大于等于4个字符长度！");
+						return false;
+                    }
+                    if (isNaN($("#pid").val())==false && $("#role").val() < 3) {
+                        layer.msg("非系统管理员必须选择所属性别！");
+                        return false;
+                    }
+					var params = {
+                        "login_name": $('#login_name').val(),
+                        "nickname": $('#nickname').val(),
+                        "role": $("#role").val(),
+                        "pid": $("#pid").val(),
+                        "phone": $("#phone").val(),
+                        "note": $("#note").val()
+					};
+					$.post("/users/create", params, function(data) {
+						if(data['code'] == 200){ var icon = 1; }else{ var icon = 0; } layer.open({ 'icon': icon, 'title': "温馨提示", 'content': data['msg'] });
+					}, "json");
+				});
+			});
+    </script>
+</body>
+
+</html>

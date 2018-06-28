@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html class="iframe-h">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>园区管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css" />
+</head>
+
+<body>
+    <div class="wrap-container clearfix">
+        <div class="column-content-detail">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline tool-btn">
+                        <button class="layui-btn layui-btn-small layui-btn-normal addBtn" data-url="/dorm/create" data-text="添加园区"><i class="layui-icon">&#xe654;</i></button>
+                        <button class="layui-btn layui-btn-small layui-btn-normal" onclick="location.reload()"><i class="layui-icon layui-icon-refresh"></i></button>
+                    </div>
+                    <div class="layui-inline">
+                        <input value="@ViewBag.keyword" type="text" name="keyword" placeholder="关键字" autocomplete="off" class="layui-input">
+                    </div>
+                    <button class="layui-btn layui-btn-normal" lay-submit="search">搜索</button>
+                </div>
+            </form>
+            <div class="layui-form" id="table-list">
+                <table class="layui-table" lay-even lay-skin="nob">
+                    <colgroup>
+                        <col class="hidden-xs">
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="hidden-xs">ID</th>
+                            <th>名称</th>
+                            <th class="hidden-xs">类型</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var dorm in ViewBag.dorms) { 
+                        <tr>
+                            <td class="hidden-xs">@dorm.Id</td>
+                            <td>@dorm.Nickname</td>
+                            <td class="hidden-xs">
+                                <i class="layui-icon">
+                                    @if (dorm.Type == true)
+                                    {
+                                        Response.Write("&#xe662");
+                                    }
+                                    else
+                                    {
+                                        Response.Write("&#xe661");
+                                    }
+                                </i>
+                            </td>
+                            <td>
+                                @if (dorm.Is_active)
+                                {
+                                    <button class="layui-btn layui-btn-mini layui-btn-normal">正常</button>}
+                                else
+                                {
+                                    <button class="layui-btn layui-btn-mini layui-btn-disabled">已注销</button>}
+                            </td>
+                            <td>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-small layui-btn-normal edit-btn" data-id="{{dorm.id}}" data-url="/dorm/mod" data-text="编辑：{{dorm.nickname}}"><i class="layui-icon">&#xe642;</i></button>
+                                    <button class="layui-btn layui-btn-small layui-btn-normal del-btn" data-id="{{dorm.id}}" data-url="/api/dorm"><i class="layui-icon">&#xe640;</i></button>
+                                </div>
+                            </td>
+                        </tr>
+                                }
+                    </tbody>
+                </table>
+                <div class="page-wrap">
+                    <ul class="pagination">
+                        <li>
+                            @if (ViewBag.pageIndex == 1)
+                            {
+                                <a disabled="disabled"><span><</span></a>
+                            }
+                            else
+                            {
+                                <a href="/user/admin?pageNum=@(ViewBag.pageIndex - 1)">
+                                    <
+                                </a>
+                            }
+                        </li>
+                        <li>@ViewBag.pageIndex</li>
+                        <li>
+                            @if (ViewBag.count > 9)
+                            {
+                                <a href="/user/admin?pageNum=@(ViewBag.pageIndex + 1)"><span>></span></a>
+                            }
+                            else
+                            {
+                                <a disabled="disabled"><span>></span></a>
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+</body>
+
+</html>
