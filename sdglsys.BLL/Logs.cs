@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-namespace sdglsys.BLL
+namespace sdglsys.DbHelper
 {
     public class Logs : DbContext
     {
-        public List<Entity.Log> getAll()
+        public List<Entity.TLog> getAll()
         {
-            return Db.Queryable<Entity.Log>().ToList();
+            return Db.Queryable<Entity.TLog>().ToList();
         }
 
         /// <summary>
@@ -13,7 +13,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.Log findById(int id)
+        public Entity.TLog findById(int id)
         {
             return LogDb.GetById(id);
         }
@@ -33,7 +33,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="Log"></param>
         /// <returns></returns>
-        public bool Update(Entity.Log Log)
+        public bool Update(Entity.TLog Log)
         {
             return LogDb.Update(Log);
         }
@@ -43,7 +43,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="Log"></param>
         /// <returns></returns>
-        public bool Add(Entity.Log Log)
+        public bool Add(Entity.TLog Log)
         {
             return LogDb.Insert(Log);
         }
@@ -57,7 +57,7 @@ namespace sdglsys.BLL
         /// <returns></returns>
         public bool Add(string ip, string login_name, string info)
         {
-            return Add(new Entity.Log()
+            return Add(new Entity.TLog()
             {
                 Ip = ip,
                 Info = info,
@@ -73,13 +73,13 @@ namespace sdglsys.BLL
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.Log> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null)
+        public List<Entity.TLog> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null)
         {
             if (where == null)
             {
-                return Db.Queryable<Entity.Log>().OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TLog>().OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
             }
-            return Db.Queryable<Entity.Log>().Where(a => a.Info.Contains(where) || a.Ip.Contains(where) || a.Login_name.Contains(where)).OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
+            return Db.Queryable<Entity.TLog>().Where(a => a.Info.Contains(where) || a.Ip.Contains(where) || a.Login_name.Contains(where)).OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
         }
     }
 }

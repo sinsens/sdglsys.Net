@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using sdglsys.BLL;
+using sdglsys.DbHelper;
+using sdglsys.Web;
 
 namespace sdglsys.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace sdglsys.Web.Controllers
         {
             var txt = Request["txt"];
             if (txt != null) {
-                Response.Write(Utils.hashpwd(txt));
+                Response.Write(DbHelper.Utils.hashpwd(txt));
                 Response.End();
             }
             return View();

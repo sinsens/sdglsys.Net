@@ -3,29 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.BLL;
+using sdglsys.Web;
 namespace sdglsys.Web.Controllers
 {
     public class UsersController : Controller
     {
         // GET: Users
-        [AccountAuthorize]
+        [NeedLogin]
         public ActionResult Index(FormCollection collection)
         {
-            var keyword = Request["keyword"]; // 搜索关键词
-            var d = new BLL.Dorms();
+            string keyword = "";
+            var d = new Dorms();
             ViewBag.dorms = d.getAll(); // 获取所有园区
-            var pageIndex = Request["pageIndex"] == null ? 1 : Convert.ToInt32(Request["pageIndex"]);
-            var pageSize = Request["pageSize"] == null ? 10 : Convert.ToInt32(Request["pageSize"]);
-            var u = new BLL.Users();
+            int pageIndex = 1;
+            int pageSize = 10;
+            try
+            {
+                keyword = Request["keyword"]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+            }
+            finally
+            {
+            }
+            var u = new Users();
             int count = 0;
             // 系统管理员
             if ((int)Session["role"] < 3)
             {
                 ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, (int)Session["pid"], keyword); // 获取列表
             }
-            else {
+            else
+            {
                 ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
             }
             ViewBag.keyword = keyword;
@@ -34,15 +45,8 @@ namespace sdglsys.Web.Controllers
             return View();
         }
 
-        // GET: Users/Details/5
-        [AccountAuthorize]
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: Users/Create
-        [AccountAuthorize]
+        [NeedLogin]
         public ActionResult Create()
         {
             var dorm = new Dorms();
@@ -56,31 +60,39 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="collection"></param>
         [HttpPost]
-        [AccountAuthorize]
+        [NeedLogin]
         public void Create(FormCollection collection)
         {
-            var msg = new BLL.Msg();
+            var msg = new Msg();
             try
             {
                 // 初始化对象
-                Entity.Users user = new Entity.Users()
+                Entity.TUser user = new Entity.TUser()
                 {
                     Nickname = collection["nickname"],
                     Note = collection["note"],
+                    Phone = collection["phone"],
                     Role = Convert.ToInt32(collection["role"]),
                     Pid = Convert.ToInt32(collection["pid"]),
                     Login_name = collection["login_name"],
-                    Pwd = Utils.hashpwd((string)Utils.getSetting("default_pwd", typeof(string))), // 设置默认密码
+                    Pwd = Utils.hashpwd((string)Utils.GetAppSetting("DefaultPassword", typeof(string))), // 设置默认密码
                 };
-                
-                var User = new BLL.Users();
-                // 判断权限
-                if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+
+                var User = new Users();
+
+                if (user.Pid == 0 && user.Role < 3)
                 {
+                    msg.msg = "非系统管理员请选择所属园区";
+                    msg.code = 400;
+                }
+                else if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                {
+                    // 判断权限
                     msg.code = 403;
                     msg.msg = "权限不足";
                 }
-                else if (User.findByLoginName(user.Login_name) != null) {
+                else if (User.findByLoginName(user.Login_name) != null)
+                {
                     // 用户名已存在
                     msg.msg = "用户名已存在！";
                     msg.code = 400;
@@ -99,81 +111,110 @@ namespace sdglsys.Web.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
             finally
             {
-                Response.Write(msg.toJson());
+                Response.Write(msg.ToJson());
                 Response.End();
             }
         }
 
+        /// <summary>
+        /// 修改系统用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: Users/Edit/5
-        [AccountAuthorize]
+        [NeedLogin]
         public ActionResult Edit(int id)
         {
-            return View();
+            var Dorm = new Dorms();
+            ViewBag.dorms = Dorm.getAll();
+            var User = new Users();
+            return View(User.findById(id));
         }
 
-        // POST: Users/Edit/5
+        /// <summary>
+        /// 修改系统用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="collection"></param>
+        // POST: Users/Edit/5；
         [HttpPost]
-        [AccountAuthorize]
-        public ActionResult Edit(int id, FormCollection collection)
+        [NotLowUser]
+        public void Edit(int id, FormCollection collection)
         {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Users/Delete/5
-        [AccountAuthorize]
-        public void Delete(int id)
-        {
-            var msg = new BLL.Msg();
-            var User = new BLL.Users();
+            var msg = new Msg();
+            var User = new Users();
             var user = User.findById(id);
-            if (user == null)
+
+            if (User.findById(user.Id) == null)
             {
                 msg.msg = "该用户不存在！";
                 msg.code = 404;
             }
-            else {
-                int myrole = (int)Session["role"];
-
-                if (myrole < 3 && (myrole <= user.Role || (int)Session["pid"] != user.Pid))
-                { // 如果不是系统管理员并且（为同级别角色或园区不同）
-                    msg.msg = "权限不足！";
-                    msg.code = 403;
-                }
-                else if (User.Delete(id))
+            else
+            {
+                try
                 {
-                    msg.msg = "删除成功！";
+                    user.Nickname = collection["nickname"];
+                    user.Note = collection["note"];
+                    user.Role = Convert.ToInt32(collection["role"]);
+                    user.Pid = Convert.ToInt32(collection["pid"]);
+                    user.Login_name = collection["login_name"];
+                    user.Phone = collection["phone"];
+                    user.Is_active = Convert.ToBoolean(collection["is_active"]);
+                    msg.content = user;
+
+                    if (user.Pid == 0 && user.Role < 3)
+                    {
+                        msg.msg = "非系统管理员请选择所属园区";
+                        msg.code = 400;
+                    }
+                    else if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                    {
+                        // 判断权限
+                        msg.code = 403;
+                        msg.msg = "权限不足";
+                    }
+                    else
+                    {
+                        if (User.Update(user))
+                        {
+                            msg.msg = "保存成功！";
+                        }
+                        else
+                        {
+                            msg.code = 500;
+                            msg.msg = "发生未知错误！";
+                        }
+                    }
+
+
                 }
-                else {
-                    msg.msg = "发生未知错误，删除失败！";
+                catch (Exception ex)
+                {
+                    msg.code = 500;
+                    msg.msg = ex.Message;
+                }
+                finally
+                {
+                    Response.Write(msg.ToJson());
+                    Response.End();
                 }
             }
-            Response.Write(msg.toJson());
-            Response.End();
         }
 
-        // POST: Users/Delete/5
-        [HttpPost]
-        [AccountAuthorize]
-        public void Delete(int id, FormCollection collection)
+        // GET: Users/Delete/5
+        [NotLowUser]
+        public void Delete(int id)
         {
-            var msg = new BLL.Msg();
-            var User = new BLL.Users();
+            var msg = new Msg();
+            var User = new Users();
             var user = User.findById(id);
             if (user == null)
             {
@@ -198,8 +239,76 @@ namespace sdglsys.Web.Controllers
                     msg.msg = "发生未知错误，删除失败！";
                 }
             }
-            Response.Write(msg.toJson());
+            Response.Write(msg.ToJson());
             Response.End();
+        }
+
+        // POST: Users/Delete/5
+        [HttpPost]
+        [NotLowUser]
+        public void Delete(int id, FormCollection collection)
+        {
+            Delete(id);
+        }
+
+        // GET: Users/Reset/5
+        [NotLowUser]
+        public ActionResult Reset(int id)
+        {
+            var Dorm = new Dorms();
+            ViewBag.dorms = Dorm.getAll();
+            var User = new Users();
+            return View(User.findById(id));
+        }
+
+        // POST: Users/Reset/5；重置默认密码
+        [HttpPost]
+        [NotLowUser]
+        public void Reset(int id, FormCollection collection)
+        {
+            var msg = new Msg();
+            var pwd = (string)Utils.GetAppSetting("DefaultPassword", typeof(string));
+            try
+            {
+                var User = new Users();
+                // 初始化对象
+                var user = User.findById(id);
+
+                if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                {
+                    // 判断权限
+                    msg.code = 403;
+                    msg.msg = "权限不足";
+                }
+                else if (User.findById(user.Id) == null)
+                {
+                    msg.msg = "该用户不存在！";
+                    msg.code = 404;
+                }
+                else
+                {
+                    user.Pwd = Utils.hashpwd(pwd); // 设置默认密码
+                    if (User.Update(user))
+                    {
+                        msg.msg = "重置默认密码成功，该角色的密码已设置为'" + pwd + "'";
+                    }
+                    else
+                    {
+                        msg.code = 500;
+                        msg.msg = "发生未知错误！";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg.code = 500;
+                msg.msg = ex.Message;
+            }
+            finally
+            {
+                Response.Write(msg.ToJson());
+                Response.End();
+            }
         }
     }
 }

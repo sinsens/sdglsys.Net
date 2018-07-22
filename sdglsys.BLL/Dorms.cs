@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 
-namespace sdglsys.BLL
+namespace sdglsys.DbHelper
 {
     public class Dorms : DbContext
     {
-        public List<Entity.Dorm> getAll()
+        public List<Entity.TDorm> getAll()
         {
-            return Db.Queryable<Entity.Dorm>().ToList();
+            return Db.Queryable<Entity.TDorm>().ToList();
         }
 
         /// <summary>
         /// 获取已启用的园区
         /// </summary>
         /// <returns></returns>
-        public List<Entity.Dorm> getAllActive()
+        public List<Entity.TDorm> getAllActive()
         {
-            return Db.Queryable<Entity.Dorm>().Where(a=>a.Is_active==true).ToList();
+            return Db.Queryable<Entity.TDorm>().Where(a=>a.Is_active==true).ToList();
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.Dorm findById(int id)
+        public Entity.TDorm findById(int id)
         {
             return DormDb.GetById(id);
         }
@@ -43,7 +43,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="dorm"></param>
         /// <returns></returns>
-        public bool Update(Entity.Dorm dorm)
+        public bool Update(Entity.TDorm dorm)
         {
             return DormDb.Update(dorm);
         }
@@ -53,7 +53,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="dorm"></param>
         /// <returns></returns>
-        public bool Add(Entity.Dorm dorm)
+        public bool Add(Entity.TDorm dorm)
         {
             return DormDb.Insert(dorm);
         }
@@ -66,11 +66,11 @@ namespace sdglsys.BLL
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.Dorm> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
+        public List<Entity.TDorm> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
         {
             if(where==null)
-                return Db.Queryable<Entity.Dorm>().ToPageList(pageIndex, pageSize, ref totalCount);
-            return Db.Queryable<Entity.Dorm>().Where(a=>a.Nickname.Contains(where)||a.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TDorm>().OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
+            return Db.Queryable<Entity.TDorm>().Where(a=>a.Nickname.Contains(where)||a.Note.Contains(where)).OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
         }
     }
 }

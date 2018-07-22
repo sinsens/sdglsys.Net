@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html class="iframe-h">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>数据图表</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/admin.css" />
+</head>
+
+<body>
+    <div class="wrap-container clearfix">
+        <div class="column-content-detail">
+            <div class="layui-hide-sm" style="text-align: center;padding: 20px;color: gray;" onclick="this.style.display='none';">
+                <div class="layui-m-layer-msg">小屏幕设备查看本页面可能会出现渲染或兼容问题，建议使用PC端的Chrome(谷歌)浏览器查看本页面。(点击这里可以关闭这条提醒)</div>
+            </div>
+            <div class="layui-form" style="width: 90%;padding-top: 20px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">开始时间：</label>
+                    <div class="layui-input-block">
+                        <input id="start_date" class="layui-input layui-laydate" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">截至时间：</label>
+                    <div class="layui-input-block">
+                        <input id="end_date" class="layui-input layui-laydate" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数据类型：</label>
+                    <div class="layui-inline">
+                        <select id="data_type" lay-filter="dataType" class="layui-select">
+                            <option value="0">所有园区最近一年的数据</option>
+                            <option value="1">按园区</option>
+                            <option value="2">按宿舍楼</option>
+                            <option value="3">按宿舍</option>
+                            <option value="5">所有园区</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数据来源：</label>
+                    <div class="layui-inline">
+                        <select id="suorce_id" class="layui-select">
+                            <option value="">请选择数据来源</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="changeData">查看</button>
+                    </div>
+                </div>
+            </div>
+
+            <!--图表-->
+            <div class="chart-panel panel panel-default">
+                <div class="panel-body" id="chart" style="height: 374px;">
+                </div>
+            </div>
+            <!--div class="layui-footer">
+                {%if 't' in session%}<p style="text-align: center;">页面执行时间：{{session['t']}}s</p>{%endif%}
+            </div-->
+
+        </div>
+
+    </div>
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Content/lib/echarts/echarts.min.js"></script>
+    <script src="~/Content/js/myChart.js"></script>
+    <script type="text/javascript">
+        layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
+            var form = layui.form;
+            var laydate = layui.laydate;
+            $ = layui.jquery;
+            // 设置时间选项为当前时间
+            laydate.render({
+                type: "datetime",
+                elem: '#start_date',
+                value: new Date()
+            });
+            laydate.render({
+                elem: '#end_date',
+                type: 'datetime',
+                value: new Date()
+            });
+            form.render();	// layui會在页面完成后自动渲染
+            form.on('select(dataType)', function (data) {
+                var url = "/dorm/list";
+                var value = parseInt(data.value);
+                $("#suorce_id").empty(); // 清空下拉列表
+                switch (value) {
+                    case 1:
+                        url = "/dorm/list";
+                        break;
+                    case 2:
+                        url = "/building/list";
+                        break;
+                    case 3:
+                        url = "/room/list";
+                        break;
+                    case 5:
+                        url = "";
+                        break;
+                }
+                // 更新下拉列表
+                $.post(url, function (data) {
+                    data = JSON.parse(data);
+                    for (var i = 0; i < data.length; i++)
+                        $("<option value=" + data[i]["Id"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#suorce_id");
+                    form.render('select'); // 重新渲染下拉列表
+                });
+            });
+            form.on('submit(changeData)', function (data) {
+                var _start = $("#start_date").val();
+                var _end = $("#end_date").val();
+                var _type = parseInt($("#data_type").val());
+                if (_type !== 0) {
+                    if (_start.length < 5 || _end.length < 5) {
+                        layer.msg("当类型不等于所有园区最近一年的数据时，必须选择开始时间和截止时间");
+                        return;
+                    }
+                    if (_end <= _start) {
+                        layer.msg("截至时间必须大于开始时间");
+                        return;
+                    }
+                }
+                var params = {
+                    'end_date': _end,
+                    'start_date': _start,
+                    'type': _type,
+                    'id': $("#suorce_id").val() == null ? 0:$("#suorce_id").val(),
+                }
+				$.ajax({
+                    async: "false",
+                    type: "post",
+                    data: params,
+                    url: "/Admin/Charts",
+                    success: function (data) {
+                        //data = JSON.parse(data);
+                        if (data['msg'] != null)
+                        layer.msg(data['msg'])
+                    else
+                        ChartLoadData2(data)
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+            });
+            /*自动调整图表大小*/
+            $(window).resize(function () {
+                myChart.resize();
+            });
+        });
+    </script>
+</body>
+</html>

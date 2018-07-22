@@ -1,0 +1,170 @@
+﻿<Controls:MetroWindow x:Class="sdglsys.DesktopUtils.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        ShowTitleBar="True"
+        Title="旅游文化学院校园水电收费管理系统桌面工具" FontSize="14" Width="1280" d:DesignHeight="720" WindowStartupLocation="CenterScreen" WindowState="Maximized" SizeChanged="MetroWindow_SizeChanged">
+
+    <Grid>
+        <Controls:MetroAnimatedTabControl HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch">
+            <Controls:MetroTabItem >
+                <Controls:MetroTabItem.Header>
+                    <TextBlock FontSize="15" Padding="10" HorizontalAlignment="Left" Width="95">连接数据库</TextBlock>
+                </Controls:MetroTabItem.Header>
+                <Grid Margin="0,0,0,0" VerticalAlignment="Stretch" Background="#FFE5E5E5">
+                    <GroupBox Header="连接到数据库" VerticalAlignment="Top" Padding="10" BorderBrush="Black">
+                        <StackPanel Margin="5" HorizontalAlignment="Left">
+                            <WrapPanel>
+                                <Label Content="请输入数据库连接字符串（可在Web目录下的Web.config文件里查看）:" />
+                                <TextBox x:Name="tbxConnectString">Server=localhost;Database=test;UID=sinsen;Password=;Allow User Variables=True;AllowZeroDateTime=True;ConvertZeroDateTime=True;SslMode=none</TextBox>
+                            </WrapPanel>
+                            <WrapPanel Margin="0,10,0,0">
+                                <Label Content="数据库类型:"/>
+                                <ComboBox x:Name="sltDBType" Margin="10,0">
+                                    <ComboBoxItem>MySQL</ComboBoxItem>
+                                    <ComboBoxItem>Oracle</ComboBoxItem>
+                                    <ComboBoxItem>PostgreSQL</ComboBoxItem>
+                                    <ComboBoxItem>SQLite</ComboBoxItem>
+                                    <ComboBoxItem>SQL Server</ComboBoxItem>
+                                </ComboBox>
+                                <Button x:Name="btnConnect" Style="{DynamicResource SquareButtonStyle}" Width="auto" Height="25" FontSize="11" Click="btnConnect_ClickAsync">连接到数据库</Button>
+                            </WrapPanel>
+
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem>
+                <Controls:MetroTabItem.Header>
+                    <TextBlock FontSize="15" Padding="10">系统角色管理</TextBlock>
+                </Controls:MetroTabItem.Header>
+                <Grid Margin="0,0,0,0" VerticalAlignment="Stretch" Background="#FFE5E5E5">
+                    <StackPanel>
+                        <GroupBox Header="创建系统管理员" VerticalAlignment="Top" Padding="10" BorderBrush="Black">
+                            <StackPanel Margin="5" HorizontalAlignment="Left">
+                                <WrapPanel>
+                                    <Label Content="请输入用户名:"/>
+                                    <TextBox x:Name="newLogin_name" Width="200" Height="25"></TextBox>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="请输入姓名:   "/>
+                                    <TextBox x:Name="newNickname" Width="200" Height="25"></TextBox>
+                                    <Button Margin="10,0,0,0" x:Name="btnCreateAdmin" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="btnCreateAdmin_Click">创建</Button>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="请输入密码:   "/>
+                                    <TextBox x:Name="newPwd" Width="200" Height="25"></TextBox>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="重置系统角色密码" VerticalAlignment="Top" Padding="10" BorderBrush="Black">
+                            <StackPanel Name="userinfo" Margin="5" HorizontalAlignment="Left">
+                                <WrapPanel>
+                                    <Label Content="请输入用户名:"/>
+                                    <TextBox x:Name="tbxLogin_name" Width="200" Height="25"></TextBox>
+                                    <Button Margin="10,0,0,0" x:Name="btnSearchUser" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="btnSearchUser_Click">查找</Button>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="用户名:"/>
+                                    <TextBox Margin="42,0,0,0" Width="200" x:Name="Login_name" IsReadOnly="True" Text="{Binding Login_name}" Controls:TextBoxHelper.Watermark="用户名"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="姓 名:"/>
+                                    <TextBox Margin="51,0,0,0" Text="{Binding Nickname}" Width="200" Height="25"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="所属园区: "/>
+                                    <TextBox Text="{Binding DormName}" Margin="23,0,0,0" Width="200" Height="25"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Label Content="权 限:"/>
+                                    <TextBox Margin="51,0,0,0" Text="{Binding RoleName}" Width="200" Height="25" />
+                                    <Button Margin="10,0,0,0" Click="btnResetPwd_Click" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="120" Height="25">确认重置密码</Button>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem>
+                <Controls:MetroTabItem.Header>
+                    <TextBlock FontSize="15" Padding="10">基础数据生成工具</TextBlock>
+                </Controls:MetroTabItem.Header>
+                <Grid Margin="0,0,0,0" VerticalAlignment="Stretch" Background="#FFE5E5E5">
+                    <StackPanel>
+                        <GroupBox Header="生成基础数据" x:Name="BaseParamsWindow">
+                            <Grid>
+                                <StackPanel>
+                                    <GroupBox Padding="10" Margin="0,0,0,5">
+                                        <GroupBox.Header>
+                                            <TextBlock FontSize="12.5">提示</TextBlock>
+                                        </GroupBox.Header>
+                                        <StackPanel>
+                                            <TextBlock FontSize="12.5" TextWrapping="Wrap">宿舍楼名称表达式有1个必选参数占位符'{0}'，其值为当前宿舍楼的序号。宿舍楼编号表达式参数同宿舍楼名称表达式参数相通。</TextBlock>
+                                            <TextBlock FontSize="12.5" TextWrapping="Wrap">宿舍名称表达式有2个必选参数占位符和1个可选参数占位符，第一位占位符值为当前宿舍楼的序号,第二位占位符当前宿舍楼楼层的序号，第三位占位符值为当前宿舍的序号。当只设置了2个占位符时，将把第二位占位符赋值为当前宿舍的序号。宿舍编号表达式同宿舍名称表达式相通。</TextBlock>
+                                            <TextBlock FontSize="12.5" TextWrapping="Wrap">使用参数时需要符合一下要求：<LineBreak/>1.符合C#的String.Format代码规范;<LineBreak/>2.生成的值不超过15个字符长度;
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <WrapPanel>
+                                        <Label Content="园区名称:" />
+                                        <TextBox Margin="60,0,0,0" x:Name="dormName" Text="男A1院" MinWidth="125"/>
+                                        <Label Margin="52,0,0,0" Content="宿舍楼数量:" />
+                                        <TextBox Margin="28,0,0,0" x:Name="buildingNum" Text="5" MinWidth="125"/>
+                                    </WrapPanel>
+                                    <WrapPanel>
+                                        <Label Content="宿舍楼楼层数:" />
+                                        <TextBox Margin="32,0,0,0" x:Name="buildingFloorNum" MinWidth="125" Text="3"/>
+                                        <Label Margin="52,0,0,0" Content="每层房间数:" />
+                                        <TextBox Margin="28,0,0,0" x:Name="roomNumOneFloor" Width="125" Text="10"/>
+                                    </WrapPanel>
+                                    <WrapPanel>
+                                        <Label Content="宿舍楼名称表达式:" />
+                                        <TextBox Margin="4,0,0,0" Width="125" x:Name="buildingNameExpr"  Controls:TextBoxHelper.Watermark="第{0:d2}栋" Text="第{0:d2}栋"/>
+                                        <Label Margin="52,0,0,0" Content="宿舍名称表达式:" />
+                                        <TextBox x:Name="roomNameExpr" MinWidth="180" Controls:TextBoxHelper.Watermark="第{0}栋{1:d2}楼{2:d3}宿舍" Text="第{0}栋{1:d2}楼{1}{2:d3}宿舍"/>
+                                    </WrapPanel>
+                                    <WrapPanel>
+                                        <Label Content="宿舍楼编号表达式:" />
+                                        <TextBox Margin="4,0,0,0" Width="125" x:Name="buildingVidExpr"  Controls:TextBoxHelper.Watermark="A1D{0:d2}" Text="A1D{0:d2}"/>
+                                        <Label Margin="52,0,0,0" Content="宿舍编号表达式:" />
+                                        <TextBox x:Name="roomVidExpr" MinWidth="180" Controls:TextBoxHelper.Watermark="A1D{0:d2}F{1:d2}R{1:d2}{2:d3}" Text="A1D{0:d2}F{1:d2}R{1:d2}{2:d3}"/>
+                                    </WrapPanel>
+                                    <WrapPanel>
+                                        <Button Name="btnGenBaseInfo" Margin="5,0,0,0" Click="btnGenBaseInfo_Click" Content="按参数生成基础数据" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                        <Button Name="btnResetInput" Margin="15,0" Click="btnResetInput_Click" Content="重新设置参数" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                        <Button Name="btnInsertBaseInfoToDatabase" Margin="90,0" Click="btnInsertBaseInfoToDatabase_Click" Content="将生成的数据插入数据库" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <StackPanel>
+                            <GroupBox Header="生成的宿舍楼信息">
+                                <DataGrid x:Name="dgBuilding" VerticalScrollBarVisibility="Visible" ItemsSource="{Binding}" AutoGenerateColumns="False" >
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="宿舍楼名称" MinWidth="120" Binding="{Binding Path=Nickname}" Width="auto" />
+                                        <DataGridTextColumn Header="宿舍楼编号" MinWidth="120" Binding="{Binding Path=Vid}" Width="auto" />
+                                        <DataGridTextColumn Header="数量"  MinWidth="120" Binding="{Binding Path=Count}" Width="auto" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Header="生成的宿舍信息">
+                                <DataGrid x:Name="dgRoom"  VerticalScrollBarVisibility="Visible" ItemsSource="{Binding}" AutoGenerateColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="宿舍名称" MinWidth="120" Binding="{Binding Path=Nickname}" Width="auto" />
+                                        <DataGridTextColumn Header="宿舍编号" MinWidth="120" Binding="{Binding Path=Vid}" Width="auto" />
+                                        <DataGridTextColumn Header="数量"  MinWidth="120" Binding="{Binding Path=Count}" Width="auto" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Controls:MetroTabItem>
+        </Controls:MetroAnimatedTabControl>
+    </Grid>
+</Controls:MetroWindow>
+

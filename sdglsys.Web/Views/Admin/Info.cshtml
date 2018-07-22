@@ -1,0 +1,194 @@
+﻿@model sdglsys.Entity.TUser
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>修改个人信息</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/admin.css" />
+</head>
+
+<body>
+    <div class="layui-tab page-content-wrap">
+        <ul class="layui-tab-title">
+            <li class="layui-this">修改资料</li>
+            <li>修改密码</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-form" style="width: 90%;padding-top: 20px;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">ID：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="id" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.Id">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名：</label>
+                        <div class="layui-input-block">
+                            <input disabled type="text" name="username" autocomplete="off" class="layui-input layui-disabled" value="@Model.Login_name">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">姓名：</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="nickname" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input" value="@Model.Nickname">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系电话：</label>
+                        <div class="layui-input-block">
+                            <input maxlength="11" type="tel" id="phone" required lay-verify="required" placeholder="请输入联系电话" autocomplete="off" class="layui-input" value="@Model.Phone">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">备注：</label>
+                        <div class="layui-input-block">
+                            <textarea id="note" placeholder="请输入内容" class="layui-textarea">@Model.Note</textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="adminInfo">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item">
+                <div class="layui-form" v style="width: 90%;padding-top: 20px;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="username" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.Login_name">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">原密码：</label>
+                        <div class="layui-input-block">
+                            <input type="password" id="pwd_old" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">新密码：</label>
+                        <div class="layui-input-block">
+                            <input type="password" id="pwd_new" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">重复密码：</label>
+                        <div class="layui-input-block">
+                            <input type="password" id="pwd_new2" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="adminPassword">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        //Demo
+        layui.use(['form', 'element', 'jquery'], function () {
+            var form = layui.form;
+            var element = layui.element;
+            var $ = layui.jquery;
+            form.render();
+            //监听信息提交
+            form.on('submit(adminInfo)', function (data) {
+                var params = {
+                    "nickname": $("#nickname").val(),
+                    "phone": $("#phone").val(),
+                    "note": $("#note").val()
+                }
+                /*$.post("/admin/updateInfo", params, function (data) {
+                    if (data['code'] == 200) {
+                        var icon = 1;
+                    } else {
+                        var icon = 0;
+                    }
+                    layer.msg(data['msg'], {
+                        'icon': icon,
+                    });
+                }, "json");*/
+				$.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "/admin/updateInfo",
+                    success: function (data) {data=JSON.parse(data);
+						layer.msg(data['msg'], {
+                            'icon': data['code'] == 200 ? 1 : 0,
+						});
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+            });
+            //监听密码提交
+            form.on('submit(adminPassword)', function (data) {
+                if ($("#pwd_old").val().trim().length < 5) {
+                    layer.msg("原密码长度应大于等于5个字符");
+                    return false;
+                }
+                if ($("#pwd_new").val().trim().length < 5) {
+                    layer.msg("新密码长度应大于等于5个字符");
+                    return false;
+                }
+                if ($("#pwd_new").val() != $("#pwd_new2").val()) {
+                    layer.msg("重复密码输入不一致");
+                    return false;
+                }
+                var params = {
+                    "pwd_old": $("#pwd_old").val(),
+                    "pwd_new": $("#pwd_new").val()
+                }
+                /*$.post("/admin/updatePassword", params, function (data) {
+                    if (data['code'] == 200) {
+                        var icon = 1;
+                    } else {
+                        var icon = 0;
+                    }
+                    layer.msg(data['msg'], {
+                        'icon': icon,
+                    });
+                }, "json");*/
+				$.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    data: params,
+                    url: "/admin/updatePassword",
+                    success: function (data) {data=JSON.parse(data);
+						layer.msg(data['msg'], {
+                            'icon': data['code'] == 200?1:0,
+						});
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

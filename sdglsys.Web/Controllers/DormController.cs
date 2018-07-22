@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.BLL;
+using sdglsys.Web;
 namespace sdglsys.Web.Controllers
 {
     public class DormController : Controller
@@ -13,11 +14,21 @@ namespace sdglsys.Web.Controllers
         [IsAdmin]
         public ActionResult Index()
         {
-            var keyword = Request["keyword"]; // 搜索关键词
-            var d = new BLL.Dorms();
+            string keyword = "";
+            var d = new Dorms();
             ViewBag.dorms = d.getAll(); // 获取所有园区
-            var pageIndex = Request["pageIndex"] == null ? 1 : Convert.ToInt32(Request["pageIndex"]);
-            var pageSize = Request["pageSize"] == null ? 10 : Convert.ToInt32(Request["pageSize"]);
+            int pageIndex = 1;
+            int pageSize = 10;
+            try
+            {
+                keyword = Request["keyword"]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+            }
+            finally
+            {
+            }
+            
             int count = 0;
             ViewBag.keyword = keyword;
             ViewBag.dorms = d.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
@@ -34,7 +45,7 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Dorm/Create
-        [AccountAuthorize]
+        [NeedLogin]
         public ActionResult Create()
         {
             return View();
@@ -49,17 +60,17 @@ namespace sdglsys.Web.Controllers
         [IsAdmin]
         public void Create(FormCollection collection)
         {
-            var msg = new BLL.Msg();
+            var msg = new Msg();
             try
             {
                 // 初始化对象
-                Entity.Dorm dorm = new Entity.Dorm()
+                Entity.TDorm dorm = new Entity.TDorm()
                 {
                     Nickname = collection["name"],
                     Note = collection["note"],
                     Type = Convert.ToBoolean(Convert.ToInt32(collection["type"])),
                 };
-                var Dorm = new BLL.Dorms();
+                var Dorm = new Dorms();
                 if (Dorm.Add(dorm))
                 {
                     msg.msg = "添加成功！";
@@ -77,7 +88,7 @@ namespace sdglsys.Web.Controllers
             }
             finally
             {
-                Response.Write(msg.toJson());
+                Response.Write(msg.ToJson());
                 Response.End();
             }
         }
@@ -86,7 +97,8 @@ namespace sdglsys.Web.Controllers
         [IsAdmin]
         public ActionResult Edit(int id)
         {
-            return View();
+            var Dorm = new Dorms();
+            return View(Dorm.findById(id));
         }
 
         // POST: Dorm/Edit/5
@@ -94,61 +106,83 @@ namespace sdglsys.Web.Controllers
         [IsAdmin]
         public void Edit(int id, FormCollection collection)
         {
-            var msg = new BLL.Msg();
-            try
+            var msg = new Msg();
+            var Dorm = new Dorms();
+            var dorm = Dorm.findById(id);
+            if (dorm == null)
             {
-                // 初始化对象
-                Entity.Dorm dorm = new Entity.Dorm()
+                msg.msg = "该园区不存在";
+                msg.code = 404;
+            }
+            else
+            {
+                try
                 {
-                    Id = id,
-                    Nickname = collection["name"],
-                    Note = collection["note"],
-                    Type = Convert.ToBoolean(Convert.ToInt32(collection["type"])),
-                };
-                var Dorm = new BLL.Dorms();
-                if (Dorm.Update(dorm))
-                {
-                    msg.msg = "保存成功！";
+                    dorm.Nickname = collection["name"];
+                    dorm.Note = collection["note"];
+                    dorm.Is_active = Convert.ToBoolean(collection["is_active"]);
+                    dorm.Type = Convert.ToBoolean(Convert.ToInt32(collection["type"]));
+                    if (Dorm.Update(dorm))
+                    {
+                        msg.msg = "保存成功！";
+                    }
+                    else
+                    {
+                        msg.msg = "发生未知错误，保存失败！";
+                        msg.code = 500;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    msg.msg = "发生未知错误，保存失败！";
                     msg.code = 500;
+                    msg.msg = "发生错误："+ex.Message;
                 }
-            }
-            catch (Exception ex)
-            {
-                msg.code = 500;
-                msg.msg = ex.Message;
-            }
-            finally
-            {
-                Response.Write(msg.toJson());
-                Response.End();
+                finally
+                {
+                    Response.Write(msg.ToJson());
+                    Response.End();
+                }
             }
         }
 
         // GET: Dorm/Delete/5
-        [AccountAuthorize]
-        public ActionResult Delete(int id)
+        [IsAdmin]
+        public void Delete(int id)
         {
-            return View();
+            var msg = new Msg();
+            var User = new Dorms();
+            var user = User.findById(id);
+            if (user == null)
+            {
+                msg.msg = "该园区不存在！";
+                msg.code = 404;
+            }
+            else
+            {
+                if (User.Delete(id))
+                {
+                    msg.msg = "删除成功！";
+                }
+                else
+                {
+                    msg.msg = "发生未知错误，删除失败！";
+                }
+            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // POST: Dorm/Delete/5
         [HttpPost]
-        [AccountAuthorize]
-        public ActionResult Delete(int id, FormCollection collection)
+        [IsAdmin]
+        public void Delete(int id, FormCollection collection)
         {
-            try
-            {
-                // TODO: Add delete logic here
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            Delete(id);
+        }
+
+        public void List() {
+            var db = new Dorms().Db;
+            Response.Write(db.Queryable<TDorm>().Where(d=>d.Is_active==true).ToJson());
         }
     }
 }

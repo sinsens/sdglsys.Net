@@ -1,13 +1,12 @@
-﻿using System.Web;
-using System.Web.Optimization;
-
-namespace sdglsys.Web
+﻿namespace sdglsys.Web
 {
     public class BundleConfig
     {
+        /*
         // 有关捆绑的详细信息，请访问 https://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -25,6 +24,8 @@ namespace sdglsys.Web
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
-        }
+           
+           // css样式文件
+        }*/
     }
 }

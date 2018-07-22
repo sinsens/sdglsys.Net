@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("sdglsys.Web")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("校园水电收费管理信息系统Web")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("sinsen")]
 [assembly: AssemblyProduct("sdglsys.Web")]
-[assembly: AssemblyCopyright("版权所有(C)  2018")]
+[assembly: AssemblyCopyright("版权所有(C) Sinsen 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

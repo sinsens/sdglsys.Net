@@ -1,11 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace sdglsys.BLL
+﻿namespace sdglsys.DbHelper
 {
     /// <summary>
     /// 自定义Json消息
@@ -19,24 +12,18 @@ namespace sdglsys.BLL
         public int code { get; set; }
         public string msg { get; set; }
         public object content { get; set; }
-
-        /// <summary>
-        /// Json化对象
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static string toJson(object obj)
-        {
-            return JsonConvert.SerializeObject(obj, Formatting.Indented);
-        }
+        private System.DateTime t = System.DateTime.Now;
+        public double exetime { get {
+                return System.Math.Round((double)(System.DateTime.Now.Ticks - t.Ticks)/10000000,5);
+            } }
 
         /// <summary>
         /// 返回Json
         /// </summary>
         /// <returns></returns>
-        public string toJson()
+        public string ToJson()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            return Utils.ToJson(this);
         }
     }
 }

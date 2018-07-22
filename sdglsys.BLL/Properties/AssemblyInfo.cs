@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("sdglsys.BLL")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("sdglsys.DbHelper")]
+[assembly: AssemblyDescription("校园水电收费管理信息系统DbHelper")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("sdglsys.BLL")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("Sinsen")]
+[assembly: AssemblyProduct("sdglsys.DbHelper")]
+[assembly: AssemblyCopyright("Copyright © Sinsen 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("dfe06221-53de-4bc0-98b3-198d348e5bc4")]
+[assembly: Guid("58a6e410-59e1-42a7-9f2c-ebf75e9defd4")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

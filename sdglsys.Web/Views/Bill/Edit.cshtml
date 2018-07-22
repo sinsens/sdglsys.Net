@@ -1,0 +1,146 @@
+﻿@model sdglsys.Entity.VBill
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>修改账单</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/admin.css" />
+</head>
+
+<body>
+    <div class="wrap-container">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">宿舍名称：</label>
+                <div class="layui-input-block">
+                    @if (Model == null)
+                    {
+                        <input id="pid" value="该宿舍没有记录" class="layui-input" />
+                    }
+                    else
+                    {
+                        <input id="pid" disabled value="@Model.Dorm_Nickname,@Model.Building_Nickname,@Model.PNickname" class="layui-input" />
+                    }
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">冷水费用：</label>
+                <div class="layui-input-block">
+                    <input value="@Model.Cold_water_cost" maxlength="11" id='cold_water_cost' type="text" placeholder="@Model.Cold_water_cost" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">热水费用：</label>
+                <div class="layui-input-block">
+                    <input value="@Model.Hot_water_cost" maxlength="11" id='hot_water_cost' type="text" placeholder="@Model.Hot_water_cost" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电力费用：</label>
+                <div class="layui-input-block">
+                    <input value="@Model.Electric_cost" maxlength="11" id='electric_cost' type="text" placeholder="@Model.Electric_cost" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态：</label>
+                <div class="layui-input-block">
+                    <select id="stat">
+                        <option value="0">已注销</option>
+                        <option value="1">已登记</option>
+                        <option value="2">已缴费</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-block">
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal layui-anim layui-anim-scale" lay-submit lay-filter="formDemo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'jquery'], function () {
+            var form = layui.form;
+            var $ = layui.jquery;
+            $("#stat").find("option[value='@Model.Is_active']").attr("selected", true);
+            form.render();
+                // 监听下拉列表
+                form.on('submit(formDemo)', function (data) {
+                    if ($('#pid').val().trim().length < 1) {
+                        layer.msg("请先选择一个宿舍");
+                        return false;
+                    }
+                    if ($("#cold_water_cost").val().trim().length < 1 || $("#hot_water_cost").val().trim().length < 1 || $("#electric_cost").val().trim().length < 1) {
+                        layer.msg("读表数值不能为空");
+                        return;
+                    }
+                    if ($("#note").val().trim().length < 3) {
+                        layer.msg("请至少填写3个字符长度的账单修改说明");
+                        return;
+                    }
+                    var pid = $("#pid").val();
+                    var params = {
+                        "dorm_id": @(Model.Dorm_id),
+                        "building_id": @(Model.Building_id),
+                        "pid": @(Model.Pid),
+                        "cold_water_cost": $("#cold_water_cost").val(),
+                        "hot_water_cost": $("#hot_water_cost").val(),
+                        "electric_cost": $("#electric_cost").val(),
+                        "note": $("#note").val(),
+                        'stat': $("#stat").val(),
+                    }
+                    console.log(params);
+                    /*
+                    $.post("/Bill/Edit/#Model.Id", params, function (data) {
+                        if (data['code'] == 200) {
+                            var icon = 1;
+                        } else {
+                            var icon = 0;
+                        }
+                        layer.open({
+                            'icon': icon,
+                            'title': "温馨提示",
+                            'content': data['msg']
+                        });
+                }, "json");*/
+                    $.ajax({
+                        async: "false",
+                        type: "post",
+                        //dataType: "json",
+                        //contentType: "application/json",
+                        data: params,
+                        url: "/Bill/Edit/@Model.Id",
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            layer.open({
+                                'icon': 1,
+                                'title': "温馨提示",
+                                'content': data['msg']
+                            });
+                        },
+                        error: function (e) {
+                            layer.open({
+                                'icon': 0,
+                                'title': "发生错误",
+                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            });
+                        }
+                    });
+                });
+            });
+    </script>
+</body>
+
+</html>

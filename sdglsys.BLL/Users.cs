@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace sdglsys.BLL
+namespace sdglsys.DbHelper
 {
     public class Users : DbContext
     {
-        public List<Entity.Users> getAll()
+        public List<Entity.TUser> getAll()
         {
-            return Db.Queryable<Entity.Users>().ToList();
+            return Db.Queryable<Entity.TUser>().ToList();
         }
 
         /// <summary>
@@ -14,9 +14,9 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.Users findById(int id)
+        public Entity.TUser findById(int id)
         {
-            return UserDb.GetById(id);
+            return Db.Queryable<Entity.TUser>().Where((u) => u.Id == id).First();
         }
 
         /// <summary>
@@ -24,9 +24,33 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.Users findByLoginName(string login_name)
+        public Entity.TUser findByLoginName(string login_name)
         {
-            return Db.Queryable<Entity.Users>().Where(a => a.Login_name == login_name).First();
+            return Db.Queryable<Entity.TUser>().Where(a => a.Login_name == login_name).First();
+        }
+
+        /// <summary>
+        /// 通过login_name查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Entity.VUser findVUserByLoginName(string login_name)
+        {
+            var user = Db.Queryable<Entity.TUser>().Where( u => u.Login_name == login_name).Select(u=>new Entity.VUser {
+                 Pid = u.Pid, Id = u.Id, Nickname = u.Nickname,Login_name = u.Login_name, Is_active = u.Is_active, Note=u.Note,
+                  Phone = u.Phone, Reg_date = u.Reg_date, Role = u.Role,
+            }).First();
+            if (user == null)
+                return user;
+            foreach (var item in Db.Queryable<Entity.TDorm>().ToList())
+            {
+                if (item.Id==user.Id)
+                {
+                    user.DormName = item.Nickname;
+                };
+            }
+            user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
+            return user;
         }
 
         public bool Delete(int id)
@@ -39,7 +63,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool Update(Entity.Users user)
+        public bool Update(Entity.TUser user)
         {
             return UserDb.Update(user);
         }
@@ -49,7 +73,7 @@ namespace sdglsys.BLL
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool Add(Entity.Users user)
+        public bool Add(Entity.TUser user)
         {
             return UserDb.Insert(user);
         }
@@ -63,12 +87,12 @@ namespace sdglsys.BLL
         /// <param name="totalCount"></param>
         /// <param name="where"></param>
         /// <returns></returns>
-        public List<Entity.Users> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
+        public List<Entity.TUser> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
         {
             if (where == null) {
-                return Db.Queryable<Entity.Users>().ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TUser>().ToPageList(pageIndex, pageSize, ref totalCount);
             }
-            return Db.Queryable<Entity.Users>().Where(u=>u.Nickname.Contains(where)||
+            return Db.Queryable<Entity.TUser>().Where(u=>u.Nickname.Contains(where)||
             u.Login_name.Contains(where)||u.Phone.Contains(where)||u.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
         }
 
@@ -81,13 +105,13 @@ namespace sdglsys.BLL
         /// <param name="totalCount"></param>
         /// <param name="where"></param>
         /// <returns></returns>
-        public List<Entity.Users> getByPages(int pageIndex, int pageSize, ref int totalCount,int pid, string where=null)
+        public List<Entity.TUser> getByPages(int pageIndex, int pageSize, ref int totalCount,int pid, string where=null)
         {
             if (where == null)
             {
-                return Db.Queryable<Entity.Users>().Where(u => u.Pid == pid).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid).ToPageList(pageIndex, pageSize, ref totalCount);
             }
-            return Db.Queryable<Entity.Users>().Where(u => u.Pid == pid && (u.Nickname.Contains(where) ||
+            return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid && (u.Nickname.Contains(where) ||
             u.Login_name.Contains(where) || u.Phone.Contains(where) || u.Note.Contains(where))).ToPageList(pageIndex, pageSize, ref totalCount);
         }
     }
