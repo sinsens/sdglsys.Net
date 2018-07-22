@@ -15,9 +15,9 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             string keyword="";
-            var b = new Buildings();
             int pageIndex = 1;
             int pageSize = 10;
+            int count = 0;
             try
             {
                 keyword = Request["keyword"]; // 搜索关键词
@@ -29,7 +29,7 @@ namespace sdglsys.Web.Controllers
 
             }
             
-            int count = 0;
+            var b = new Buildings();
             ViewBag.keyword = keyword;
             ViewBag.buildings = b.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
             ViewBag.count = count;  // 获取当前页数量

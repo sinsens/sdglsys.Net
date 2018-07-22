@@ -27,16 +27,14 @@ namespace sdglsys.Web.Controllers
             }
             var msg = new Msg();
             string ip = "";
-            var login_name = "";
+            string login_name = "";
             try
             {
                 var Log = new Logs();
                 ip = Request.UserHostAddress;
                 login_name = Request["login_name"];
-
                 var pwd = Request.Form["password"];
                 var user = Utils.Login(login_name, pwd);
-                msg.content += login_name + ":" + pwd;
                 if (user != null)
                 {
                     Session["id"] = user.Id;

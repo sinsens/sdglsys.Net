@@ -15,10 +15,10 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             string keyword = "";
-            var d = new Notices();
-            ViewBag.Notices = d.getAll(); // 获取所有公告
+            
             int pageIndex = 1;
             int pageSize = 10;
+            int count = 0;
             try
             {
                 keyword = Request["keyword"]; // 搜索关键词
@@ -28,9 +28,9 @@ namespace sdglsys.Web.Controllers
             catch
             {
             }
-            int count = 0;
+            var notices = new Notices();
             ViewBag.keyword = keyword;
-            ViewBag.notices = d.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
+            ViewBag.notices = notices.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.pageIndex = pageIndex;  // 获取当前页
             return View();

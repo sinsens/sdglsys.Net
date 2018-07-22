@@ -75,11 +75,8 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.TLog> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null)
         {
-            if (where == null)
-            {
-                return Db.Queryable<Entity.TLog>().OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
-            }
-            return Db.Queryable<Entity.TLog>().Where(a => a.Info.Contains(where) || a.Ip.Contains(where) || a.Login_name.Contains(where)).OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
+            return (where == null) ? Db.Queryable<Entity.TLog>().OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount) :
+                Db.Queryable<Entity.TLog>().Where(a => a.Info.Contains(where) || a.Ip.Contains(where) || a.Login_name.Contains(where)).OrderBy(a => a.Log_date, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
         }
     }
 }

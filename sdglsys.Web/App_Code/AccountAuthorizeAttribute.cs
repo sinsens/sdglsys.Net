@@ -138,7 +138,6 @@ namespace sdglsys.Web
     {
         public override void OnAuthorization(AuthorizationContext authorizationContext)
         {
-
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
 

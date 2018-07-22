@@ -20,36 +20,33 @@ namespace sdglsys.Web.Controllers
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
             }
-            string keyword="";
-            var b = new Bills();
-            int pageIndex=1;
-            int pageSize=10;
-            int stat = -1;
+            
+            string keyword = ""; // 关键词
+            int pageIndex = 1; // 当前页数
+            int pageSize = 10; // 每页显示数量
+            int stat = -1;  // 账单状态
+            int count = 0;  // 结果数量
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
-                stat = Convert.ToInt16(Request["stat"]);
+                keyword = Request[ "keyword" ]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                stat = Convert.ToInt16(Request[ "stat" ]);
             }
             catch
+            {}
+            var bills = new Bills();
+            if ((int) Session[ "role" ] < 3)
             {
-
-            }
-            
-            int count = 0;
-
-            if ((int)Session["role"] < 3)
-            {
-                ViewBag.useds = b.getByPagesByDormId(pageIndex, pageSize, (int)Session["pid"], ref count, keyword, (short)stat); // 获取列表
+                ViewBag.bills = bills.getByPagesByDormId(pageIndex, pageSize, (int) Session[ "pid" ], ref count, keyword, (short) stat); // 获取列表
             }
             else
             {
-                ViewBag.useds = b.getByPages(pageIndex, pageSize, ref count, keyword, (short)stat); // 获取列表
+                ViewBag.bills = bills.getByPages(pageIndex, pageSize, ref count, keyword, (short) stat); // 获取列表
             }
             ViewBag.stat = stat;
             ViewBag.keyword = keyword;
-            ViewBag.count = count;  // 获取当前页数量
+            ViewBag.count = count;  // 当前页数量
             ViewBag.pageIndex = pageIndex;  // 获取当前页
 
             return View();
@@ -64,8 +61,8 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var Room = new Rooms();
-            if ((int)Session["role"] < 3)
-                ViewBag.rooms = Room.getAllVRoomActive((int)Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
+            if ((int) Session[ "role" ] < 3)
+                ViewBag.rooms = Room.getAllVRoomActive((int) Session[ "pid" ]); // 非系统管理员只能看到所属于园区的宿舍
             else
                 ViewBag.rooms = Room.getAllVRoomActive();
             return View();
@@ -79,7 +76,7 @@ namespace sdglsys.Web.Controllers
         /// <param name="collection"></param>
         [HttpPost]
         [NeedLogin]
-        
+
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
@@ -96,31 +93,37 @@ namespace sdglsys.Web.Controllers
             try
             {
                 ///1.获取数据
-                var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
-                var hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
-                var electric_value = Convert.ToSingle(collection["electric_value"]);
+                var cold_water_value = Convert.ToSingle(collection[ "cold_water_value" ]);
+                var hot_water_value = Convert.ToSingle(collection[ "hot_water_value" ]);
+                var electric_value = Convert.ToSingle(collection[ "electric_value" ]);
                 ///1.1判断输入数值
                 if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
                 {
                     msg.msg = "数值输入有误，费用不能小于0";
                     goto end;
                 }
-                var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
-                var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
-                var Note = collection["note"];
-                if (Dorm_id < 0 || Building_id < 0 || Pid < 0) {
+                var Dorm_id = Convert.ToInt32(collection[ "dorm_id" ]); // 园区ID
+                var Building_id = Convert.ToInt32(collection[ "building_id" ]); // 宿舍楼ID
+                var Pid = Convert.ToInt32(collection[ "pid" ]); // 宿舍ID
+                var Note = collection[ "note" ];
+                if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
+                {
                     msg.msg = "宿舍ID或宿舍楼ID或园区ID输入有误";
                     goto end;
                 }
-                if (Note.Trim().Length < 3) {
+                if (Note.Trim().Length < 3)
+                {
                     msg.msg = "手动添加账单时请输入至少3个字符作为说明";
                     goto end;
                 }
                 /// 生成一个虚拟用量登记
-                var used = new TUsed() {
-                    Pid = Pid, Note = "手动添加账单后自动生成的登记信息，并不会更新读表数据",
-                     Building_id = Building_id, Dorm_id = Dorm_id, Post_uid = (int)Session["id"],
+                var used = new TUsed()
+                {
+                    Pid = Pid,
+                    Note = "手动添加账单后自动生成的登记信息，并不会更新读表数据",
+                    Building_id = Building_id,
+                    Dorm_id = Dorm_id,
+                    Post_uid = (int) Session[ "id" ],
                 };
                 /// 开始事务
                 Db.Ado.BeginTran();
@@ -133,14 +136,14 @@ namespace sdglsys.Web.Controllers
                     Room_id = Pid,
                     Building_id = Building_id,
                     Dorm_id = Dorm_id,
-                    Cold_water_cost = (decimal)cold_water_value,
-                    Electric_cost = (decimal)hot_water_value,
-                    Hot_water_cost = (decimal)electric_value,
+                    Cold_water_cost = (decimal) cold_water_value,
+                    Electric_cost = (decimal) hot_water_value,
+                    Hot_water_cost = (decimal) electric_value,
                     Rates_id = rate.Id,
                     Quota_id = quota.Id,
                 };
 
-                
+
                 ///7.保存所有数据
                 var flage = true;
                 ///7.2保存账单
@@ -164,7 +167,7 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -175,11 +178,10 @@ namespace sdglsys.Web.Controllers
         /// <param name="id"></param>
         // GET: Used/Delete/5
         [NotLowUser]
-        
+
         public void Delete(int id)
         {
             var msg = new Msg();
-            msg.code = 500;
             var Db = new DbContext().Db;
             var Bill = new Bills();
             try
@@ -197,7 +199,6 @@ namespace sdglsys.Web.Controllers
                 {
                     Bill.Delete(id);
                     Db.Ado.CommitTran();// 提交事务
-                    msg.code = 200;
                     msg.msg = "删除成功！";
                 }
             }
@@ -207,7 +208,7 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -227,8 +228,8 @@ namespace sdglsys.Web.Controllers
         // GET: Used/Delete/5
         [NotLowUser]
         [HttpPost]
-        
-        public void Edit(int id,FormCollection collection)
+
+        public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
             msg.code = 400;
@@ -236,26 +237,27 @@ namespace sdglsys.Web.Controllers
             try
             {
                 var bill = Db.Queryable<TBill>().Where(b => b.Id == id).First();
-                if (bill == null) {
+                if (bill == null)
+                {
                     msg.msg = "该账单信息不存在！";
                     msg.code = 404;
                     goto end;
                 }
                 ///1.获取数据
-                var cold_water_cost = Convert.ToDecimal(collection["cold_water_cost"]);
-                var hot_water_cost = Convert.ToDecimal(collection["hot_water_cost"]);
-                var electric_cost = Convert.ToDecimal(collection["electric_cost"]);
+                var cold_water_cost = Convert.ToDecimal(collection[ "cold_water_cost" ]);
+                var hot_water_cost = Convert.ToDecimal(collection[ "hot_water_cost" ]);
+                var electric_cost = Convert.ToDecimal(collection[ "electric_cost" ]);
                 ///1.1判断输入数值
                 if (cold_water_cost < 0 || hot_water_cost < 0 || electric_cost < 0)
                 {
                     msg.msg = "数值输入有误，费用不能小于0";
                     goto end;
                 }
-                var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
-                var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
-                var Note = collection["note"];
-                var stat = Convert.ToInt16(collection["stat"]); // 账单状态
+                var Dorm_id = Convert.ToInt32(collection[ "dorm_id" ]); // 园区ID
+                var Building_id = Convert.ToInt32(collection[ "building_id" ]); // 宿舍楼ID
+                var Pid = Convert.ToInt32(collection[ "pid" ]); // 宿舍ID
+                var Note = collection[ "note" ];
+                var stat = Convert.ToInt16(collection[ "stat" ]); // 账单状态
                 if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
                 {
                     msg.msg = "宿舍ID或宿舍楼ID或园区ID输入有误";
@@ -263,7 +265,7 @@ namespace sdglsys.Web.Controllers
                 }
                 if (Note.Trim().Length < 3)
                 {
-                    msg.msg = "手动添加账单时请输入至少3个字符作为说明";
+                    msg.msg = "修改账单时请输入至少3个字符作为说明";
                     goto end;
                 }
                 ///修改账单数值
@@ -297,7 +299,7 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -319,8 +321,8 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         [NotLowUser]
-        
-        public void Pay(int id) {
+        public void Pay(int id)
+        {
             var msg = new Msg();
             try
             {
@@ -337,7 +339,8 @@ namespace sdglsys.Web.Controllers
                 {
                     msg.msg += "结算成功！";
                 }
-                else {
+                else
+                {
                     msg.msg += "发生未知错误！";
                 }
             }
@@ -346,7 +349,7 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }

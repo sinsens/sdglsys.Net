@@ -21,9 +21,9 @@ namespace sdglsys.Web.Controllers
             int pageSize = 10;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                keyword = Request[ "keyword" ]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
             }
             finally
             {
@@ -31,9 +31,9 @@ namespace sdglsys.Web.Controllers
             var u = new Users();
             int count = 0;
             // 系统管理员
-            if ((int)Session["role"] < 3)
+            if ((int) Session[ "role" ] < 3)
             {
-                ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, (int)Session["pid"], keyword); // 获取列表
+                ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, (int) Session[ "pid" ], keyword); // 获取列表
             }
             else
             {
@@ -69,13 +69,13 @@ namespace sdglsys.Web.Controllers
                 // 初始化对象
                 Entity.TUser user = new Entity.TUser()
                 {
-                    Nickname = collection["nickname"],
-                    Note = collection["note"],
-                    Phone = collection["phone"],
-                    Role = Convert.ToInt32(collection["role"]),
-                    Pid = Convert.ToInt32(collection["pid"]),
-                    Login_name = collection["login_name"],
-                    Pwd = Utils.hashpwd((string)Utils.GetAppSetting("DefaultPassword", typeof(string))), // 设置默认密码
+                    Nickname = collection[ "nickname" ],
+                    Note = collection[ "note" ],
+                    Phone = collection[ "phone" ],
+                    Role = Convert.ToInt32(collection[ "role" ]),
+                    Pid = Convert.ToInt32(collection[ "pid" ]),
+                    Login_name = collection[ "login_name" ],
+                    Pwd = Utils.hashpwd((string) Utils.GetAppSetting("DefaultPassword", typeof(string))), // 设置默认密码
                 };
 
                 var User = new Users();
@@ -85,7 +85,7 @@ namespace sdglsys.Web.Controllers
                     msg.msg = "非系统管理员请选择所属园区";
                     msg.code = 400;
                 }
-                else if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                else if ((int) Session[ "role" ] < 3 && (int) Session[ "role" ] < user.Role + 1)
                 {
                     // 判断权限
                     msg.code = 403;
@@ -99,16 +99,7 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-
-                    if (User.Add(user))
-                    {
-                        msg.msg = "添加成功！";
-                    }
-                    else
-                    {
-                        msg.msg = "发生未知错误，添加失败！";
-                        msg.code = 500;
-                    }
+                    msg.msg = (User.Add(user)) ? "添加成功！" : "发生未知错误，添加失败！";
                 }
             }
             catch (Exception ex)
@@ -116,11 +107,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         /// <summary>
@@ -149,33 +137,31 @@ namespace sdglsys.Web.Controllers
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
-            var User = new Users();
-            var user = User.findById(id);
-
-            if (User.findById(user.Id) == null)
+            try
             {
-                msg.msg = "该用户不存在！";
-                msg.code = 404;
-            }
-            else
-            {
-                try
+                var User = new Users();
+                var user = User.findById(id);
+                if (User.findById(user.Id) == null)
                 {
-                    user.Nickname = collection["nickname"];
-                    user.Note = collection["note"];
-                    user.Role = Convert.ToInt32(collection["role"]);
-                    user.Pid = Convert.ToInt32(collection["pid"]);
-                    user.Login_name = collection["login_name"];
-                    user.Phone = collection["phone"];
-                    user.Is_active = Convert.ToBoolean(collection["is_active"]);
-                    msg.content = user;
+                    msg.msg = "该用户不存在！";
+                    msg.code = 404;
+                }
+                else
+                {
+                    user.Nickname = collection[ "nickname" ];
+                    user.Note = collection[ "note" ];
+                    user.Role = Convert.ToInt32(collection[ "role" ]);
+                    user.Pid = Convert.ToInt32(collection[ "pid" ]);
+                    user.Login_name = collection[ "login_name" ];
+                    user.Phone = collection[ "phone" ];
+                    user.Is_active = Convert.ToBoolean(collection[ "is_active" ]);
 
                     if (user.Pid == 0 && user.Role < 3)
                     {
                         msg.msg = "非系统管理员请选择所属园区";
                         msg.code = 400;
                     }
-                    else if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                    else if ((int) Session[ "role" ] < 3 && (int) Session[ "role" ] < user.Role + 1)
                     {
                         // 判断权限
                         msg.code = 403;
@@ -183,30 +169,17 @@ namespace sdglsys.Web.Controllers
                     }
                     else
                     {
-                        if (User.Update(user))
-                        {
-                            msg.msg = "保存成功！";
-                        }
-                        else
-                        {
-                            msg.code = 500;
-                            msg.msg = "发生未知错误！";
-                        }
+                        msg.msg = (User.Update(user)) ? "保存成功！" : "发生未知错误！";
                     }
-
-
-                }
-                catch (Exception ex)
-                {
-                    msg.code = 500;
-                    msg.msg = ex.Message;
-                }
-                finally
-                {
-                    Response.Write(msg.ToJson());
-                    Response.End();
                 }
             }
+            catch (Exception ex)
+            {
+                msg.code = 500;
+                msg.msg = "保存用户信息时发生错误：" + ex.Message;
+            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // GET: Users/Delete/5
@@ -223,9 +196,9 @@ namespace sdglsys.Web.Controllers
             }
             else
             {
-                int myrole = (int)Session["role"];
+                int myrole = (int) Session[ "role" ];
 
-                if (myrole < 3 && (myrole <= user.Role || (int)Session["pid"] != user.Pid))
+                if (myrole < 3 && (myrole <= user.Role || (int) Session[ "pid" ] != user.Pid))
                 { // 如果不是系统管理员并且（为同级别角色或园区不同）
                     msg.msg = "权限不足！";
                     msg.code = 403;
@@ -267,14 +240,14 @@ namespace sdglsys.Web.Controllers
         public void Reset(int id, FormCollection collection)
         {
             var msg = new Msg();
-            var pwd = (string)Utils.GetAppSetting("DefaultPassword", typeof(string));
+            var pwd = (string) Utils.GetAppSetting("DefaultPassword", typeof(string));
             try
             {
                 var User = new Users();
                 // 初始化对象
                 var user = User.findById(id);
 
-                if ((int)Session["role"] < 3 && (int)Session["role"] < user.Role + 1)
+                if ((int) Session[ "role" ] < 3 && (int) Session[ "role" ] < user.Role + 1)
                 {
                     // 判断权限
                     msg.code = 403;
@@ -288,15 +261,7 @@ namespace sdglsys.Web.Controllers
                 else
                 {
                     user.Pwd = Utils.hashpwd(pwd); // 设置默认密码
-                    if (User.Update(user))
-                    {
-                        msg.msg = "重置默认密码成功，该角色的密码已设置为'" + pwd + "'";
-                    }
-                    else
-                    {
-                        msg.code = 500;
-                        msg.msg = "发生未知错误！";
-                    }
+                    msg.msg = (User.Update(user)) ? "重置默认密码成功，该角色的密码已设置为'" + pwd + "'" : "发生未知错误！";
                 }
             }
             catch (Exception ex)
@@ -304,11 +269,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
     }
 }

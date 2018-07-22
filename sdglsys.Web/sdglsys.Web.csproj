@@ -156,7 +156,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\NoticeController.cs" />
     <Compile Include="Controllers\BillController.cs" />
     <Compile Include="Controllers\UsedController.cs" />
@@ -318,7 +317,6 @@
     <Content Include="Views\Bill\Index.cshtml" />
     <Content Include="Views\Bill\Edit.cshtml" />
     <Content Include="Views\Bill\Create.cshtml" />
-    <Content Include="Views\Error\Index.cshtml" />
     <Content Include="Content\fonts\iconfont.eot" />
     <Content Include="Content\fonts\iconfont.ttf" />
     <Content Include="Content\fonts\iconfont.woff" />

@@ -86,10 +86,7 @@ namespace sdglsys.DbHelper
         {
             foreach (var item in used_Data)
             {
-                Date.Add(item.Date);
-                Electric_value.Add(item.Electric_value);
-                Cold_water_value.Add(item.Cold_water_value);
-                Hot_water_value.Add(item.Hot_water_value);
+                Add(item);
             }
             
         }

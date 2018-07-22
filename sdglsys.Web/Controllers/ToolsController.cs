@@ -14,7 +14,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             var txt = Request["txt"];
-            if (txt != null) {
+            if (txt != null&&txt.Length>0) {
                 Response.Write(DbHelper.Utils.hashpwd(txt));
                 Response.End();
             }

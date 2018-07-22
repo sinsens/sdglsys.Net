@@ -1,11 +1,10 @@
 using SqlSugar;
-using System;
 
 namespace sdglsys.Entity
 {
     [SugarTable("t_notice")]
     /// <summary>
-    /// ¹«¸æÍ¨Öª
+    /// å…¬å‘Šé€šçŸ¥
     /// </summary>
     public class TNotice
     {
@@ -18,38 +17,38 @@ namespace sdglsys.Entity
 
         private System.String _Login_name;
         /// <summary>
-        /// ÓÃ»§Ãû
+        /// ç”¨æˆ·å
         /// </summary>
         public System.String Login_name { get { return this._Login_name; } set { this._Login_name = value.Trim(); } }
 
         private System.String _Title;
         /// <summary>
-        /// ±êÌâ
+        /// æ ‡é¢˜
         /// </summary>
         [SugarColumn(Length = 40, ColumnDataType = "varchar")]
         public System.String Title { get { return this._Title; } set { this._Title = value.Trim(); } }
 
         private System.String _Content;
         /// <summary>
-        /// ÄÚÈİ
+        /// å†…å®¹
         /// </summary>
         public System.String Content { get { return this._Content; } set { this._Content = value.Trim(); } }
 
-        private System.DateTime _Post_date=DateTime.Now;
+        private System.DateTime _Post_date = System.DateTime.Now;
         /// <summary>
-        /// ·¢²¼Ê±¼ä
+        /// å‘å¸ƒæ—¶é—´
         /// </summary>
         public System.DateTime Post_date { get { return this._Post_date; } set { this._Post_date = value; } }
 
-        private System.DateTime _Mod_date=DateTime.Now;
+        private System.DateTime _Mod_date = System.DateTime.Now;
         /// <summary>
-        /// ¸üĞÂÊ±¼ä
+        /// æ›´æ–°æ—¶é—´
         /// </summary>
         public System.DateTime Mod_date { get { return this._Mod_date; } set { this._Mod_date = value; } }
 
         private System.Boolean _Is_active = true;
         /// <summary>
-        /// ×´Ì¬£º0ÒÑ×¢Ïú£¬1Õı³£
+        /// çŠ¶æ€ï¼š0å·²æ³¨é”€ï¼Œ1æ­£å¸¸
         /// </summary>
         public System.Boolean Is_active { get { return this._Is_active; } set { this._Is_active = value; } }
     }

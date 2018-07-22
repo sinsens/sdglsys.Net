@@ -16,7 +16,19 @@ namespace sdglsys.DesktopUtils
         public MainWindow()
         {
             InitializeComponent();
+            TrialChk();
             resetTextBox();
+        }
+
+        private async void TrialChk()
+        {
+            DateTime trial_end_date;
+            DateTime.TryParse("2019-12-30 23:59", out trial_end_date);
+            if (DateTime.Now >= trial_end_date)
+            {
+                await this.ShowMessageAsync("温馨提示", "非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "\r\n如有任何疑问，请联系QQ：1278386874");
+                Application.Current.Shutdown();
+            }
         }
 
         private async void btnSearchUser_Click(object sender, RoutedEventArgs e)
@@ -56,7 +68,8 @@ namespace sdglsys.DesktopUtils
         /// <summary>
         /// 连接到数据库
         /// </summary>
-        private async void Connect() {
+        private async void Connect()
+        {
             if (tbxConnectString.Text.Trim().Length < 10)
             {
                 await this.ShowMessageAsync("温馨提示", "数据库连接字符串长度必须大于10个字符");
@@ -268,7 +281,7 @@ namespace sdglsys.DesktopUtils
                     await this.ShowMessageAsync("温馨提示", "请输入园区类型时发生错误：" + ex.Message);
                     return;
                 }
-                GenData(bNum,fNum,rNum);
+                GenData(bNum, fNum, rNum);
             }
             catch (Exception ex)
             {
@@ -282,7 +295,8 @@ namespace sdglsys.DesktopUtils
         /// <param name="bNum"></param>
         /// <param name="fNum"></param>
         /// <param name="rNum"></param>
-        private async void GenData(int bNum,int fNum,int rNum) {
+        private async void GenData(int bNum, int fNum, int rNum)
+        {
             var controller = await this.ShowProgressAsync("温馨提示", "正在进行计算，请稍等", true);
             controller.SetProgress(0.1F);
             await Task.Delay(500);
@@ -342,7 +356,7 @@ namespace sdglsys.DesktopUtils
             // 自动调整数据窗口
             if (Height / 2 - 280 < 50)
                 return;
-            dgBuilding.Height = dgBuilding.MaxHeight = (double)this.Height /2 -280;
+            dgBuilding.Height = dgBuilding.MaxHeight = (double)this.Height / 2 - 280;
             dgRoom.Height = dgRoom.MaxHeight = (double)this.Height / 2 - dgBuilding.Height;
         }
 
@@ -379,10 +393,11 @@ namespace sdglsys.DesktopUtils
                     BaseInfoGenerator.b.Rows[0]["Vid"], BaseInfoGenerator.r.Rows[0]["Nickname"], BaseInfoGenerator.r.Rows[0]["Vid"]); // 格式化提示信息
 
                 var result = await this.ShowMessageAsync("温馨提示", msg, MessageDialogStyle.AffirmativeAndNegative);
-                if (result == MessageDialogResult.Negative) {
+                if (result == MessageDialogResult.Negative)
+                {
                     return;
                 }
-                    
+
                 var t = DateTime.Now.Ticks;
                 var controller = await this.ShowProgressAsync("请稍后", "正在向数据库添加数据", true, new MetroDialogSettings
                 {

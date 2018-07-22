@@ -15,9 +15,9 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             string keyword = "";
-            var b = new Rooms();
             int pageIndex = 1;
             int pageSize = 10;
+            int count = 0;
             try
             {
                 keyword = Request["keyword"]; // 搜索关键词
@@ -27,9 +27,9 @@ namespace sdglsys.Web.Controllers
             finally
             {
             }
-            int count = 0;
+            var rooms = new Rooms();
             ViewBag.keyword = keyword;
-            ViewBag.rooms = b.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
+            ViewBag.rooms = rooms.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.pageIndex = pageIndex;  // 获取当前页
 
@@ -128,16 +128,7 @@ namespace sdglsys.Web.Controllers
                     r.Dorm_id = Convert.ToInt32(collection["dorm_id"]);
                     r.Vid = collection["vid"];
                     r.Pid = Convert.ToInt32(collection["pid"]);
-
-                    if (Room.Update(r))
-                    {
-                        msg.msg = "保存成功！";
-                    }
-                    else
-                    {
-                        msg.msg = "发生未知错误，保存失败！";
-                        msg.code = 500;
-                    }
+                    msg.msg = (Room.Update(r)) ? "保存成功！" : "发生未知错误，保存失败！";
                 }
                 
             }

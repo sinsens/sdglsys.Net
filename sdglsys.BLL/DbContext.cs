@@ -43,10 +43,9 @@ namespace sdglsys.DbHelper
         public DbContext(string ConnectionString, string DBType)
         {
             connectstring = ConnectionString;
-            dbtype = DBType;
-
             var dbType = new SqlSugar.DbType();
-            switch (dbtype)
+            // 判断数据库类型
+            switch (DBType.ToLower())
             {
                 case "mysql": dbType = DbType.MySql; break;
                 case "sqlserver": dbType = DbType.SqlServer; break;

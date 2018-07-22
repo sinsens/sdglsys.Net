@@ -113,12 +113,8 @@ namespace sdglsys.DesktopUtils
                 return "请先连接数据库";
             if (DormName == null || DormName.Length < 1)
                 return "请设置园区名称";
-            if (b == null || r.Rows.Count < 1)
-                return "未生成宿舍楼数据或数据数量为0";
-            if (r == null)
-            {
-                return "未生成宿舍数据或数据数量为0";
-            }
+            if (b == null || r.Rows.Count < 1||r == null)
+                return "请先生成数据";
             var t = DateTime.Now.Ticks;
             var db = DBInfo.DB.Db;
             var i = 0; // 宿舍楼数据指针

@@ -19,27 +19,19 @@ namespace sdglsys.Web.Controllers
             int pageIndex = 1;
             int pageSize = 10;
             int stat = 0;
+            int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
-                stat = Convert.ToInt32(Request["stat"]);
+                keyword = Request[ "keyword" ]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                stat = Convert.ToInt32(Request[ "stat" ]);
             }
             finally
             {
             }
-            
-            int count = 0;
+            ViewBag.useds = ((int) Session[ "role" ] < 3) ? b.getByPagesByDormId(pageIndex, pageSize, (int) Session[ "pid" ], ref count, keyword) : b.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
 
-            if ((int)Session["role"] < 3)
-            {
-                ViewBag.useds = b.getByPagesByDormId(pageIndex, pageSize, (int)Session["pid"], ref count, keyword); // 获取列表
-            }
-            else
-            {
-                ViewBag.useds = b.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
-            }
             ViewBag.keyword = keyword;
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.pageIndex = pageIndex;  // 获取当前页
@@ -59,8 +51,8 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var B = new DbHelper.Buildings();
-            if ((int)Session["role"] < 3)
-                ViewBag.building = B.getAllActiveById((int)Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
+            if ((int) Session[ "role" ] < 3)
+                ViewBag.building = B.getAllActiveById((int) Session[ "pid" ]); // 非系统管理员只能看到所属于园区的宿舍
             else
                 ViewBag.building = B.getAllActive(); // 非系统管理员只能看到所属于园区的宿舍
             return View();
@@ -84,14 +76,14 @@ namespace sdglsys.Web.Controllers
                 // 验证费率信息
                 if (rate == null)
                 {
-                    msg.msg += "请先到'系统设置-费率及基础配额设置'设置费率信息";
+                    msg.msg = "请先到'系统设置-费率及基础配额设置'设置费率信息";
                     goto end;
                 }
                 // 验证基础配额信息
                 var quota = Db.Queryable<TQuota>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
                 if (quota == null)
                 {
-                    msg.msg += "请先到'系统设置-费率及基础配额设置'设置基础配额信息";
+                    msg.msg = "请先到'系统设置-费率及基础配额设置'设置基础配额信息";
                     goto end;
                 }
 
@@ -100,28 +92,28 @@ namespace sdglsys.Web.Controllers
                 var Bill = new Bills();
 
                 ///1.获取数据
-                var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
-                var hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
-                var electric_value = Convert.ToSingle(collection["electric_value"]);
+                var cold_water_value = Convert.ToSingle(collection[ "cold_water_value" ]);
+                var hot_water_value = Convert.ToSingle(collection[ "hot_water_value" ]);
+                var electric_value = Convert.ToSingle(collection[ "electric_value" ]);
                 ///1.1判断输入数值
                 if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
                 {
                     msg.msg += "数值输入有误，读表数值不能小于0";
                     goto end;
                 }
-                var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
-                var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
-                var Note = collection["note"];
+                var Dorm_id = Convert.ToInt32(collection[ "dorm_id" ]); // 园区ID
+                var Building_id = Convert.ToInt32(collection[ "building_id" ]); // 宿舍楼ID
+                var Pid = Convert.ToInt32(collection[ "pid" ]); // 宿舍ID
+                var Note = collection[ "note" ];
                 if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
                 {
-                    msg.msg += "宿舍ID或宿舍楼ID或园区ID输入有误";
+                    msg.msg = "宿舍ID或宿舍楼ID或园区ID输入有误";
                     goto end;
                 }
                 ///1.2判断该宿舍是否已登记, 避免重复操作
                 if (Used.IsRecord(Pid))
                 {
-                    msg.msg += "该宿舍本月已经登记过了，无需再次登记";
+                    msg.msg = "该宿舍本月已经登记过了，无需再次登记";
                     goto end;
                 }
 
@@ -132,14 +124,14 @@ namespace sdglsys.Web.Controllers
                 ///3.计算本次用量
                 var usedinfo = Db.Queryable<TUsed_total>().Where(u => Pid == u.Pid).First();
                 if (usedinfo != null)
-                { // 本次数值=本次读数-上次读数
-
+                {
                     ///3.1判断本次数值是否大于等于上次数值
                     if (this_cold_water_value < usedinfo.Cold_water_value || this_hot_water_value < usedinfo.Hot_water_value || this_electric_value < usedinfo.Electric_value)
                     {
-                        msg.msg += "数值输入有误，水表电表通常是不会装着转滴。";
+                        msg.msg = "数值输入有误，水表电表通常是不会装着转滴。";
                         goto end;
                     }
+                    // 本次数值=本次读数-上次读数
                     this_cold_water_value -= usedinfo.Cold_water_value;
                     this_hot_water_value -= usedinfo.Hot_water_value;
                     this_electric_value -= usedinfo.Electric_value;
@@ -164,7 +156,7 @@ namespace sdglsys.Web.Controllers
                     Dorm_id = Dorm_id,
                     Note = Note,
                     Pid = Pid,
-                    Post_uid = (int)Session["id"],
+                    Post_uid = (int) Session[ "id" ],
                 };
                 Db.Ado.BeginTran(); // 开始事务
                 ///3.3保存用量单
@@ -174,6 +166,7 @@ namespace sdglsys.Web.Controllers
                 {
                     msg.msg = "保存登记信息时发生错误！";
                     // 回滚事务
+                    Db.Ado.RollbackTran();
                     goto end;
                 }
                 ///4.获取基础配额数据
@@ -190,14 +183,14 @@ namespace sdglsys.Web.Controllers
                 bill.Room_id = Pid;
                 bill.Building_id = Building_id;
                 bill.Dorm_id = Dorm_id;
-                bill.Cold_water_cost = (decimal)this_cold_water_value * (decimal)rate.Cold_water_value;
-                bill.Electric_cost = (decimal)this_electric_value * (decimal)rate.Electric_value;
-                bill.Hot_water_cost = (decimal)this_hot_water_value * (decimal)rate.Hot_water_value;
+                bill.Cold_water_cost = (decimal) this_cold_water_value * (decimal) rate.Cold_water_value;
+                bill.Electric_cost = (decimal) this_electric_value * (decimal) rate.Electric_value;
+                bill.Hot_water_cost = (decimal) this_hot_water_value * (decimal) rate.Hot_water_value;
                 bill.Rates_id = rate.Id;
                 bill.Quota_id = quota.Id;
                 //msg.content = last;goto end;//#debug
                 ///7.保存所有数据
-                
+
                 var flage = true;
                 ///7.1保存读表信息
                 if (usedinfo.Id < 1)
@@ -235,7 +228,7 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -307,10 +300,9 @@ namespace sdglsys.Web.Controllers
             catch (Exception ex)
             {
                 Db.Ado.RollbackTran();//发生错误，回滚操作
-                msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -326,18 +318,12 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public void Last(FormCollection collection)
         {
+            /// 获取宿舍的读表数值
             var msg = new Msg();
             var Used = new Useds_total();
-            try
-            {
-                msg.content = Used.Last(Convert.ToInt32(collection["pid"]));
-            }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
-
+            msg.content = Used.Last(Convert.ToInt32(collection[ "pid" ]));
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         /// <summary>
@@ -347,31 +333,24 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult UsedInfo()
         {
-            var keyword = Request["keyword"]; // 搜索关键词
-            var b = new Useds_total();
+            var keyword = "";
             int pageIndex = 1;
             int pageSize = 10;
             int stat = 0;
+            int count = 0;
             try
             {
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
-                stat = Convert.ToInt32(Request["stat"]);
+                keyword = Request[ "keyword" ]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                stat = Convert.ToInt32(Request[ "stat" ]);
             }
             finally
             {
             }
-            
-            int count = 0;
+            var b = new Useds_total();
+            ViewBag.useds = ((int) Session[ "role" ] < 3) ? b.getByPagesByDormId(pageIndex, pageSize, (int) Session[ "pid" ], ref count, keyword) : ViewBag.useds = b.getByPages(pageIndex, pageSize, ref count, keyword);// 获取列表
 
-            if ((int)Session["role"] < 3)
-            {
-                ViewBag.useds = b.getByPagesByDormId(pageIndex, pageSize, (int)Session["pid"], ref count, keyword); // 获取列表
-            }
-            else
-            {
-                ViewBag.useds = b.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
-            }
             ViewBag.keyword = keyword;
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.pageIndex = pageIndex;  // 获取当前页
@@ -387,8 +366,8 @@ namespace sdglsys.Web.Controllers
         public ActionResult CreateUsedInfo()
         {
             var Room = new Rooms();
-            if ((int)Session["role"] < 3)
-                ViewBag.rooms = Room.GetVRoomWithoutUsedInfo((int)Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
+            if ((int) Session[ "role" ] < 3)
+                ViewBag.rooms = Room.GetVRoomWithoutUsedInfo((int) Session[ "pid" ]); // 非系统管理员只能看到所属于园区的宿舍
             else
                 ViewBag.rooms = Room.GetVRoomWithoutUsedInfo();
             return View();
@@ -403,9 +382,9 @@ namespace sdglsys.Web.Controllers
             msg.code = 400;
             try
             {
-                var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
-                var hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
-                var electric_value = Convert.ToSingle(collection["electric_value"]);
+                var cold_water_value = Convert.ToSingle(collection[ "cold_water_value" ]);
+                var hot_water_value = Convert.ToSingle(collection[ "hot_water_value" ]);
+                var electric_value = Convert.ToSingle(collection[ "electric_value" ]);
 
                 ///1.1判断输入数值
                 if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
@@ -413,10 +392,10 @@ namespace sdglsys.Web.Controllers
                     msg.msg = "数值输入有误，读表数值不能小于0";
                     goto end;
                 }
-                var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
-                var Pid = Convert.ToInt32(collection["pid"]); ; // 宿舍ID
-                var Note = collection["note"];
+                var Dorm_id = Convert.ToInt32(collection[ "dorm_id" ]); // 园区ID
+                var Building_id = Convert.ToInt32(collection[ "building_id" ]); // 宿舍楼ID
+                var Pid = Convert.ToInt32(collection[ "pid" ]); ; // 宿舍ID
+                var Note = collection[ "note" ];
 
                 Db.Ado.BeginTran(); //开始事务
                 var usedinfo = Db.Queryable<TUsed_total>().Where(u => pid == u.Pid).First();
@@ -464,7 +443,7 @@ namespace sdglsys.Web.Controllers
                 msg.msg += ex.Message;
             }
 
-            end:    // 不满足条件直接跳到这里
+        end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }

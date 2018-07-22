@@ -46,11 +46,7 @@ namespace sdglsys.DbHelper
         {
             Users u = new Users();
             Entity.TUser user = u.findByLoginName(login_name);
-            if (user == null)
-                return null;
-            if (user.Is_active == false || checkpw(pwd, user.Pwd) == false)
-                return null;
-            return user;
+            return (user == null || user.Is_active == false || checkpw(pwd, user.Pwd) == false) ? null : user;
         }
 
         /// <summary>
@@ -83,9 +79,7 @@ namespace sdglsys.DbHelper
         public static bool NeedAudit(string url)
         {
             url.ToLower();
-            /// <summary>
-            /// 敏感操作列表
-            /// </summary>
+            // 敏感操作列表
             string[] permit_list = {
                 "create","edit","delete","pay","createusedinfo","editusedinfo","deleteusedinfo","reset"
             };
