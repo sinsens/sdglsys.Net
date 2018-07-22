@@ -44,16 +44,19 @@
                 @if (Convert.ToInt32(Session["role"]) > 1)
                 {
                     <li class="layui-nav-item">
-                        <a href="javascript:;" data-url="/bill/index" data-id='20' data-text="账单管理"><i class="layui-icon">&#xe65e;</i>账单管理</a>
+                        <a href="javascript:;" data-url="/bill/index?stat=-1" data-id='20' data-text="账单管理"><i class="layui-icon">&#xe65e;</i>账单管理</a>
                     </li>
                     <li class="layui-nav-item">
                         <a href="javascript:;"><i class="layui-icon">&#xe667;</i>公告管理</a>
                         <dl class="layui-nav-child">
                             <dd>
-                                <a href="javascript:;" data-url="/notice/list" data-id='30' data-text="查看公告"><span class="l-line"></span>查看公告</a>
+                                <a href="javascript:;" data-url="/notice/index" data-id='30' data-text="管理公告"><span class="l-line"></span>管理公告</a>
                             </dd>
                             <dd>
-                                <a href="javascript:;" data-url="/notice/create" data-id='31' data-text="发布公告"><span class="l-line"></span>发布公告</a>
+                                <a href="javascript:;" data-url="/notice/list" data-id='31' data-text="查看公告"><span class="l-line"></span>查看公告</a>
+                            </dd>
+                            <dd>
+                                <a href="javascript:;" data-url="/notice/create" data-id='32' data-text="发布公告"><span class="l-line"></span>发布公告</a>
                             </dd>
                         </dl>
                     </li>
