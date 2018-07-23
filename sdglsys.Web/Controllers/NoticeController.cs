@@ -15,15 +15,15 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             string keyword = "";
-            
+
             int pageIndex = 1;
             int pageSize = 10;
             int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                keyword = Request[ "keyword" ]; // 搜索关键词
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
             }
             catch
             {
@@ -65,19 +65,60 @@ namespace sdglsys.Web.Controllers
                 // 初始化对象
                 Entity.TNotice notice = new Entity.TNotice()
                 {
-                    Title = collection["title"],
-                    Content = collection["content"],
-                    Login_name = (string)Session["login_name"],
+                    Title = collection[ "title" ],
+                    Content = collection[ "content" ],
+                    Login_name = (string) Session[ "login_name" ],
                     Post_date = DateTime.Now,
                 };
                 var Notice = new Notices();
-                if (Notice.Add(notice))
+                msg.msg = (Notice.Add(notice)) ? "发布公告成功！" : "发生未知错误，发布公告失败！";
+            }
+            catch (Exception ex)
+            {
+                msg.code = 500;
+                msg.msg = ex.Message;
+            }
+            Response.Write(msg.ToJson());
+            Response.End();
+        }
+
+        // GET: Notice/Edit/5
+        [IsAdmin]
+        public ActionResult Edit(int id)
+        {
+            var Notice = new Notices();
+            return View(Notice.findById(id));
+        }
+
+        // POST: Notice/Edit/5
+        [HttpPost]
+        [NotLowUser]
+        public void Edit(int id, FormCollection collection)
+        {
+            var msg = new Msg();
+            var Notice = new Notices();
+            var notice = Notice.findById(id);
+            if (notice == null)
+            {
+                msg.code = 404;
+                msg.msg = "该公告不存在！";
+                Response.Write(msg.ToJson());
+                Response.End();
+            }
+            try
+            {
+                notice.Content = collection[ "content" ];
+                notice.Title = collection[ "title" ];
+                notice.Mod_date = DateTime.Now;
+                notice.Is_active = Convert.ToBoolean(collection[ "is_active" ]);
+
+                if (Notice.Update(notice))
                 {
-                    msg.msg = "发布公告成功！";
+                    msg.msg = "保存成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，发布公告失败！";
+                    msg.msg = "发生未知错误，保存失败！";
                     msg.code = 500;
                 }
             }
@@ -91,59 +132,7 @@ namespace sdglsys.Web.Controllers
                 Response.Write(msg.ToJson());
                 Response.End();
             }
-        }
 
-        // GET: Notice/Edit/5
-        [IsAdmin]
-        public ActionResult Edit(int id)
-        {
-            var Notice = new Notices();
-            return View(Notice.findById(id));
-        }
-
-        // POST: Notice/Edit/5
-        [HttpPost]
-        [IsAdmin]
-        public void Edit(int id, FormCollection collection)
-        {
-            var msg = new Msg();
-            var Notice = new Notices();
-            var notice = Notice.findById(id);
-            if (notice == null)
-            {
-                msg.code = 404;
-                msg.msg = "该公告不存在！";
-            }
-            else
-            {
-                try
-                {
-                    notice.Content = collection["content"];
-                    notice.Title = collection["title"];
-                    notice.Mod_date = DateTime.Now;
-                    notice.Is_active = Convert.ToBoolean(collection["is_active"]);
-
-                    if (Notice.Update(notice))
-                    {
-                        msg.msg = "保存成功！";
-                    }
-                    else
-                    {
-                        msg.msg = "发生未知错误，保存失败！";
-                        msg.code = 500;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    msg.code = 500;
-                    msg.msg = ex.Message;
-                }
-                finally
-                {
-                    Response.Write(msg.ToJson());
-                    Response.End();
-                }
-            }
         }
 
         // GET: Notice/Delete/5
@@ -187,7 +176,8 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult View(int id) {
+        public ActionResult View(int id)
+        {
             var db = new Notices().NoticeDb;
             var notice = db.GetById(id);
             if (notice == null)
@@ -195,14 +185,15 @@ namespace sdglsys.Web.Controllers
             return View(notice);
         }
 
-        public ActionResult List() {
+        public ActionResult List()
+        {
             var db = new Notices();
             int pageIndex = 1;
             int pageSize = 10;
             try
             {
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
+                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
             }
             finally
             {

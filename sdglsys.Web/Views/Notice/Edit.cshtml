@@ -37,7 +37,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
                 <div class="layui-input-block">
-                    @if ((bool)Model.Is_active)
+                    @if ((bool) Model.Is_active)
                     {
                         <input id="is_active" type="checkbox" name="switch" lay-skin="switch" checked="checked"> }
                     else
@@ -58,32 +58,52 @@
             var $ = layui.jquery;
             var form = layui.form;
             form.render();
-				var layedit = layui.layedit;
-				layedit.set({
-					uploadImage: {
-						url: '/admin/upload', //接口url
-						type: 'post' //默认post
-					}
-                });
-                var editor = layedit.build('content'); //建立编辑器
+            var layedit = layui.layedit;
+            layedit.set({
+                uploadImage: {
+                    url: '/admin/upload', //接口url
+                    type: 'post' //默认post
+                }
+            });
+            var editor = layedit.build('content'); //建立编辑器
 
-				form.render();
-				//监听提交
-				form.on('submit(formDemo)', function(data) {
-					if($('#title').val().trim().length<3){
-						layer.msg("公告标题必须大于等于3个字符长度");
-						return false;
-					}
-					var params = {
-						"title": $('#title').val(),
-                        "content": layedit.getContent(editor),
-                        "is_active": data.field['switch'] == "on" ? true : false,
-						}
-					$.post("/notice/edit/@Model.Id", params, function(data){
-						if(data['code']==200){ var icon = 1; }else{ var icon = 0; } layer.open({ 'icon': icon, 'title': "温馨提示", 'content': data['msg'] });
-					},"json");
-				});
-			});
+            form.render();
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                if ($('#title').val().trim().length < 3) {
+                    layer.msg("公告标题必须大于等于3个字符长度");
+                    return false;
+                }
+                var params = {
+                    "title": $('#title').val(),
+                    "content": zip(layedit.getContent(editor)),
+                    "is_active": data.field['switch'] == "on" ? true : false,
+                }
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.open({
+                            'icon': 1,
+                            'title': "温馨提示",
+                            'content': data['msg']
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
