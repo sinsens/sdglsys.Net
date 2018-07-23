@@ -46,8 +46,7 @@ namespace sdglsys.DesktopUtils
 
             try
             {
-                var U = new DbHelper.Users();
-                var user = U.findVUserByLoginName(tbxLogin_name.Text);
+                var user = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == tbxLogin_name.Text).First();
                 if (user == null)
                 {
                     await this.ShowMessageAsync("温馨提示", "未找到用户名为'" + tbxLogin_name.Text + "'的系统用户。");
@@ -113,8 +112,8 @@ namespace sdglsys.DesktopUtils
             try
             {
                 var pwd = DbHelper.Utils.hashpwd(newpwd.Trim());
-                var db = new DbHelper.Users().Db;
-                var user = db.Queryable<Entity.TUser>().Where(u => u.Login_name == Login_name.Text).Select(u => new Entity.VUser
+                var u =DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u1 => u1.Login_name == Login_name.Text).First();
+                var user = new Entity.VUser
                 {
                     Pid = u.Pid,
                     Id = u.Id,
@@ -125,12 +124,12 @@ namespace sdglsys.DesktopUtils
                     Phone = u.Phone,
                     Reg_date = u.Reg_date,
                     Role = u.Role,
-                }).First();
+                };
                 if (user == null)
                     user = new Entity.VUser();
                 else
                 {
-                    foreach (var item in db.Queryable<Entity.TDorm>().ToList())
+                    foreach (var item in DBInfo.DB.Db.Queryable<Entity.TDorm>().ToList())
                     {
                         if (item.Id == user.Pid)
                         {
@@ -141,7 +140,7 @@ namespace sdglsys.DesktopUtils
                 }
                 user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
                 user.Pwd = pwd;
-                db.Updateable(user);
+                DBInfo.DB.Db.Updateable(user);
                 await this.ShowMessageAsync("温馨提示", "重置密码成功");
             }
             catch (Exception ex)
@@ -167,8 +166,7 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                var db = new DbHelper.Users().Db;
-                if (db.Queryable<Entity.TUser>().Where(u => u.Login_name == loginname).Count() > 0)
+                if (DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == loginname).Count() > 0)
                 {
                     await this.ShowMessageAsync("温馨提示", "该用户名已存在");
                     return;
@@ -184,7 +182,7 @@ namespace sdglsys.DesktopUtils
                     Nickname = nickname,
                     Note = "使用桌面工具生成的系统角色"
                 };
-                db.Insertable(user).ExecuteCommand();
+                DBInfo.DB.Db.Insertable(user).ExecuteCommand();
                 await this.ShowMessageAsync("温馨提示", "创建系统角色成功");
             }
             catch (Exception ex)
