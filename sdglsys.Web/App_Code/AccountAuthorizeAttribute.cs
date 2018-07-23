@@ -54,7 +54,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (DbHelper.Utils.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
+            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
             {
                 /// 加入日志
                 var Log = new DbHelper.Logs();
@@ -113,7 +113,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (DbHelper.Utils.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
+            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
             {
                 /// 加入日志
                 var Log = new DbHelper.Logs();
@@ -172,7 +172,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (DbHelper.Utils.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
+            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
             {
                 /// 加入日志
                 var Log = new DbHelper.Logs();

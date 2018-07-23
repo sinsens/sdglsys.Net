@@ -71,26 +71,6 @@ namespace sdglsys.DbHelper
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
 
-        /// <summary>
-        /// 检查是否为敏感操作
-        /// </summary>
-        /// <param name="url">URL</param>
-        /// <returns>false</returns>
-        public static bool NeedAudit(string url)
-        {
-            url.ToLower();
-            // 敏感操作列表
-            string[] permit_list = {
-                "create","edit","delete","pay","createusedinfo","editusedinfo","deleteusedinfo","reset"
-            };
-            foreach (var item in permit_list)
-            {
-                if (url.Contains(item))
-                    return true;
-            }
-            return false;
-        }
-
         public static bool OutTrial()
         {
             DateTime trial_end_date;
