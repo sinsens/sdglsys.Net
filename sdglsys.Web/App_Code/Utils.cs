@@ -1,14 +1,8 @@
-﻿using BCrypt.Net;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using Newtonsoft.Json;
 
-namespace sdglsys.DbHelper
+namespace sdglsys.Web
 {
     /// <summary>
     /// 常用工具集
@@ -44,7 +38,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public static Entity.TUser Login(string login_name, string pwd)
         {
-            Users u = new Users();
+            DbHelper.Users u = new DbHelper.Users();
             Entity.TUser user = u.findByLoginName(login_name);
             return (user == null || user.Is_active == false || checkpw(pwd, user.Pwd) == false) ? null : user;
         }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sdglsys.DbHelper
+namespace sdglsys.Entity
 {
     /// <summary>
     /// 输出图表需要的数据
@@ -38,14 +38,6 @@ namespace sdglsys.DbHelper
         public void Add(used_data used_Data)
         {
             data.Add(used_Data);
-        }
-
-        /// <summary>
-        /// 返回Json字符串
-        /// </summary>
-        /// <returns></returns>
-        public string ToJson() {
-            return Utils.ToJson(this);
         }
     }
 

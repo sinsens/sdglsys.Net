@@ -111,7 +111,7 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                var pwd = DbHelper.Utils.hashpwd(newpwd.Trim());
+                var pwd = BCrypt.Net.BCrypt.HashPassword(newpwd.Trim(), 4);
                 var u =DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u1 => u1.Login_name == Login_name.Text).First();
                 var user = new Entity.VUser
                 {
@@ -172,7 +172,7 @@ namespace sdglsys.DesktopUtils
                     return;
                 }
                 // 检查用户名是否已存在
-                pwd = DbHelper.Utils.hashpwd(pwd);
+                pwd = BCrypt.Net.BCrypt.HashPassword(pwd,4);
                 var nickname = newNickname.Text.Trim().Length > 1 ? newNickname.Text.Trim() : loginname;
                 var user = new Entity.TUser
                 {

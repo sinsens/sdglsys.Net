@@ -30,14 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
-      <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\sdglsys.Web\obj\Release\AspnetCompileMerge\Source\bin\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SqlSugar, Version=4.6.4.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\sqlSugar.4.6.4.9\lib\SqlSugar.dll</HintPath>
@@ -57,18 +51,14 @@
     <Compile Include="DbContext.cs" />
     <Compile Include="Dorms.cs" />
     <Compile Include="Logs.cs" />
-    <Compile Include="Msg.cs" />
     <Compile Include="Notices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quotas.cs" />
     <Compile Include="Rates.cs" />
-    <Compile Include="ResponseData.cs" />
     <Compile Include="Rooms.cs" />
     <Compile Include="Useds.cs" />
     <Compile Include="Useds_total.cs" />
-    <Compile Include="Used_datas.cs" />
     <Compile Include="Users.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\sdglsys.Entity\sdglsys.Entity.csproj">
@@ -77,7 +67,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

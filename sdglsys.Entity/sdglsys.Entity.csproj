@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msg.cs" />
+    <Compile Include="ResponseData.cs" />
     <Compile Include="TBill.cs" />
     <Compile Include="TBuilding.cs" />
     <Compile Include="TDorm.cs" />
@@ -54,6 +56,7 @@
     <Compile Include="TRoom.cs" />
     <Compile Include="TUsed.cs" />
     <Compile Include="TUsed_total.cs" />
+    <Compile Include="Used_datas.cs" />
     <Compile Include="VUser.cs" />
     <Compile Include="TUser.cs" />
     <Compile Include="VBill.cs" />

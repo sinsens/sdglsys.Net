@@ -204,5 +204,12 @@ namespace sdglsys.Web.Controllers
             ViewBag.notices = db.getListByPages(pageIndex, pageSize, ref count);
             return View();
         }
+
+        /// <summary>
+        /// 测试Layui Table模板引擎
+        /// </summary>
+        public void List2() {
+            //var data = new DbHelper.
+        }
     }
 }

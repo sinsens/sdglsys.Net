@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace sdglsys.DbHelper
+﻿namespace sdglsys.Entity
 {
     /// <summary>
     /// API请求返回的数据对象
     /// 针对Layui的Table模块的返回数据
     /// 2018年7月2日 21点38分 sinsen
     /// </summary>
-    public class ResponseData:Msg
+    public class ResponseData: Msg
     {
         /// <summary>
         /// 响应记录数

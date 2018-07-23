@@ -15,7 +15,7 @@ namespace sdglsys.Web.Controllers
         {
             var txt = Request["txt"];
             if (txt != null&&txt.Length>0) {
-                Response.Write(DbHelper.Utils.hashpwd(txt));
+                Response.Write(Utils.hashpwd(txt));
                 Response.End();
             }
             return View();

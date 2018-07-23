@@ -1,10 +1,23 @@
 ﻿using SqlSugar;
 using System;
+using System.Configuration;
 
 namespace sdglsys.DbHelper
 {
     public class DbContext:IDisposable
     {
+        /// <summary>
+        /// 获取App配置信息
+        /// </summary>
+        /// <param name="key">App配置节点名称(Key)</param>
+        /// <param name="type">类型：typeof(string,bool,int)</param>
+        /// <returns></returns>
+        public object GetAppSetting(string key, Type type)
+        {
+            var setting = new AppSettingsReader();
+            return setting.GetValue(key, type);
+        }
+
         public SqlSugarClient Db;
         public static string dbtype = null;
         public static string connectstring = null;
@@ -13,7 +26,7 @@ namespace sdglsys.DbHelper
             var dbType = new SqlSugar.DbType();
             if (dbtype == null)
             {
-                dbtype = (string)Utils.GetAppSetting("DBType", typeof(string));
+                dbtype = (string)GetAppSetting("DBType", typeof(string));
             }
             switch (dbtype)
             {
@@ -24,7 +37,7 @@ namespace sdglsys.DbHelper
                 case "oracle": dbType = DbType.Oracle; break;
             }
             if (connectstring == null)
-                connectstring = (string)DbHelper.Utils.GetAppSetting("DBConnectionString", typeof(string));
+                connectstring = (string)GetAppSetting("DBConnectionString", typeof(string));
 
             Db = new SqlSugarClient(new ConnectionConfig()
             {

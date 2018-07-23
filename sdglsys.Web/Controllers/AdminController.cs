@@ -20,7 +20,7 @@ namespace sdglsys.Web.Controllers
         public void Login()
         {
             /// #trial
-            if (!DbHelper.Utils.IsTrial)
+            if (!Utils.IsTrial)
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -91,7 +91,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             /// #trial
-            if (!DbHelper.Utils.IsTrial)
+            if (!Utils.IsTrial)
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -323,7 +323,7 @@ namespace sdglsys.Web.Controllers
         public void Charts(FormCollection collection)
         {
             var Used_data = new DbHelper.Useds();
-            var data = new Used_datas();
+            var data = new Entity.Used_datas();
             try
             {
                 var _type = Convert.ToInt32(collection["type"]);
@@ -334,7 +334,7 @@ namespace sdglsys.Web.Controllers
             }
             finally
             {
-                Response.Write(DbHelper.Utils.ToJson(data));
+                Response.Write(Utils.ToJson(data));
                 Response.End();
             }
 
@@ -382,7 +382,7 @@ namespace sdglsys.Web.Controllers
                             title = "",
                         }
                     };
-                    Response.Write(DbHelper.Utils.ToJson(msg));
+                    Response.Write(Utils.ToJson(msg));
                     Response.End();
                 }
                 var upload_dir = Server.MapPath("~/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/");
@@ -404,10 +404,10 @@ namespace sdglsys.Web.Controllers
                         {
                             src = "/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/" + filename,
                             title = Request.Files["file"].FileName,
-                            files = DbHelper.Utils.ToJson(Request.Files.AllKeys),
+                            files = Utils.ToJson(Request.Files.AllKeys),
                         }
                     };
-                    Response.Write(DbHelper.Utils.ToJson(msg));
+                    Response.Write(Utils.ToJson(msg));
                 }
                 catch (Exception ex)
                 {
@@ -419,10 +419,10 @@ namespace sdglsys.Web.Controllers
                         {
                             src = "",
                             title = "",
-                            files = DbHelper.Utils.ToJson(Request.Files.AllKeys),
+                            files = Utils.ToJson(Request.Files.AllKeys),
                         }
                     };
-                    Response.Write(DbHelper.Utils.ToJson(msg));
+                    Response.Write(Utils.ToJson(msg));
                 }
             }
             else
@@ -437,7 +437,7 @@ namespace sdglsys.Web.Controllers
                         title = "",
                     }
                 };
-                Response.Write(DbHelper.Utils.ToJson(error));
+                Response.Write(Utils.ToJson(error));
             }
             Response.End();
         }

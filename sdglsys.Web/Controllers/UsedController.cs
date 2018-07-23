@@ -287,7 +287,8 @@ namespace sdglsys.Web.Controllers
                 }
                 else if (Db.Updateable(last).ExecuteCommand() < 1)
                 {
-                    msg.msg = "更新读表信息时发生错误！"; Db.Ado.RollbackTran();
+                    msg.msg = "更新读表信息时发生错误！";
+                    Db.Ado.RollbackTran();
                 }
                 else
                 {
