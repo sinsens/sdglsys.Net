@@ -101,20 +101,6 @@
                         "note": $("#note").val(),
                         'stat': $("#stat").val(),
                     }
-                    console.log(params);
-                    /*
-                    $.post("/Bill/Edit/#Model.Id", params, function (data) {
-                        if (data['code'] == 200) {
-                            var icon = 1;
-                        } else {
-                            var icon = 0;
-                        }
-                        layer.open({
-                            'icon': icon,
-                            'title': "温馨提示",
-                            'content': data['msg']
-                        });
-                }, "json");*/
                     $.ajax({
                         async: "false",
                         type: "post",

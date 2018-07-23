@@ -59,9 +59,29 @@
                     "title": $('#title').val(),
                     "content": zip(layedit.getContent(editor)),
                 }
-                $.post("/notice/create", params, function (data) {
-                    if (data['code'] == 200) { var icon = 1; } else { var icon = 0; } layer.open({ 'icon': icon, 'title': "温馨提示", 'content': data['msg'] });
-                }, "json");
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.open({
+                            'icon': 1,
+                            'title': "温馨提示",
+                            'content': data['msg']
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
             });
         });
     </script>
