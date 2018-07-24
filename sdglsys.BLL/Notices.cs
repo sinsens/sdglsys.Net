@@ -61,31 +61,31 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找公告
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.TNotice> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
+        public List<Entity.TNotice> getByPages(int page, int limit, ref int totalCount, string where=null)
         {
             if(where==null)
-                return Db.Queryable<Entity.TNotice>().OrderBy(a=>a.Post_date,SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
-            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Post_date, SqlSugar.OrderByType.Desc).Where(a=>a.Title.Contains(where)||a.Login_name.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TNotice>().OrderBy(a=>a.Post_date,SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Post_date, SqlSugar.OrderByType.Desc).Where(a=>a.Title.Contains(where)||a.Login_name.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
         /// 查找公告
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.TNotice> getListByPages(int pageIndex, int pageSize, ref int totalCount)
+        public List<Entity.TNotice> getListByPages(int page, int limit, ref int totalCount)
         {
-            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Mod_date, SqlSugar.OrderByType.Desc).Select(n=>new Entity.TNotice() {
+            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Post_date, SqlSugar.OrderByType.Desc).Select(n=>new Entity.TNotice() {
                  Id = n.Id, Login_name = n.Login_name, Post_date = n.Post_date, Title = n.Title
-            }).ToPageList(pageIndex, pageSize, ref totalCount);
+            }).ToPageList(page, limit, ref totalCount);
         }
     }
 }

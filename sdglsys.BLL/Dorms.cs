@@ -61,16 +61,16 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找园区
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.TDorm> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
+        public List<Entity.TDorm> getByPages(int page, int limit, ref int totalCount, string where=null)
         {
             if(where==null)
-                return Db.Queryable<Entity.TDorm>().OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
-            return Db.Queryable<Entity.TDorm>().Where(a=>a.Nickname.Contains(where)||a.Note.Contains(where)).OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TDorm>().OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            return Db.Queryable<Entity.TDorm>().Where(a=>a.Nickname.Contains(where)||a.Note.Contains(where)).OrderBy(d=>d.Id, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
         }
     }
 }

@@ -16,23 +16,23 @@ namespace sdglsys.Web.Controllers
         {
             string keyword = "";
 
-            int pageIndex = 1;
-            int pageSize = 10;
+            int page = 1;
+            int limit = 10;
             int count = 0;
             try
             {
                 keyword = Request[ "keyword" ]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
             catch
             {
             }
             var notices = new Notices();
             ViewBag.keyword = keyword;
-            ViewBag.notices = notices.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
+            ViewBag.notices = notices.getByPages(page, limit, ref count, keyword); // 获取列表
             ViewBag.count = count;  // 获取当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
+            ViewBag.page = page;  // 获取当前页
             return View();
         }
 
@@ -176,6 +176,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [OutputCache(CacheProfile = "noticeview",Duration = 60)]
         public ActionResult View(int id)
         {
             var db = new Notices().NoticeDb;
@@ -188,28 +189,56 @@ namespace sdglsys.Web.Controllers
         public ActionResult List()
         {
             var db = new Notices();
-            int pageIndex = 1;
-            int pageSize = 10;
+            int page = 1;
+            int limit = 10;
             try
             {
-                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
             finally
             {
             }
             int count = 0;
             ViewBag.count = count;  // 获取当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
-            ViewBag.notices = db.getListByPages(pageIndex, pageSize, ref count);
+            ViewBag.page = page;  // 获取当前页
+            ViewBag.notices = db.getListByPages(page, limit, ref count);
             return View();
         }
 
         /// <summary>
         /// 测试Layui Table模板引擎
         /// </summary>
-        public void List2() {
+        public ViewResult List2() {
+            return View();
+        }
+
+        /// <summary>
+        /// 测试Layui Table模板引擎
+        /// </summary>
+        [OutputCache(CacheProfile = "noticeview", Duration = 60)]
+        [HttpPost]
+        public void GetList()
+        {
             //var data = new DbHelper.
+            var msg = new ResponseData();
+            var db = new Notices();
+            int page = 1;
+            int limit = 10;
+            int count = 0;
+            try
+            {
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+            }
+            finally
+            {
+                msg.code = 0;
+                msg.data = db.getListByPages(page, limit, ref count);
+                msg.count = count;
+                Response.Write(msg.ToJson());
+                Response.End();
+            }
         }
     }
 }

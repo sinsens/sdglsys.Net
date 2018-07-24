@@ -10,6 +10,9 @@
 </head>
 
 <body>
+    <div class="layui-progress" lay-showpercent="true" lay-filter="demo" style="display:none" id="pr">
+        <div class="layui-progress-bar" lay-percent="0%"></div>
+    </div>
     <div class="m-login-bg"></div>
     <div class="m-login">
         <noscript>
@@ -59,17 +62,31 @@
 
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        layui.use(['form', 'layedit', 'laydate', 'jquery'], function () {
+        layui.use(['form', 'jquery', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
-                $ = layui.jquery;
-
+                $ = layui.jquery,
+                element = layui.element;
+            var load = function (url) {
+                document.getElementById("pr").style.display = "";
+                //模拟loading
+                var n = 0, timer = setInterval(function () {
+                    n = n + Math.random() * 25 | 0;
+                    if (n > 100) {
+                        n = 100;
+                        clearInterval(timer);
+                        location.href = url;
+                    }
+                    element.progress('demo', n + '%');
+                }, 100 + Math.random() * 100);
+            }
             //监听提交
             form.on('submit(login)', function (data) {
                 var params = {
                     "login_name": data.field.login_name,
                     "password": data.field.password
                 };
+                var jq = $;
                 $.ajax({
                     async: "false",
                     type: "POST",
@@ -81,7 +98,8 @@
                         data = JSON.parse(data);
                         if (data['code'] == 200) {
                             layer.msg(data['msg'], { icon: 6 });
-                            location.href = data['content'];
+                            //location.href = data['content'];
+                            load(data['content']);
                         } else {
                             layer.msg(data['msg'], { icon: 5 });
                         }
@@ -95,7 +113,6 @@
                     }
                 });
             });
-
         });
     </script>
 </body>

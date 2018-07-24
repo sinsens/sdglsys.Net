@@ -450,28 +450,37 @@ namespace sdglsys.Web.Controllers
         [IsAdmin]
         public ViewResult Log()
         {
-            string keyword="";
-            var Log = new DbHelper.Logs();
-            int pageIndex = 1;
-            int pageSize = 10;
+            return View();
+        }
 
+
+        /// <summary>
+        /// 查看系统日志,测试Layui Table模板引擎
+        /// </summary>
+        /// <returns></returns>
+        [IsAdmin]
+        [OutputCache(CacheProfile = "logCahce", Duration = 10)]
+        public void GetLogList()
+        {
+            var msg = new ResponseData();
+            string keyword = "";
+            int page = 1;
+            int limit = 10;
+            int count = 0;
             try
             {
+                var Log = new DbHelper.Logs();
                 keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+                msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
+                msg.code = 0;
+                msg.count = count;
             }
             catch
-            {}
-
-            int count = 0;
-            ViewBag.logs = Log.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
-
-
-            ViewBag.keyword = keyword;
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
-            return View();
+            { }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
     }
 }

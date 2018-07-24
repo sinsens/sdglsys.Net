@@ -69,12 +69,12 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找登记
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VUsed> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null)
+        public List<VUsed> getByPages(int page, int limit, ref int totalCount, string where = null)
         {
             if (where == null)
                 return Db.Queryable<TUser ,TUsed, TRoom, TBuilding, TDorm>((user,u, r, b, d) => new object[] {JoinType.Left,user.Id == u.Post_uid, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id , JoinType.Left, b.Pid == d.Id }).
@@ -95,7 +95,7 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value,
                       Post_date = u.Post_date
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TUser, TUsed, TRoom, TBuilding, TDorm>((user, u, r, b, d) => new object[] { JoinType.Left, user.Id == u.Post_uid, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where((user, u, r, b, d) => SqlFunc.IsNullOrEmpty(u.Id) == false).
                 Where((user, u, r, b, d) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).
@@ -116,20 +116,20 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value,
                       Post_date = u.Post_date
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
+            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
         /// 查找登记
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="id">园区ID</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VUsed> getByPagesByDormId(int pageIndex, int pageSize,int id, ref int totalCount, string where = null)
+        public List<VUsed> getByPagesByDormId(int page, int limit,int id, ref int totalCount, string where = null)
         {
             if (where == null)
                 return Db.Queryable<TUser, TUsed, TRoom, TBuilding, TDorm>((user, u, r, b, d) => new object[] { JoinType.Left, user.Id == u.Post_uid, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
@@ -151,7 +151,7 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value,
                       Post_date = u.Post_date
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TUser, TUsed, TRoom, TBuilding, TDorm>((user, u, r, b, d) => new object[] { JoinType.Left, user.Id == u.Post_uid, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where((user, u, r, b, d) => SqlFunc.IsNullOrEmpty(u.Id) == false).
                 Where((user, u, r, b, d) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).
@@ -173,8 +173,8 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value,
                       Post_date = u.Post_date
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
+            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
 

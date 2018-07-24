@@ -103,22 +103,22 @@
                 <div class="page-wrap">
                     <ul class="pagination">
                         <li>
-                            @if (ViewBag.pageIndex == 1)
+                            @if (ViewBag.page == 1)
                             {
                                 <a disabled="disabled"><span><</span></a>
                             }
                             else
                             {
-                                <a href="/used/UsedInfo?pageIndex=@(ViewBag.pageIndex - 1)&keyword=@(ViewBag.keyword)">
+                                <a href="/used/UsedInfo?page=@(ViewBag.page - 1)&keyword=@(ViewBag.keyword)">
                                     <
                                 </a>
                             }
                         </li>
-                        <li>@ViewBag.pageIndex</li>
+                        <li>@ViewBag.page</li>
                         <li>
-                            @if (ViewBag.count/ ViewBag.pageIndex -9>1 )
+                            @if (ViewBag.count/ ViewBag.page -9>1 )
                             {
-                                <a href="/used/UsedInfo?pageIndex=@(ViewBag.pageIndex + 1)&keyword=@(ViewBag.keyword)"><span>></span></a>
+                                <a href="/used/UsedInfo?page=@(ViewBag.page + 1)&keyword=@(ViewBag.keyword)"><span>></span></a>
                             }
                             else
                             {

@@ -17,13 +17,13 @@ namespace sdglsys.Web.Controllers
             string keyword = "";
             var d = new Dorms();
             ViewBag.dorms = d.getAll(); // 获取所有园区
-            int pageIndex = 1;
-            int pageSize = 10;
+            int page = 1;
+            int limit = 10;
             try
             {
                 keyword = Request[ "keyword" ]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
             finally
             {
@@ -33,15 +33,15 @@ namespace sdglsys.Web.Controllers
             // 系统管理员
             if ((int) Session[ "role" ] < 3)
             {
-                ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, (int) Session[ "pid" ], keyword); // 获取列表
+                ViewBag.users = u.getByPages(page, limit, ref count, (int) Session[ "pid" ], keyword); // 获取列表
             }
             else
             {
-                ViewBag.users = u.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
+                ViewBag.users = u.getByPages(page, limit, ref count, keyword); // 获取列表
             }
             ViewBag.keyword = keyword;
             ViewBag.count = count;  // 获取当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
+            ViewBag.page = page;  // 获取当前页
             return View();
         }
 

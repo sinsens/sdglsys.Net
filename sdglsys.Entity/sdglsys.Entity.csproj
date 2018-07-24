@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Msg.cs" />
-    <Compile Include="ResponseData.cs" />
     <Compile Include="TBill.cs" />
     <Compile Include="TBuilding.cs" />
     <Compile Include="TDorm.cs" />

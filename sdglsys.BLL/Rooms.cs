@@ -118,12 +118,12 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找宿舍
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VRoom> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null)
+        public List<VRoom> getByPages(int page, int limit, ref int totalCount, string where = null)
         {
             if (where == null)
                 return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r=>r.Id, OrderByType.Desc).
@@ -137,7 +137,7 @@ namespace sdglsys.DbHelper
                       PNickname = b.Nickname,
                       Is_active = r.Is_active,
                       Dorm_Nickname = d.Nickname
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
                  r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r=>r.Id, OrderByType.Desc).
                  Select((r, b, d) => new VRoom
@@ -150,8 +150,8 @@ namespace sdglsys.DbHelper
                      PNickname = b.Nickname,
                      Is_active = r.Is_active,
                      Dorm_Nickname = d.Nickname
-                 }).ToPageList(pageIndex, pageSize, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                 }).ToPageList(page, limit, ref totalCount);
+            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>

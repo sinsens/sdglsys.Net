@@ -82,37 +82,37 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找角色
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
         /// <param name="totalCount"></param>
         /// <param name="where"></param>
         /// <returns></returns>
-        public List<Entity.TUser> getByPages(int pageIndex, int pageSize, ref int totalCount, string where=null)
+        public List<Entity.TUser> getByPages(int page, int limit, ref int totalCount, string where=null)
         {
             if (where == null) {
-                return Db.Queryable<Entity.TUser>().ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TUser>().ToPageList(page, limit, ref totalCount);
             }
             return Db.Queryable<Entity.TUser>().Where(u=>u.Nickname.Contains(where)||
-            u.Login_name.Contains(where)||u.Phone.Contains(where)||u.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+            u.Login_name.Contains(where)||u.Phone.Contains(where)||u.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
         /// 查找角色
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
         /// <param name="pid">园区ID</param>
         /// <param name="totalCount"></param>
         /// <param name="where"></param>
         /// <returns></returns>
-        public List<Entity.TUser> getByPages(int pageIndex, int pageSize, ref int totalCount,int pid, string where=null)
+        public List<Entity.TUser> getByPages(int page, int limit, ref int totalCount,int pid, string where=null)
         {
             if (where == null)
             {
-                return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid).ToPageList(pageIndex, pageSize, ref totalCount);
+                return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid).ToPageList(page, limit, ref totalCount);
             }
             return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid && (u.Nickname.Contains(where) ||
-            u.Login_name.Contains(where) || u.Phone.Contains(where) || u.Note.Contains(where))).ToPageList(pageIndex, pageSize, ref totalCount);
+            u.Login_name.Contains(where) || u.Phone.Contains(where) || u.Note.Contains(where))).ToPageList(page, limit, ref totalCount);
         }
     }
 }

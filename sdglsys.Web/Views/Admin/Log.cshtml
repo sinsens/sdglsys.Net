@@ -14,98 +14,50 @@
 <body>
     <div class="wrap-container clearfix">
         <div class="column-content-detail">
-            <form class="layui-form" action="">
+            <div class="layui-form">
                 <div class="layui-form-item">
                     <div class="layui-inline tool-btn">
                         <button class="layui-btn layui-btn-sm layui-btn-normal addBtn" data-url="/notice/create" data-text="发布新公告"><i class="layui-icon">&#xe654;</i></button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal reloadBtn"><i class="layui-icon layui-icon-refresh"></i></button>
                     </div>
                     <div class="layui-inline">
-                        <input value="@ViewBag.keyword" type="text" name="keyword" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                        <input type="text" id="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
                     </div>
-                    <button class="layui-btn layui-btn-normal" lay-submit="search">搜索</button>
+                    <button class="layui-btn layui-btn-normal" lay-filter="search" lay-submit>搜索</button>
                 </div>
-            </form>
+            </div>
             <div class="layui-form" id="table-list">
-                <div>总共：@ViewBag.count 条记录</div><table class="layui-table" lay-even lay-skin="nob">
-                    <colgroup>
-                        <col class="hidden-xs" width="50">
-                        <col>
-                        <col class="hidden-xs" width="150">
-                        <col class="hidden-xs">
-                        <col>
-                        <col>
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th class="hidden-xs">ID</th>
-                            <th>用户名</th>
-                            <th>IP</th>
-                            <th class="hidden-xs">操作时间</th>
-                            <th>日志信息</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (sdglsys.Entity.TLog log in ViewBag.logs)
-                        {
+                <div class="layui-form" id="table-list">
+                    <table class="layui-table" lay-data="{url:'/Admin/GetLogList', page:true, height:400}" id="notice" lay-filter="notice">
+                        <thead>
                             <tr>
-                                <td class="hidden-xs">@log.Id</td>
-                                <td>@log.Login_name</td>
-                                <td>@log.Ip</td>
-                                <td class="hidden-xs">@log.Log_date</td>
-                                <td>
-                                    @{
-                                        string logstr = log.Info.Length < 16 ? log.Info : log.Info.Remove(15);
-                                    }
-                                    @logstr;
-                                </td>
-
-                                <td>
-
-                                    <div class="layui-btn-group">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary view-btn"
-                                                title="用户名:@log.Login_name|IP:@log.Ip|操作时间:@log.Log_date|日志详情:@log.Info">
-                                            <i class="layui-icon">&#xe60e;</i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <!--th lay-data="{field:'Id', width:80, sort: true}">ID</th-->
+                                <th lay-data="{field:'Login_name', width:80, sort: true, event:'c'}">用户名</th>
+                                <th lay-data="{field:'Ip', width:120, sort: true}">IP</th>
+                                <th lay-data="{field:'Log_date', width:170, sort:true}">操作时间</th>
+                                <th lay-data="{field:'Info'}">日志信息</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-                <div class="page-wrap">
-                    <ul class="pagination">
-                        <li>
-                            <span>
-                                @if (ViewBag.pageIndex == 1)
-                                {
-                                    <a disabled="disabled"><</a>
-                                }
-                                else
-                                {
-                                    <a href="?pageIndex=@(ViewBag.pageIndex + 1)&pageSize=@(ViewBag.pageSize)&keyword=@(ViewBag.keyword)"><</a>
-                                }
-                            </span>
-                        </li>
-                        <li>@ViewBag.pageIndex</li>
-                        <li>
-                            @if (ViewBag.count / ViewBag.pageIndex - 9 > 1)
-                            {
-                                <a href="?pageIndex=@(ViewBag.pageIndex + 1)&pageSize=@(ViewBag.pageSize)&keyword=@(ViewBag.keyword)"><span>></span></a>
-                            }
-                            else
-                            {
-                                <a disabled="disabled"><span>></span></a>
-                            }
-                        </li>
-                    </ul>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/Content/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['table', 'jquery', 'form'], function () {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var form = layui.form;
+            form.on("submit(search)", function (data) {
+                table.reload('notice', {
+                    url: encodeURI('/Admin/GetLogList/?keyword=' + $("#keyword").val()) //数据接口
+                });
+            });
+
+        });
+    </script>
 </body>
 
 </html>

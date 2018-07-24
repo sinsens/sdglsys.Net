@@ -109,12 +109,32 @@
                         break;
                 }
                 // 更新下拉列表
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    data: params,
+                    url: "/Admin/Charts",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        for (var i = 0; i < data.length; i++)
+                            $("<option value=" + data[i]["Id"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#suorce_id");
+                        form.render('select'); // 重新渲染下拉列表
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+                /*
                 $.post(url, function (data) {
                     data = JSON.parse(data);
                     for (var i = 0; i < data.length; i++)
                         $("<option value=" + data[i]["Id"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#suorce_id");
                     form.render('select'); // 重新渲染下拉列表
-                });
+                });*/
             });
             form.on('submit(changeData)', function (data) {
                 var _start = $("#start_date").val();

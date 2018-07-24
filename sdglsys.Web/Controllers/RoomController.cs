@@ -15,23 +15,23 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             string keyword = "";
-            int pageIndex = 1;
-            int pageSize = 10;
+            int page = 1;
+            int limit = 10;
             int count = 0;
             try
             {
                 keyword = Request["keyword"]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request["pageIndex"]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request["pageSize"]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
             }
-            finally
+            catch
             {
             }
             var rooms = new Rooms();
             ViewBag.keyword = keyword;
-            ViewBag.rooms = rooms.getByPages(pageIndex, pageSize, ref count, keyword); // 获取列表
+            ViewBag.rooms = rooms.getByPages(page, limit, ref count, keyword); // 获取列表
             ViewBag.count = count;  // 获取当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
+            ViewBag.page = page;  // 获取当前页
 
             return View();
         }

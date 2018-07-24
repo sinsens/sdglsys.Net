@@ -86,12 +86,12 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找登记
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VBill> getByPages(int pageIndex, int pageSize, ref int totalCount, string where = null, short stat = -1)
+        public List<VBill> getByPages(int page, int limit, ref int totalCount, string where = null, short stat = -1)
         {
             if (where == null && stat == -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
@@ -115,7 +115,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             if (where != null && stat == -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                     Where((e, u, r, b, d) => r.Vid.Contains(where) || r.Nickname.Contains(where) || b.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
@@ -139,7 +139,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             if (where != null && stat != -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                     Where((e, u, r, b, d) => e.Is_active == stat).
@@ -164,7 +164,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value,
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where((e, u, r, b, d) => e.Is_active == stat).
                 OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
@@ -187,19 +187,19 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
+            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
         /// 查找登记
         /// </summary>
-        /// <param name="pageIndex">当前页数</param>
-        /// <param name="pageSize">每页数量</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VBill> getByPagesByDormId(int pageIndex, int pageSize, int id, ref int totalCount, string where = null, short stat = -1)
+        public List<VBill> getByPagesByDormId(int page, int limit, int id, ref int totalCount, string where = null, short stat = -1)
         {
             if (where == null && stat == -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
@@ -224,7 +224,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             if (where != null && stat == -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                     Where((e, u, r, b, d) => e.Dorm_id == id).
@@ -249,7 +249,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             if (where != null && stat != -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                     Where((e, u, r, b, d) => e.Dorm_id == id).
@@ -275,7 +275,7 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where((e, u, r, b, d) => e.Dorm_id == id).
                 Where((e, u, r, b, d) => e.Is_active == stat).
@@ -299,8 +299,8 @@ namespace sdglsys.DbHelper
                       Cold_water_value = u.Cold_water_value,
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
-                  }).ToPageList(pageIndex, pageSize, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(pageIndex, pageSize, ref totalCount);
+                  }).ToPageList(page, limit, ref totalCount);
+            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
     }
 }

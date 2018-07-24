@@ -114,22 +114,22 @@
                     <ul class="pagination">
                         <li>
                             <span>
-                                @if (ViewBag.pageIndex == 1)
+                                @if (ViewBag.page == 1)
                                 {
                                     <a disabled="disabled"><</a>
                                 }
                                 else
                                 {
-                                    <a href="?pageIndex=@(ViewBag.pageIndex + 1)&pageSize=@(ViewBag.pageSize)&keyword=@(ViewBag.keyword)"><</a>
+                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)"><</a>
                                 }
                             </span>
                         </li>
-                        <li>@ViewBag.pageIndex</li>
+                        <li>@ViewBag.page</li>
                         <li>
                             <span>
-                                @if (ViewBag.count / ViewBag.pageIndex - 9 > 1)
+                                @if (ViewBag.count / ViewBag.page - 9 > 1)
                                 {
-                                    <a href="?pageIndex=@(ViewBag.pageIndex + 1)&pageSize=@(ViewBag.pageSize)&keyword=@(ViewBag.keyword)">
+                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)">
                                         >
                                     </a>
                                 }

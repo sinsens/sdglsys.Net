@@ -22,15 +22,15 @@ namespace sdglsys.Web.Controllers
             }
             
             string keyword = ""; // 关键词
-            int pageIndex = 1; // 当前页数
-            int pageSize = 10; // 每页显示数量
+            int page = 1; // 当前页数
+            int limit = 10; // 每页显示数量
             int stat = -1;  // 账单状态
             int count = 0;  // 结果数量
             try
             {
                 keyword = Request[ "keyword" ]; // 搜索关键词
-                pageIndex = Convert.ToInt32(Request[ "pageIndex" ]); if (pageIndex < 1) pageIndex = 1;
-                pageSize = Convert.ToInt32(Request[ "pageSize" ]); if (pageSize > 99 || pageSize < 1) pageSize = 10;
+                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
                 stat = Convert.ToInt16(Request[ "stat" ]);
             }
             catch
@@ -38,16 +38,16 @@ namespace sdglsys.Web.Controllers
             var bills = new Bills();
             if ((int) Session[ "role" ] < 3)
             {
-                ViewBag.bills = bills.getByPagesByDormId(pageIndex, pageSize, (int) Session[ "pid" ], ref count, keyword, (short) stat); // 获取列表
+                ViewBag.bills = bills.getByPagesByDormId(page, limit, (int) Session[ "pid" ], ref count, keyword, (short) stat); // 获取列表
             }
             else
             {
-                ViewBag.bills = bills.getByPages(pageIndex, pageSize, ref count, keyword, (short) stat); // 获取列表
+                ViewBag.bills = bills.getByPages(page, limit, ref count, keyword, (short) stat); // 获取列表
             }
             ViewBag.stat = stat;
             ViewBag.keyword = keyword;
             ViewBag.count = count;  // 当前页数量
-            ViewBag.pageIndex = pageIndex;  // 获取当前页
+            ViewBag.page = page;  // 获取当前页
 
             return View();
         }

@@ -1,4 +1,4 @@
-﻿namespace sdglsys.Entity
+﻿namespace sdglsys.Web
 {
     /// <summary>
     /// API请求返回的数据对象
