@@ -84,8 +84,7 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
     }*/
 
     //监听快捷导航点击
-    var qlinks = $("#qlinks");
-    qlinks.on('click', function (elem) {
+    $("#qlinks").on('click', function (elem) {
         var navA = $(elem["toElement"]);
         var id = navA.attr('data-id');
         var url = navA.attr('data-url');

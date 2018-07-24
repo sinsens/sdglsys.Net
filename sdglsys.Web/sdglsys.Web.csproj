@@ -187,11 +187,16 @@
     <Content Include="Content\fonts\iconfont.css" />
     <Content Include="Content\fonts\iconfont.js" />
     <Content Include="Content\fonts\iconfont.svg" />
+    <Content Include="Content\images\chrome.jpg" />
+    <Content Include="Content\images\firefox.jpg" />
+    <Content Include="Content\images\ie.jpg" />
     <Content Include="Content\images\l-line-white.png" />
     <Content Include="Content\images\l-line.png" />
     <Content Include="Content\images\login\login_bg.png" />
     <Content Include="Content\images\login\login_line.jpg" />
     <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\opera.jpg" />
+    <Content Include="Content\images\safari.jpg" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\module\dialog.js" />
@@ -313,6 +318,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="App_Code\packages.config" />
+    <Content Include="browser.html" />
     <Content Include="Views\Building\Edit.cshtml" />
     <Content Include="Views\Notice\Edit.cshtml" />
     <Content Include="Views\Admin\System.cshtml" />
