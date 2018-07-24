@@ -112,8 +112,8 @@
                 $.ajax({
                     async: "false",
                     type: "post",
-                    data: params,
-                    url: "/Admin/Charts",
+                    //data: params,
+                    url: url,
                     success: function (data) {
                         data = JSON.parse(data);
                         for (var i = 0; i < data.length; i++)
