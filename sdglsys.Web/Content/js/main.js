@@ -86,10 +86,10 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
     //监听快捷导航点击
     var qlinks = $("#qlinks");
     qlinks.on('click', function (elem) {
-        var navA = elem["toElement"];
-        var id = navA.getAttribute('data-id');
-        var url = navA.getAttribute('data-url');
-        var text = navA.getAttribute('data-text');
+        var navA = $(elem["toElement"]);
+        var id = navA.attr('data-id');
+        var url = navA.attr('data-url');
+        var text = navA.attr('data-text');
         if (!url) {
             return;
         }

@@ -213,7 +213,7 @@ namespace sdglsys.DbHelper
         }
 
         /// <summary>
-        /// 按园区查找当月未登记宿舍
+        /// 按宿舍楼查找当月未登记宿舍
         /// </summary>
         /// <param name="id">宿舍楼ID</param>
         /// <returns></returns>
@@ -239,6 +239,21 @@ namespace sdglsys.DbHelper
                   Is_active = r.Is_active,
                   Dorm_Nickname = d.Nickname
               }).ToList();
+        }
+
+        /// <summary>
+        /// 按宿舍楼查找当月未登记宿舍并返回Json
+        /// </summary>
+        /// <param name="id">宿舍楼ID</param>
+        /// <returns></returns>
+        public string getJsonAllNoRecordByBuilding(int id)
+        {
+            /// 先获取本月已登记的宿舍ID
+            var rooms = Db.Queryable<TUsed>().
+                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
+                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
+            return Db.Queryable<TRoom>().Where((r) => r.Pid == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
+                ToJson();
         }
 
         /// <summary>

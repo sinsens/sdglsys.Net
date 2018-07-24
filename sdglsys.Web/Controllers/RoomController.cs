@@ -36,14 +36,14 @@ namespace sdglsys.Web.Controllers
             return View();
         }
 
-        // GET: Dorm/Details/5
+        // GET: Room/Details/5
         [NotLowUser]
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Dorm/Create
+        // GET: Room/Create
         [NotLowUser]
         public ActionResult Create()
         {
@@ -52,7 +52,7 @@ namespace sdglsys.Web.Controllers
             return View();
         }
 
-        // POST: Dorm/Create
+        // POST: Room/Create
         /// <summary>
         /// 添加园区
         /// </summary>
@@ -96,7 +96,7 @@ namespace sdglsys.Web.Controllers
             }
         }
 
-        // GET: Dorm/Edit/5
+        // GET: Room/Edit/5
         [NotLowUser]
         public ActionResult Edit(int id)
         {
@@ -106,7 +106,7 @@ namespace sdglsys.Web.Controllers
             return View(Room.findById(id));
         }
 
-        // POST: Dorm/Edit/5
+        // POST: Room/Edit/5
         [HttpPost]
         [NotLowUser]
         public void Edit(int id, FormCollection collection)
@@ -141,7 +141,7 @@ namespace sdglsys.Web.Controllers
                 Response.End();
         }
 
-        // GET: Dorm/Delete/5
+        // GET: Room/Delete/5
         [NotLowUser]
         public void Delete(int id)
         {
@@ -168,7 +168,7 @@ namespace sdglsys.Web.Controllers
             Response.End();
         }
 
-        // POST: Dorm/Delete/5
+        // POST: Room/Delete/5
         [HttpPost]
         [NotLowUser]
         public void Delete(int id, FormCollection collection)
@@ -186,8 +186,8 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public void List(int pid)
         {
-            var db = new Rooms().Db;
-            Response.Write(db.Queryable<TRoom>().Where(d => d.Is_active == true&&d.Pid==pid).ToJson());
+            var room = new Rooms();
+            Response.Write(room.getJsonAllNoRecordByBuilding(pid));
         }
     }
 }
