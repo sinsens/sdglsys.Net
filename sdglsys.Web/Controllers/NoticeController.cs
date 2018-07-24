@@ -196,7 +196,7 @@ namespace sdglsys.Web.Controllers
                 page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
-            finally
+            catch
             {
             }
             int count = 0;
@@ -231,7 +231,7 @@ namespace sdglsys.Web.Controllers
                 page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
-            finally
+            catch
             {
                 msg.code = 0;
                 msg.data = db.getListByPages(page, limit, ref count);

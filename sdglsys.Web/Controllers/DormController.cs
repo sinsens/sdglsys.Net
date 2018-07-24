@@ -24,7 +24,7 @@ namespace sdglsys.Web.Controllers
                 page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
             }
-            finally
+            catch
             {
             }
             

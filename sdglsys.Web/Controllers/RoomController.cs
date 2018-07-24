@@ -137,11 +137,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
                 Response.Write(msg.ToJson());
                 Response.End();
-            }
         }
 
         // GET: Dorm/Delete/5

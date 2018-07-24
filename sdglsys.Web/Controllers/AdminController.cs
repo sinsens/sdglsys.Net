@@ -104,7 +104,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Info()
         {
             var User = new Users();
-            return View(User.findById((int)Session["id"]));
+            return View(User.findById((int) Session["id"]));
         }
 
         // GET: Admin/Info:修改个人信息
@@ -114,7 +114,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.findById((int)Session["id"]);
+            var user = User.findById((int) Session["id"]);
             try
             {
                 user.Nickname = collection["nickname"];
@@ -149,7 +149,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.findById((int)Session["id"]);
+            var user = User.findById((int) Session["id"]);
             try
             {
                 var pwd_old = collection["pwd_old"];
@@ -179,11 +179,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // GET: Admin/System:费率及基础配额设置
@@ -471,8 +468,8 @@ namespace sdglsys.Web.Controllers
             {
                 var Log = new DbHelper.Logs();
                 keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
                 msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
                 msg.code = 0;
                 msg.count = count;

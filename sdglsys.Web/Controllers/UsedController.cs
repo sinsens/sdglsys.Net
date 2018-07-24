@@ -27,7 +27,7 @@ namespace sdglsys.Web.Controllers
                 limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
                 stat = Convert.ToInt32(Request[ "stat" ]);
             }
-            finally
+            catch
             {
             }
             ViewBag.useds = ((int) Session[ "role" ] < 3) ? b.getByPagesByDormId(page, limit, (int) Session[ "pid" ], ref count, keyword) : b.getByPages(page, limit, ref count, keyword); // 获取列表
@@ -346,7 +346,7 @@ namespace sdglsys.Web.Controllers
                 limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
                 stat = Convert.ToInt32(Request[ "stat" ]);
             }
-            finally
+            catch
             {
             }
             var b = new Useds_total();
