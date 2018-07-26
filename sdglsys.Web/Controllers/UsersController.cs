@@ -240,9 +240,9 @@ namespace sdglsys.Web.Controllers
         public void Reset(int id, FormCollection collection)
         {
             var msg = new Msg();
-            var pwd = (string) Utils.GetAppSetting("DefaultPassword", typeof(string));
             try
             {
+                
                 var User = new Users();
                 // 初始化对象
                 var user = User.findById(id);
@@ -260,7 +260,9 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-                    user.Pwd = Utils.hashpwd(pwd); // 设置默认密码
+                    var pwd = (string) Utils.GetAppSetting("DefaultPassword", typeof(string));
+                    user.Pwd = Utils.hashpwd(Utils.GetMD5(pwd)); // 设置默认密码
+                    msg.content = Utils.GetMD5(pwd);
                     msg.msg = (User.Update(user)) ? "重置默认密码成功，该角色的密码已设置为'" + pwd + "'" : "发生未知错误！";
                 }
             }

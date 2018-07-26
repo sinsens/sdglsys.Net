@@ -13,9 +13,20 @@ namespace sdglsys.Web.Controllers
         // GET: Tools
         public ActionResult Index()
         {
+            var hash = Request["hash"];
             var txt = Request["txt"];
+            if (hash != null&&hash.Length>20) {
+                Response.Write(Utils.checkpw(txt, hash)?true:false);
+                Response.End();
+            }
             if (txt != null&&txt.Length>0) {
-                Response.Write(Utils.hashpwd(txt));
+                var msg = new Msg();
+                msg.content = new
+                {
+                    text = txt,
+                    bcrypt_hash = Utils.hashpwd(txt),
+                };
+                Response.Write(msg.ToJson());
                 Response.End();
             }
             return View();

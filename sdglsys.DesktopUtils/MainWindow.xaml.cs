@@ -3,6 +3,8 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -46,12 +48,41 @@ namespace sdglsys.DesktopUtils
 
             try
             {
-                var user = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == tbxLogin_name.Text).First();
-                if (user == null)
+                var u = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(q => q.Login_name == tbxLogin_name.Text).First();
+                if (u == null)
                 {
                     await this.ShowMessageAsync("温馨提示", "未找到用户名为'" + tbxLogin_name.Text + "'的系统用户。");
                 }
-                userinfo.DataContext = user;
+                else
+                {
+                    var user = new Entity.VUser
+                    {
+                        Pid = u.Pid,
+                        Id = u.Id,
+                        Nickname = u.Nickname,
+                        Login_name = u.Login_name,
+                        Is_active = u.Is_active,
+                        Note = u.Note,
+                        Phone = u.Phone,
+                        Reg_date = u.Reg_date,
+                        Role = u.Role
+                    };
+                    if (user == null)
+                        user = new Entity.VUser();
+                    else
+                    {
+                        foreach (var item in DBInfo.DB.Db.Queryable<Entity.TDorm>().ToList())
+                        {
+                            if (item.Id == user.Pid)
+                            {
+                                user.DormName = item.Nickname;
+                            }
+                        }
+                    }
+                    user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
+                    userinfo.DataContext = user;
+                }
+
             }
             catch (Exception ex)
             {
@@ -111,36 +142,9 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                var pwd = BCrypt.Net.BCrypt.HashPassword(newpwd.Trim(), 4);
-                var u =DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u1 => u1.Login_name == Login_name.Text).First();
-                var user = new Entity.VUser
-                {
-                    Pid = u.Pid,
-                    Id = u.Id,
-                    Nickname = u.Nickname,
-                    Login_name = u.Login_name,
-                    Is_active = u.Is_active,
-                    Note = u.Note,
-                    Phone = u.Phone,
-                    Reg_date = u.Reg_date,
-                    Role = u.Role,
-                };
-                if (user == null)
-                    user = new Entity.VUser();
-                else
-                {
-                    foreach (var item in DBInfo.DB.Db.Queryable<Entity.TDorm>().ToList())
-                    {
-                        if (item.Id == user.Pid)
-                        {
-                            user.DormName = item.Nickname;
-                        }
-                    }
-
-                }
-                user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
-                user.Pwd = pwd;
-                DBInfo.DB.Db.Updateable(user);
+                var user = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == tbxLogin_name.Text).First();
+                user.Pwd = BCrypt.Net.BCrypt.HashPassword(GetMD5(newpwd.Trim()), 4);/// 先做md5，再做bcrypt加密
+                DBInfo.DB.Db.Updateable(user).ExecuteCommand();
                 await this.ShowMessageAsync("温馨提示", "重置密码成功");
             }
             catch (Exception ex)
@@ -166,13 +170,14 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
+                // 检查用户名是否已存在
                 if (DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == loginname).Count() > 0)
                 {
                     await this.ShowMessageAsync("温馨提示", "该用户名已存在");
                     return;
                 }
-                // 检查用户名是否已存在
-                pwd = BCrypt.Net.BCrypt.HashPassword(pwd,4);
+                /// 先做md5，再做bcrypt加密
+                pwd = BCrypt.Net.BCrypt.HashPassword(GetMD5(pwd), 4);
                 var nickname = newNickname.Text.Trim().Length > 1 ? newNickname.Text.Trim() : loginname;
                 var user = new Entity.TUser
                 {
@@ -354,8 +359,8 @@ namespace sdglsys.DesktopUtils
             // 自动调整数据窗口
             if (Height / 2 - 280 < 50)
                 return;
-            dgBuilding.Height = dgBuilding.MaxHeight = (double)this.Height / 2 - 280;
-            dgRoom.Height = dgRoom.MaxHeight = (double)this.Height / 2 - dgBuilding.Height;
+            dgBuilding.Height = dgBuilding.MaxHeight = (double) this.Height / 2 - 280;
+            dgRoom.Height = dgRoom.MaxHeight = (double) this.Height / 2 - dgBuilding.Height;
         }
 
         private async void btnInsertBaseInfoToDatabase_Click(object sender, RoutedEventArgs e)
@@ -374,15 +379,6 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                // 判断园区类型
-                /*MessageDialogResult result = await this.ShowMessageAsync("温馨提示", "当前的园区类型为 " + (BaseInfoGenerator.DormType ? "男" : "女") + " 是否正确？", MessageDialogStyle.AffirmativeAndNegative);
-                if (!result.Equals(MessageDialogResult.Affirmative))
-                {
-                    var dormType = await this.ShowInputAsync("请重新输入园区类型", "数字0为女，其他数字或1为男，输入非数字字符串则无效");
-
-                    BaseInfoGenerator.DormType = Convert.ToBoolean(Convert.ToInt16(dormType));
-                    await this.ShowMessageAsync("温馨提示", "输入的园区类型为：" + (BaseInfoGenerator.DormType ? "男" : "女"));
-                }*/
                 var msg = "当前生成的数据统计：\r\n园区名称：{0}，\n园区类型：{1}，\n生成的宿舍楼数量：{2}，\n" +
                     "每层宿舍楼宿舍数量：{3}，\n生成的宿舍数量：{4}，\n宿舍楼名称示例：{5}，\n宿舍楼编号示例：{6}，\n" +
                     "宿舍名称示例：{7}，\n宿舍编号示例：{8}，\n\r以上信息是否正确？点击OK将直接执行插入数据操作";
@@ -418,6 +414,27 @@ namespace sdglsys.DesktopUtils
                 return;
             }
 
+        }
+
+
+        ///<summary>
+        ///给一个字符串生成MD5 Hash
+        ///</summary>
+        ///<param name="strText">字符串</param>
+        ///<returns>Md5 Hash</returns>
+        public static string GetMD5(string strText)
+        {
+            System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            byte[] fromData = System.Text.Encoding.UTF8.GetBytes(strText);
+            byte[] targetData = md5.ComputeHash(fromData);
+            string byte2String = null;
+
+            for (int i = 0; i < targetData.Length; i++)
+            {
+                byte2String += targetData[i].ToString("x2");
+            }
+
+            return byte2String;
         }
     }
 }

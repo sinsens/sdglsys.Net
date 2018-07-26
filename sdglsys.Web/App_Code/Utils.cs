@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
+using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace sdglsys.Web
@@ -10,6 +14,25 @@ namespace sdglsys.Web
     public class Utils
     {
         /// <summary>
+        /// 生成md5
+        /// https://coderwall.com/p/4puszg/c-convert-string-to-md5-hash
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string GetMD5(string input)
+        {
+            StringBuilder hash = new StringBuilder();
+            MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
+            byte[] bytes = md5provider.ComputeHash(new UTF8Encoding().GetBytes(input));
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                hash.Append(bytes[i].ToString("x2"));
+            }
+            return hash.ToString();
+        }
+
+        /// <summary>
         /// 密码验证
         /// </summary>
         /// <param name="pwd">密码明文</param>
@@ -19,6 +42,7 @@ namespace sdglsys.Web
         {
             return BCrypt.Net.BCrypt.Verify(pwd, hashpwd);
         }
+
 
         /// <summary>
         /// 不可逆加密密码或字符串

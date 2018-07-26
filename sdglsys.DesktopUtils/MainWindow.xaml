@@ -6,7 +6,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         ShowTitleBar="True"
-        Title="旅游文化学院校园水电收费管理系统桌面工具" FontSize="14" Width="1280" d:DesignHeight="720" WindowStartupLocation="CenterScreen" WindowState="Maximized" SizeChanged="MetroWindow_SizeChanged">
+        Title="旅游文化学院校园水电收费管理系统桌面工具" FontSize="14" d:DesignWidth="680" d:DesignHeight="620" MinWidth="680" Width="680" Height="620" WindowStartupLocation="CenterScreen" SizeChanged="MetroWindow_SizeChanged">
 
     <Grid>
         <Controls:MetroAnimatedTabControl HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch">

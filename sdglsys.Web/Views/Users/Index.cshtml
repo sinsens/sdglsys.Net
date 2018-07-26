@@ -33,11 +33,11 @@
                         <col width="50" class="hidden-xs">
                         <col class="hidden-xs">
                         <col>
-                        <col class="hidden-xs">
+                        <col>
                         @if ((int)Session["role"] > 2)
                         {
                             <col class="hidden-xs">}
-                        <col class="hidden-xs">
+                        <col>
                         <col>
                     </colgroup>
                     <thead>
@@ -45,12 +45,12 @@
                             <th class="hidden-xs">ID</th>
                             <th class="hidden-xs">用户名</th>
                             <th>姓名</th>
-                            <th class="hidden-xs">类型</th>
+                            <th>类型</th>
                             @if ((int)Session["role"] > 2)
                             {
                                 <th class="hidden-xs">所属园区</th>
                             }
-                            <th class="hidden-xs">状态</th>
+                            <th>状态</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -61,7 +61,7 @@
                                 <td class="hidden-xs">@user.Id</td>
                                 <td class="hidden-xs">@user.Login_name</td>
                                 <td>@user.Nickname</td>
-                                <td class="hidden-xs">
+                                <td>
                                     @{
                                         var role_name = "";
                                     }
@@ -89,7 +89,7 @@
                                     }
                                     </td>
                                 }
-                                <td class="hidden-xs">
+                                <td>
                                     @if (user.Is_active)
                                     {
                                         <button class="layui-btn layui-btn-xs layui-btn-normal">正常</button> }

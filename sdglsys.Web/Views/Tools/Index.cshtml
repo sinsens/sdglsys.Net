@@ -1,4 +1,18 @@
-﻿<form action="">
-    <input type="text" name="txt" />
-    <input type="submit" />
-</form>
+<html>
+<body>
+    <script src="~/Content/js/md5.min.js"></script>
+    <script type="text/javascript">
+        function ChkHash() {
+            var pwd = md5(document.getElementById("pwd").value);
+            console.log(pwd);
+            document.getElementById("pwd").value = pwd;
+            return true;
+        }
+    </script>
+    <form action="" onsubmit="return ChkHash()">
+        <input type="text" id="pwd" name="txt" />
+        <input type="text" id="hash" name="hash" />
+        <input type="submit" />
+    </form>
+</body>
+</html>

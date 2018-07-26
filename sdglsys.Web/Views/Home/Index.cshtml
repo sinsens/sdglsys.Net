@@ -64,7 +64,7 @@
             <p class="copyright">Copyright 2018 by SINSEN</p>
         </div>
     </div>
-
+    <script src="~/Content/js/md5.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
         layui.use(['form', 'jquery', 'element'], function () {
@@ -88,8 +88,8 @@
             //监听提交
             form.on('submit(login)', function (data) {
                 var params = {
-                    "login_name": data.field.login_name,
-                    "password": data.field.password
+                    "login_name": data.field.login_name
+                    , "password": md5(data.field.password) // 先离线加密密码
                 };
                 var jq = $;
                 $.ajax({

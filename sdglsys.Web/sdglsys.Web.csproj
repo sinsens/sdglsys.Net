@@ -96,6 +96,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -199,6 +200,7 @@
     <Content Include="Content\images\safari.jpg" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\main.js" />
+    <Content Include="Content\js\md5.min.js" />
     <Content Include="Content\js\module\dialog.js" />
     <Content Include="Content\js\module\formate.js" />
     <Content Include="Content\js\module\tool.js" />
@@ -347,6 +349,7 @@
     <Content Include="Content\less\var.less" />
     <Content Include="Content\less\welcome.less" />
     <Content Include="Views\Admin\Upload.cshtml" />
+    <Content Include="Content\js\md5.min.js.map" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Views\Notice\Create.cshtml" />
     <Content Include="Views\Room\Create.cshtml" />
@@ -354,7 +357,9 @@
     <Content Include="Views\Room\Index.cshtml" />
     <Content Include="Views\Admin\Info.cshtml" />
     <None Include="Views\Building\Create.cshtml" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
