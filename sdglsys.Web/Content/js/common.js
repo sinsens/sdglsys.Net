@@ -217,7 +217,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 				'is_active': 2
 			},
 		});
-		layer.confirm('确认把该账单设置成缴费状态？', {
+		layer.confirm('确认把该账单设置成已缴费状态？', {
 			icon: 10,
             title: '结算账单'
         }, function (index) {

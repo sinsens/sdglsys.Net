@@ -17,103 +17,141 @@
                 <div class="layui-input-block waiting">
                     虽然本系统提供此功能，但并不建议手动添加账单
                 </div>
-                </div>
+            </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">宿舍名称：</label>
+                <label class="layui-form-label">宿舍楼：</label>
                 <div class="layui-input-block">
-                    <select class="layui-select" id='pid' lay-filter='changeRoom' lay-search>
-                        @if (ViewBag.rooms.Count < 1)
-                        {<option value="">暂无符合条件的宿舍</option>}
-                        @foreach (var room in ViewBag.rooms)
+                    <select class="layui-select" id='bid' lay-filter='changeBuilding' lay-search>
+                        @if (ViewBag.buildings.Count < 1)
                         {
-                            <option value="@room.Id" dorm-id="@room.Dorm_id" building-id="@room.Pid">@room.Vid | @room.Dorm_Nickname | @room.PNickname | @room.Nickname</option>
+                            <option value="">暂无宿舍楼数据</option>}
+                        @foreach (var room in ViewBag.buildings)
+                        {
+                            <option value="@room.Id" dorm-id="@room.Pid">@room.Vid | @room.PNickname | @room.Nickname</option>
                         }
                     </select>
                 </div>
             </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">冷水费用：</label>
-                    <div class="layui-input-block">
-                        <input maxlength="11" id='cold_water_value' type="text" placeholder="冷水费用" autocomplete="off" class="layui-input">
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">宿舍名称：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" id='pid' lay-filter='changeRoom' lay-search></select>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">热水费用：</label>
-                    <div class="layui-input-block">
-                        <input maxlength="11" id='hot_water_value' type="text" placeholder="热水费用" autocomplete="off" class="layui-input">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">冷水费用：</label>
+                <div class="layui-input-block">
+                    <input maxlength="11" id='cold_water_value' type="text" placeholder="冷水费用" autocomplete="off" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">电费用：</label>
-                    <div class="layui-input-block">
-                        <input maxlength="11" id='electric_value' type="text" placeholder="电费用" autocomplete="off" class="layui-input">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">热水费用：</label>
+                <div class="layui-input-block">
+                    <input maxlength="11" id='hot_water_value' type="text" placeholder="热水费用" autocomplete="off" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">备注：</label>
-                    <div class="layui-input-block">
-                        <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电费用：</label>
+                <div class="layui-input-block">
+                    <input maxlength="11" id='electric_value' type="text" placeholder="电费用" autocomplete="off" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn layui-btn-normal layui-anim layui-anim-scale" lay-submit lay-filter="formDemo">保存</button>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-block">
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal layui-anim layui-anim-scale" lay-submit lay-filter="formDemo">保存</button>
                 </div>
             </div>
         </div>
+    </div>
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
-	layui.use(['form', 'jquery'],
-		function() {
-			var form = layui.form;
-			var $ = layui.jquery;
-			form.render();
-			
-			//监听提交
-			form.on('submit(formDemo)', function(data) {
-				if($('#pid').val().trim().length < 1) {
-					layer.msg("请先选择一个宿舍");
-					return false;
-				}
-				if($("#cold_water_value").val().trim().length<1||$("#hot_water_value").val().trim().length<1||$("#electric_value").val().trim().length<1){
-					layer.msg("读表数值不能为空");
-					return;
-                }
-                var pid = $("#pid").val();
-                var params = {
+        layui.use(['form', 'jquery'],
+            function () {
+                var form = layui.form;
+                var $ = layui.jquery;
+                form.render();
+                // 监听下拉列表
+                form.on('select(changeBuilding)', function (data) {
+                    // 更新宿舍列表
+                    $("#pid").empty(); //清空原有数据
+                    var params = {
+                        "pid": $("#bid").val(),
+                    }
+                    $.ajax({
+                        async: "false",
+                        type: "post",
+                        //dataType: "json",
+                        //contentType: "application/json",
+                        data: params,
+                        url: "/room/list",
+                        success: function (data) {
+                            var data = JSON.parse(data);
+                            if (data != null) {
+                                for (var i = 0; i < data.length; i++)
+                                    $("<option value=" + data[i]["Id"] + " dorm-id=" + data[i]["Dorm_id"] + " building-id=" + data[i]["Pid"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#pid");
+                                form.render('select'); // 重新渲染下拉列表
+                            }
+                        },
+                        error: function (e) {
+                            layer.open({
+                                'icon': 0,
+                                'title': "发生错误",
+                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            });
+                        }
+                    });
+                });
+                //监听提交
+                form.on('submit(formDemo)', function (data) {
+                    if ($('#pid').val().trim().length < 1) {
+                        layer.msg("请先选择一个宿舍");
+                        return false;
+                    }
+                    if ($("#cold_water_value").val().trim().length < 1 || $("#hot_water_value").val().trim().length < 1 || $("#electric_value").val().trim().length < 1) {
+                        layer.msg("读表数值不能为空");
+                        return;
+                    }
+                    var pid = $("#pid").val();
+                    var params = {
                         "dorm_id": $("#pid").find("option[value='" + pid + "']").attr("dorm-id"),
                         "building_id": $("#pid").find("option[value='" + pid + "']").attr("building-id"),
                         "pid": pid,
-						"cold_water_value": $("#cold_water_value").val(),
-						"hot_water_value": $("#hot_water_value").val(),
-						"electric_value": $("#electric_value").val(),
-						"note": $("#note").val()
-                }
-                $.ajax({
-                    async: "false",
-                    type: "post",
-                    //dataType: "json",
-                    //contentType: "application/json",
-                    data: params,
-                    url: "/Bill/create",
-                    success: function (data) {data=JSON.parse(data);
-                        layer.open({
-                            'icon': 1,
-                            'title': "温馨提示",
-                            'content': data['msg']
-                        });
-                    },
-                    error: function (e) {
-                        layer.open({
-                            'icon': 0,
-                            'title': "发生错误",
-                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
-                        });
+                        "cold_water_value": $("#cold_water_value").val(),
+                        "hot_water_value": $("#hot_water_value").val(),
+                        "electric_value": $("#electric_value").val(),
+                        "note": $("#note").val()
                     }
+                    $.ajax({
+                        async: "false",
+                        type: "post",
+                        //dataType: "json",
+                        //contentType: "application/json",
+                        data: params,
+                        url: "/Bill/create",
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            layer.open({
+                                'icon': 1,
+                                'title': "温馨提示",
+                                'content': data['msg']
+                            });
+                        },
+                        error: function (e) {
+                            layer.open({
+                                'icon': 0,
+                                'title': "发生错误",
+                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            });
+                        }
+                    });
                 });
-			});
-		});
+            });
     </script>
 </body>
 

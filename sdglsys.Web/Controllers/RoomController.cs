@@ -176,6 +176,7 @@ namespace sdglsys.Web.Controllers
             Delete(id);
         }
 
+        [NeedLogin]
         public void List()
         {
             var db = new Rooms().Db;

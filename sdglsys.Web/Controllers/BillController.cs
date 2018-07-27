@@ -60,11 +60,8 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult Create()
         {
-            var Room = new Rooms();
-            if ((int) Session[ "role" ] < 3)
-                ViewBag.rooms = Room.getAllVRoomActive((int) Session[ "pid" ]); // 非系统管理员只能看到所属于园区的宿舍
-            else
-                ViewBag.rooms = Room.getAllVRoomActive();
+            var Building = new Buildings();
+            ViewBag.buildings = (int) Session["role"] < 3 ? Building.getAllActiveById((int) Session["pid"]):Building.getAllActive();
             return View();
         }
 
@@ -76,7 +73,6 @@ namespace sdglsys.Web.Controllers
         /// <param name="collection"></param>
         [HttpPost]
         [NeedLogin]
-
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
@@ -228,7 +224,6 @@ namespace sdglsys.Web.Controllers
         // GET: Used/Delete/5
         [NotLowUser]
         [HttpPost]
-
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();

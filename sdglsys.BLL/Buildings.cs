@@ -24,6 +24,7 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 获取已启用的宿舍楼
         /// </summary>
+        /// <param name="pid">园区ID</param>
         /// <returns></returns>
         public List<Entity.VBuilding> getAllActiveById(int pid)
         {

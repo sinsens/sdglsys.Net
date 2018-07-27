@@ -33,7 +33,7 @@
                         <select name="stat" id="stat">
                             <option value="-1">请选择一个状态</option>
                             <option value="1">已登记</option>
-                            <option value="2">已结算</option>
+                            <option value="2">已缴费</option>
                             <option value="0">已注销</option>
                         </select>
                     </div>
@@ -116,11 +116,11 @@
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
+                                        @if (bill.Is_active == 1) { 
                                         <button class="layui-btn layui-btn-sm layui-btn-primary pay-btn" data-id="@bill.Id"
                                                 data-url="/Bill/Pay/@bill.Id" data-text="结算该账单">
                                             <i class="layui-icon">&#xe65e;</i>
-
-                                        </button>
+                                        </button>}
                                         <button class="layui-btn layui-btn-sm layui-btn-primary view-btn"
                                                 title="冷水用量:@Cold_water_value|热水用量:@Hot_water_value|用电量:@Electric_value|备注:@bill.Note">
                                             <i class="layui-icon">&#xe60e;</i>

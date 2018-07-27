@@ -154,34 +154,6 @@ namespace sdglsys.DbHelper
             //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
-        /// <summary>
-        /// 查找当月未登记宿舍
-        /// </summary>
-        /// <returns></returns>
-        public List<VRoom> getAllNoRecord()
-        {
-
-            /// 先获取本月已登记的宿舍ID
-            var rooms = Db.Queryable<TUsed>().
-                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
-                JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
-              Select((r, b, d) => new VRoom
-              {
-                  Id = r.Id,
-                  Pid = r.Pid,
-                  Dorm_id = r.Dorm_id,
-                  Vid = r.Vid,
-                  Nickname = r.Nickname,
-                  Note = r.Note,
-                  PNickname = b.Nickname,
-                  Is_active = r.Is_active,
-                  Dorm_Nickname = d.Nickname
-              }).ToList();
-        }
 
         /// <summary>
         /// 按园区查找当月未登记宿舍
