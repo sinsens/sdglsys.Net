@@ -75,7 +75,7 @@ namespace sdglsys.Web.Controllers
                     Role = Convert.ToInt32(collection[ "role" ]),
                     Pid = Convert.ToInt32(collection[ "pid" ]),
                     Login_name = collection[ "login_name" ],
-                    Pwd = Utils.hashpwd((string) Utils.GetAppSetting("DefaultPassword", typeof(string))), // 设置默认密码
+                    Pwd = Utils.hashpwd(Utils.GetMD5((string) Utils.GetAppSetting("DefaultPassword", typeof(string)))), // 设置默认密码
                 };
 
                 var User = new Users();
@@ -261,7 +261,7 @@ namespace sdglsys.Web.Controllers
                 else
                 {
                     var pwd = (string) Utils.GetAppSetting("DefaultPassword", typeof(string));
-                    user.Pwd = Utils.hashpwd(pwd); // 设置默认密码
+                    user.Pwd = Utils.hashpwd(Utils.GetMD5(pwd)); // 设置默认密码
                     msg.msg = (User.Update(user)) ? "重置默认密码成功，该角色的密码已设置为'" + pwd + "'" : "发生未知错误！";
                 }
             }

@@ -51,7 +51,7 @@ namespace sdglsys.Web
         /// <returns>加密后的密码或字符串hash</returns>
         public static string hashpwd(string pwd)
         {
-            return BCrypt.Net.BCrypt.HashPassword(GetMD5(pwd), 4);
+            return BCrypt.Net.BCrypt.HashPassword(pwd, 4);
         }
 
         /// <summary>

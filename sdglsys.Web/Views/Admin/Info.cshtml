@@ -93,6 +93,7 @@
             </div>
         </div>
     </div>
+    <script src="~/Content/js/md5.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
         //Demo
@@ -108,27 +109,18 @@
                     "phone": $("#phone").val(),
                     "note": $("#note").val()
                 }
-                /*$.post("/admin/updateInfo", params, function (data) {
-                    if (data['code'] == 200) {
-                        var icon = 1;
-                    } else {
-                        var icon = 0;
-                    }
-                    layer.msg(data['msg'], {
-                        'icon': icon,
-                    });
-                }, "json");*/
-				$.ajax({
+                $.ajax({
                     async: "false",
                     type: "post",
                     //dataType: "json",
                     //contentType: "application/json",
                     data: params,
                     url: "/admin/updateInfo",
-                    success: function (data) {data=JSON.parse(data);
-						layer.msg(data['msg'], {
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['msg'], {
                             'icon': data['code'] == 200 ? 1 : 0,
-						});
+                        });
                     },
                     error: function (e) {
                         layer.open({
@@ -154,29 +146,20 @@
                     return false;
                 }
                 var params = {
-                    "pwd_old": $("#pwd_old").val(),
-                    "pwd_new": $("#pwd_new").val()
+                    "pwd_old": md5($("#pwd_old").val()),
+                    "pwd_new": md5($("#pwd_new").val())
                 }
-                /*$.post("/admin/updatePassword", params, function (data) {
-                    if (data['code'] == 200) {
-                        var icon = 1;
-                    } else {
-                        var icon = 0;
-                    }
-                    layer.msg(data['msg'], {
-                        'icon': icon,
-                    });
-                }, "json");*/
-				$.ajax({
+                $.ajax({
                     async: "false",
                     type: "post",
                     //dataType: "json",
                     data: params,
                     url: "/admin/updatePassword",
-                    success: function (data) {data=JSON.parse(data);
-						layer.msg(data['msg'], {
-                            'icon': data['code'] == 200?1:0,
-						});
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['msg'], {
+                            'icon': data['code'] == 200 ? 1 : 0,
+                        });
                     },
                     error: function (e) {
                         layer.open({
