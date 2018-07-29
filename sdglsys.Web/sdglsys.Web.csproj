@@ -153,10 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\AccountAuthorizeAttribute.cs" />
-    <Compile Include="App_Code\Audit.cs" />
     <Compile Include="App_Code\Msg.cs" />
     <Compile Include="App_Code\ResponseData.cs" />
-    <Compile Include="App_Code\Utils.cs" />
+    <Compile Include="App_Code\XUtils.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />

@@ -85,7 +85,7 @@ namespace sdglsys.DbHelper
                       Pid = u.Pid,
                       Building_id = b.Id,
                       Dorm_id = d.Id,
-                      Note = r.Note,
+                      Note = u.Note,
                       PNickname = r.Nickname,
                       Building_Nickname = b.Nickname,
                       Dorm_Nickname = d.Nickname,

@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using Newtonsoft.Json;
 
 namespace sdglsys.Web
@@ -11,7 +12,7 @@ namespace sdglsys.Web
     /// <summary>
     /// 常用工具集
     /// </summary>
-    public class Utils
+    public class XUtils
     {
         /// <summary>
         /// 生成md5
@@ -100,6 +101,73 @@ namespace sdglsys.Web
             get {
                 return OutTrial()?false:true;
             }
+        }
+
+        /// <summary>
+        /// 检查是否为敏感操作
+        /// </summary>
+        /// <param name="url">URL</param>
+        /// <returns>false</returns>
+        public static bool NeedAudit(string url)
+        {
+            url.ToLower();
+            // 敏感操作列表
+            string[] permit_list = {
+                "create","edit","delete","pay","createusedinfo","editusedinfo","deleteusedinfo","reset","update","quota","rate","charts","upload"
+            };
+            foreach (var item in permit_list)
+            {
+                if (url.Contains(item))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 按需求记录日志
+        /// </summary>
+        /// <param name="httpContext">页面对象</param>
+        public static void Log(HttpContextBase httpContext) {
+            var request = httpContext.Request;
+            var session = HttpContext.Current.Session;
+            if (NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
+            {
+                /// 加入日志
+                Log(new Entity.TLog()
+                {
+                    Info = request.Url.PathAndQuery,
+                    Ip = request.UserHostAddress,
+                    Login_name = (string) session["login_name"]
+                });
+            }
+        }
+
+        /// <summary>
+        /// 记录日志
+        /// </summary>
+        /// <param name="log"></param>
+        public static void Log(Entity.TLog log) {
+            new DbHelper.Logs().Add(log);
+        }
+
+        /// <summary>
+        /// 记录日志
+        /// </summary>
+        /// <param name="login_name">用户名</param>
+        /// <param name="ip">操作IP</param>
+        /// <param name="info">日志信息</param>
+        public static void Log(string login_name,string ip, string info) {
+            Log(new Entity.TLog {
+                 Info = info, Ip = ip, Login_name = login_name
+            });
+        }
+
+        /// <summary>
+        /// 获取一个系统管理员权限的角色
+        /// </summary>
+        /// <returns></returns>
+        public static Entity.TUser GetAdminUser() {
+            return new DbHelper.Users().Db.Queryable<Entity.TUser>().Where(u => u.Is_active == true && u.Role == 3).First();
         }
     }
 }

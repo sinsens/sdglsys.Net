@@ -21,9 +21,9 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                keyword = Request[ "keyword" ]; // 搜索关键词
-                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+                keyword = Request["keyword"]; // 搜索关键词
+                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
             }
             catch
             {
@@ -65,9 +65,9 @@ namespace sdglsys.Web.Controllers
                 // 初始化对象
                 Entity.TNotice notice = new Entity.TNotice()
                 {
-                    Title = collection[ "title" ],
-                    Content = collection[ "content" ],
-                    Login_name = (string) Session[ "login_name" ],
+                    Title = collection["title"],
+                    Content = collection["content"],
+                    Login_name = (string) Session["login_name"],
                     Post_date = DateTime.Now,
                 };
                 var Notice = new Notices();
@@ -107,10 +107,10 @@ namespace sdglsys.Web.Controllers
             }
             try
             {
-                notice.Content = collection[ "content" ];
-                notice.Title = collection[ "title" ];
+                notice.Content = collection["content"];
+                notice.Title = collection["title"];
                 notice.Mod_date = DateTime.Now;
-                notice.Is_active = Convert.ToBoolean(collection[ "is_active" ]);
+                notice.Is_active = Convert.ToBoolean(collection["is_active"]);
 
                 if (Notice.Update(notice))
                 {
@@ -127,11 +127,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
 
         }
 
@@ -176,7 +173,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [OutputCache(CacheProfile = "noticeview",Duration = 60)]
+        [OutputCache(CacheProfile = "noticeview", Duration = 60)]
         public ActionResult View(int id)
         {
             var db = new Notices().NoticeDb;
@@ -193,8 +190,8 @@ namespace sdglsys.Web.Controllers
             int limit = 10;
             try
             {
-                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
             }
             catch
             {
@@ -209,11 +206,13 @@ namespace sdglsys.Web.Controllers
         /// <summary>
         /// 测试Layui Table模板引擎
         /// </summary>
-        public ViewResult List2() {
+        public ViewResult List2()
+        {
             return View();
         }
 
         /// <summary>
+        /// 获取公告列表
         /// 测试Layui Table模板引擎
         /// </summary>
         [OutputCache(CacheProfile = "noticeview", Duration = 60)]
@@ -228,17 +227,14 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                page = Convert.ToInt32(Request[ "page" ]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request[ "limit" ]); if (limit > 99 || limit < 1) limit = 10;
+                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
+                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
             }
             catch
-            {
-                msg.code = 0;
-                msg.data = db.getListByPages(page, limit, ref count);
-                msg.count = count;
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            {}
+            msg.data = db.getListByPages(page, limit, ref count);
+            Response.Write(msg.ToJson());
+            Response.End();
         }
     }
 }

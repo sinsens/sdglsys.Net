@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using sdglsys.DbHelper;
-using sdglsys.Web;
-
 
 namespace sdglsys.Web
 {
@@ -27,10 +21,9 @@ namespace sdglsys.Web
             var session = HttpContext.Current.Session;
 
             /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) Utils.GetAppSetting("Debug", typeof(bool)) && session[ "login_name" ] == null)
+            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "login_name" ] == null)
             {
-                var db = new DbHelper.Users().Db;
-                var user = db.Queryable<Entity.TUser>().Where(u => u.Is_active == true && u.Role == 3).First();
+                var user = XUtils.GetAdminUser();
                 if (user != null)
                 {
                     session[ "id" ] = user.Id;
@@ -54,18 +47,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
-            {
-                /// 加入日志
-                var Log = new DbHelper.Logs();
-                Log.Add(new Entity.TLog()
-                {
-                    Info = request.Url.PathAndQuery,
-                    Ip = request.UserHostAddress,
-                    Login_name = (string) session[ "login_name" ]
-                });
-            }
-
+            XUtils.Log(httpContext);
             authorizationContext.Result = actionResult;
         }
     }
@@ -86,10 +68,9 @@ namespace sdglsys.Web
             string message = string.Empty;
             var session = HttpContext.Current.Session;
             /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) Utils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
+            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
             {
-                var db = new DbHelper.Users().Db;
-                var user = db.Queryable<Entity.TUser>().Where(u => u.Is_active == true && u.Role == 3).First();
+                var user = XUtils.GetAdminUser();
                 if (user != null)
                 {
                     session[ "id" ] = user.Id;
@@ -113,17 +94,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
-            {
-                /// 加入日志
-                var Log = new DbHelper.Logs();
-                Log.Add(new Entity.TLog()
-                {
-                    Info = request.Url.PathAndQuery,
-                    Ip = request.UserHostAddress,
-                    Login_name = (string) session[ "login_name" ]
-                });
-            }
+            XUtils.Log(httpContext);
 
             authorizationContext.Result = actionResult;
         }
@@ -145,10 +116,9 @@ namespace sdglsys.Web
             var session = HttpContext.Current.Session;
 
             /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) Utils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
+            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
             {
-                var db = new DbHelper.Users().Db;
-                var user = db.Queryable<Entity.TUser>().Where(u => u.Is_active == true && u.Role == 3).First();
+                var user = XUtils.GetAdminUser();
 
                 if (user != null)
                 {
@@ -172,17 +142,7 @@ namespace sdglsys.Web
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            if (App_Code.Audit.NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
-            {
-                /// 加入日志
-                var Log = new DbHelper.Logs();
-                Log.Add(new Entity.TLog()
-                {
-                    Info = request.Url.PathAndQuery,
-                    Ip = request.UserHostAddress,
-                    Login_name = (string) session[ "login_name" ]
-                });
-            }
+            XUtils.Log(httpContext);
             authorizationContext.Result = actionResult;
         }
     }

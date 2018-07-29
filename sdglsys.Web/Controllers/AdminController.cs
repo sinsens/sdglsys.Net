@@ -20,7 +20,7 @@ namespace sdglsys.Web.Controllers
         public void Login()
         {
             /// #trial
-            if (!Utils.IsTrial)
+            if (!XUtils.IsTrial)
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -34,7 +34,7 @@ namespace sdglsys.Web.Controllers
                 ip = Request.UserHostAddress;
                 login_name = Request["login_name"];
                 var pwd = Request.Form["password"];
-                var user = Utils.Login(login_name, pwd);
+                var user = XUtils.Login(login_name, pwd);
                 if (user != null)
                 {
                     Session["id"] = user.Id;
@@ -91,7 +91,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             /// #trial
-            if (!Utils.IsTrial)
+            if (!XUtils.IsTrial)
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -103,8 +103,7 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public ActionResult Info()
         {
-            var User = new Users();
-            return View(User.findById((int) Session["id"]));
+            return View(new Users().findById((int) Session["id"]));
         }
 
         // GET: Admin/Info:修改个人信息
@@ -135,11 +134,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // GET: Admin/Info:修改个人密码
@@ -155,9 +151,9 @@ namespace sdglsys.Web.Controllers
                 var pwd_old = collection["pwd_old"];
                 var pwd_new = collection["pwd_new"];
                 // 验证原密码
-                if (Utils.checkpw(pwd_old, user.Pwd))
+                if (XUtils.checkpw(pwd_old, user.Pwd))
                 {
-                    user.Pwd = Utils.hashpwd(pwd_new);
+                    user.Pwd = XUtils.hashpwd(pwd_new);
                     if (User.Update(user))
                     {
                         msg.msg = "修改密码成功！";
@@ -255,7 +251,6 @@ namespace sdglsys.Web.Controllers
         /// <param name="collection"></param>
         [HttpPost]
         [IsAdmin]
-
         public void Rate(FormCollection collection)
         {
             var msg = new Msg();
@@ -282,11 +277,8 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
 
@@ -307,9 +299,7 @@ namespace sdglsys.Web.Controllers
         /// <returns></returns>
         public ActionResult Charts()
         {
-            var used_data = new DbHelper.Useds();
-            var data = used_data.GetUsedDatas();
-            return View(data);
+            return View(new DbHelper.Useds().GetUsedDatas());
         }
 
         /// <summary>
@@ -321,20 +311,25 @@ namespace sdglsys.Web.Controllers
         {
             var Used_data = new DbHelper.Useds();
             var data = new Entity.Used_datas();
+            var _type = 0;
+            var _id = 0;
+            var _start = DateTime.Now;
+            var _end = DateTime.Now;
             try
             {
-                var _type = Convert.ToInt32(collection["type"]);
-                var _id = _type == 0 ? 0 : Convert.ToInt32(collection["id"]);
-                var _start = _type == 0 ? default(DateTime) : DateTime.Parse(collection["start_date"]);
-                var _end = _type == 0 ? default(DateTime) : DateTime.Parse(collection["end_date"]);
-                data = Used_data.GetUsedDatas(_type, _id, _start, _end);
-            }
-            finally
-            {
-                Response.Write(Utils.ToJson(data));
-                Response.End();
-            }
+                _type = Convert.ToInt32(collection["type"]);
+                _id = _type == 0 ? 0 : Convert.ToInt32(collection["id"]);
+                _start = _type == 0 ? default(DateTime) : DateTime.Parse(collection["start_date"]);
+                _end = _type == 0 ? default(DateTime) : DateTime.Parse(collection["end_date"]);
 
+            }
+            catch
+            {
+                data.info = "请求参数有误";
+            }
+            data = Used_data.GetUsedDatas(_type, _id, _start, _end);
+            Response.Write(XUtils.ToJson(data));
+            Response.End();
         }
 
 
@@ -349,6 +344,7 @@ namespace sdglsys.Web.Controllers
         }
 
 
+        #region 上传文件
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -362,7 +358,7 @@ namespace sdglsys.Web.Controllers
                 var file_ext = Request.Files["file"].FileName.Split('.').Reverse().First();
                 /// 文件后缀名过滤
                 var flage = false;
-                foreach (var item in Utils.GetAppSetting("AllowFiles", typeof(string)).ToString().Split(','))
+                foreach (var item in XUtils.GetAppSetting("AllowFiles", typeof(string)).ToString().Split(','))
                 {
                     if (item.Equals(file_ext))
                         flage = true;
@@ -379,7 +375,7 @@ namespace sdglsys.Web.Controllers
                             title = "",
                         }
                     };
-                    Response.Write(Utils.ToJson(msg));
+                    Response.Write(XUtils.ToJson(msg));
                     Response.End();
                 }
                 var upload_dir = Server.MapPath("~/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/");
@@ -401,10 +397,10 @@ namespace sdglsys.Web.Controllers
                         {
                             src = "/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/" + filename,
                             title = Request.Files["file"].FileName,
-                            files = Utils.ToJson(Request.Files.AllKeys),
+                            files = XUtils.ToJson(Request.Files.AllKeys),
                         }
                     };
-                    Response.Write(Utils.ToJson(msg));
+                    Response.Write(XUtils.ToJson(msg));
                 }
                 catch (Exception ex)
                 {
@@ -416,10 +412,10 @@ namespace sdglsys.Web.Controllers
                         {
                             src = "",
                             title = "",
-                            files = Utils.ToJson(Request.Files.AllKeys),
+                            files = XUtils.ToJson(Request.Files.AllKeys),
                         }
                     };
-                    Response.Write(Utils.ToJson(msg));
+                    Response.Write(XUtils.ToJson(msg));
                 }
             }
             else
@@ -434,11 +430,11 @@ namespace sdglsys.Web.Controllers
                         title = "",
                     }
                 };
-                Response.Write(Utils.ToJson(error));
+                Response.Write(XUtils.ToJson(error));
             }
             Response.End();
         }
-
+        #endregion
 
         /// <summary>
         /// 查看系统日志
@@ -452,7 +448,8 @@ namespace sdglsys.Web.Controllers
 
 
         /// <summary>
-        /// 查看系统日志,测试Layui Table模板引擎
+        /// 查看系统日志
+        /// 测试Layui Table模板引擎
         /// </summary>
         /// <returns></returns>
         [IsAdmin]
@@ -460,22 +457,23 @@ namespace sdglsys.Web.Controllers
         public void GetLogList()
         {
             var msg = new ResponseData();
+            var Log = new DbHelper.Logs();
             string keyword = "";
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
-                var Log = new DbHelper.Logs();
                 keyword = Request["keyword"]; // 搜索关键词
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-                msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
-                msg.code = 0;
                 msg.count = count;
             }
             catch
-            { }
+            {
+                msg.code = 500;
+            }
+            msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
             Response.Write(msg.ToJson());
             Response.End();
         }

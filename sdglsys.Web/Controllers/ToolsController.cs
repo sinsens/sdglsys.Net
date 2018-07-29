@@ -16,7 +16,7 @@ namespace sdglsys.Web.Controllers
             var hash = Request["hash"];
             var txt = Request["txt"];
             if (hash != null&&hash.Length>20) {
-                Response.Write(Utils.checkpw(txt, hash)?true:false);
+                Response.Write(XUtils.checkpw(txt, hash)?true:false);
                 Response.End();
             }
             if (txt != null&&txt.Length>0) {
@@ -24,7 +24,7 @@ namespace sdglsys.Web.Controllers
                 msg.content = new
                 {
                     text = txt,
-                    bcrypt_hash = Utils.hashpwd(txt),
+                    bcrypt_hash = XUtils.hashpwd(txt),
                 };
                 Response.Write(msg.ToJson());
                 Response.End();

@@ -7,6 +7,9 @@
     /// </summary>
     public class ResponseData: Msg
     {
+        public ResponseData() {
+            this.code = 0;
+        }
         /// <summary>
         /// 响应记录数
         /// </summary>
