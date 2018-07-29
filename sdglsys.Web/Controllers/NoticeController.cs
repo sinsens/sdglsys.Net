@@ -188,6 +188,7 @@ namespace sdglsys.Web.Controllers
             var db = new Notices();
             int page = 1;
             int limit = 10;
+            int count = 0;
             try
             {
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
@@ -196,10 +197,10 @@ namespace sdglsys.Web.Controllers
             catch
             {
             }
-            int count = 0;
+            ViewBag.notices = db.getListByPages(page, limit, ref count);            
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
-            ViewBag.notices = db.getListByPages(page, limit, ref count);
+            
             return View();
         }
 

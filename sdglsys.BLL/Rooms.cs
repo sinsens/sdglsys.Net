@@ -151,7 +151,47 @@ namespace sdglsys.DbHelper
                      Is_active = r.Is_active,
                      Dorm_Nickname = d.Nickname
                  }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
+            
+        }
+
+        /// <summary>
+        /// 查找宿舍
+        /// </summary>
+        /// <param name="pid">园区ID</param>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
+        /// <param name="totalCount">当前页结果数</param>
+        /// <param name="where">条件</param>
+        /// <returns></returns>
+        public List<VRoom> getByPages(int pid,int page, int limit, ref int totalCount, string where = null)
+        {
+            if (where == null)
+                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).Where(r=>r.Dorm_id==pid).OrderBy(r => r.Id, OrderByType.Desc).
+                  Select((r, b, d) => new VRoom
+                  {
+                      Id = r.Id,
+                      Pid = r.Pid,
+                      Vid = r.Vid,
+                      Nickname = r.Nickname,
+                      Note = r.Note,
+                      PNickname = b.Nickname,
+                      Is_active = r.Is_active,
+                      Dorm_Nickname = d.Nickname
+                  }).ToPageList(page, limit, ref totalCount);
+            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
+                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where(r=>r.Dorm_id==pid).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
+                 Select((r, b, d) => new VRoom
+                 {
+                     Id = r.Id,
+                     Pid = r.Pid,
+                     Vid = r.Vid,
+                     Nickname = r.Nickname,
+                     Note = r.Note,
+                     PNickname = b.Nickname,
+                     Is_active = r.Is_active,
+                     Dorm_Nickname = d.Nickname
+                 }).ToPageList(page, limit, ref totalCount);
+
         }
 
 

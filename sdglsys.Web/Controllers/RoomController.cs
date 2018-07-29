@@ -27,12 +27,17 @@ namespace sdglsys.Web.Controllers
             catch
             {
             }
-            var rooms = new Rooms();
-            ViewBag.keyword = keyword;
-            ViewBag.rooms = rooms.getByPages(page, limit, ref count, keyword); // 获取列表
+            if ((int)Session["role"] < 3)
+            {
+                ViewBag.rooms = new Rooms().getByPages((int)Session["pid"], page, limit, ref count, keyword); // 获取列表
+            }
+            else {
+                ViewBag.rooms = new Rooms().getByPages(page, limit, ref count, keyword); // 获取列表
+            }
+            
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
-
+            ViewBag.keyword = keyword;
             return View();
         }
 

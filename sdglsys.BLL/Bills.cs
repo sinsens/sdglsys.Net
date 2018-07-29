@@ -194,12 +194,13 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 查找登记
         /// </summary>
+        /// <param name="id">园区ID</param>
         /// <param name="page">当前页数</param>
         /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VBill> getByPagesByDormId(int page, int limit, int id, ref int totalCount, string where = null, short stat = -1)
+        public List<VBill> getByPagesByDormId(int id, int page, int limit, ref int totalCount, string where = null, short stat = -1)
         {
             if (where == null && stat == -1)
                 return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).

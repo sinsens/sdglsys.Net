@@ -89,5 +89,22 @@ namespace sdglsys.DbHelper
                   Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
             //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
+
+        /// <summary>
+        /// 查找宿舍楼
+        /// </summary>
+        /// <param name="page">当前页数</param>
+        /// <param name="limit">每页数量</param>
+        /// <param name="totalCount">当前页结果数</param>
+        /// <param name="where">条件</param>
+        /// <returns></returns>
+        public List<VBuilding> getByPages(int pid, int page, int limit, ref int totalCount, string where = null)
+        {
+            if (where == null)
+                return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where(b=>b.Pid == pid).
+                  Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
+            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where(b=>b.Pid==pid).Where((b, d) => b.Vid.Contains(where) || b.Nickname.Contains(where) || b.Note.Contains(where)).OrderBy((b, d) => b.Id, OrderByType.Desc).
+                  Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
+        }
     }
 }

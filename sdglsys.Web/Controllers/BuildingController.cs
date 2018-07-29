@@ -18,6 +18,7 @@ namespace sdglsys.Web.Controllers
             int page = 1;
             int limit = 10;
             int count = 0;
+            var b = new Buildings();
             try
             {
                 keyword = Request["keyword"]; // 搜索关键词
@@ -29,9 +30,18 @@ namespace sdglsys.Web.Controllers
 
             }
             
-            var b = new Buildings();
+            if ((int) Session["role"] < 3)
+            {
+                ViewBag.buildings =b.getByPages((int) Session["pid"], page, limit, ref count, keyword); // 获取列表
+            }
+            else
+            {
+                ViewBag.buildings = b.getByPages(page, limit, ref count, keyword); // 获取列表
+            }
+
+            
             ViewBag.keyword = keyword;
-            ViewBag.buildings = b.getByPages(page, limit, ref count, keyword); // 获取列表
+            
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
 

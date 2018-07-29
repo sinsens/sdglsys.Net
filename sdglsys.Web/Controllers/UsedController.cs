@@ -76,15 +76,13 @@ namespace sdglsys.Web.Controllers
                 // 验证费率信息
                 if (rate == null)
                 {
-                    msg.msg = "请先到'系统设置-费率及基础配额设置'设置费率信息";
-                    goto end;
+                    throw new Exception("请先到'系统设置-费率及基础配额设置'设置费率信息");
                 }
                 // 验证基础配额信息
                 var quota = Db.Queryable<TQuota>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
                 if (quota == null)
                 {
-                    msg.msg = "请先到'系统设置-费率及基础配额设置'设置基础配额信息";
-                    goto end;
+                    throw new Exception("请先到'系统设置-费率及基础配额设置'设置基础配额信息");
                 }
 
                 var Used = new Useds();
@@ -98,8 +96,7 @@ namespace sdglsys.Web.Controllers
                 ///1.1判断输入数值
                 if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
                 {
-                    msg.msg += "数值输入有误，读表数值不能小于0";
-                    goto end;
+                    throw new Exception("数值输入有误，读表数值不能小于0");
                 }
                 var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
                 var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
@@ -107,14 +104,12 @@ namespace sdglsys.Web.Controllers
                 var Note = collection["note"];
                 if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
                 {
-                    msg.msg = "宿舍ID或宿舍楼ID或园区ID输入有误";
-                    goto end;
+                    throw new Exception("宿舍ID或宿舍楼ID或园区ID输入有误");
                 }
                 ///1.2判断该宿舍是否已登记, 避免重复操作
                 if (Used.IsRecord(Pid))
                 {
-                    msg.msg = "该宿舍本月已经登记过了，无需再次登记";
-                    goto end;
+                    throw new Exception("该宿舍本月已经登记过了，无需再次登记");
                 }
 
                 ///2.获取上次读数
@@ -128,8 +123,7 @@ namespace sdglsys.Web.Controllers
                     ///3.1判断本次数值是否大于等于上次数值
                     if (this_cold_water_value < usedinfo.Cold_water_value || this_hot_water_value < usedinfo.Hot_water_value || this_electric_value < usedinfo.Electric_value)
                     {
-                        msg.msg = "数值输入有误，水表电表通常是不会装着转滴。";
-                        goto end;
+                        throw new Exception("数值输入有误，水表电表通常是不会装着转滴");
                     }
                     // 本次数值=本次读数-上次读数
                     this_cold_water_value -= usedinfo.Cold_water_value;
@@ -164,10 +158,7 @@ namespace sdglsys.Web.Controllers
 
                 if (uid.Id < 1)// 插入并更新自增ID
                 {
-                    msg.msg = "保存登记信息时发生错误！";
-                    // 回滚事务
-                    Db.Ado.RollbackTran();
-                    goto end;
+                    throw new Exception("保存登记信息时发生错误！");
                 }
                 ///4.获取基础配额数据
                 if (quota != null && quota.Is_active)
@@ -188,38 +179,30 @@ namespace sdglsys.Web.Controllers
                 bill.Hot_water_cost = (decimal) this_hot_water_value * (decimal) rate.Hot_water_value;
                 bill.Rates_id = rate.Id;
                 bill.Quota_id = quota.Id;
-                //msg.content = last;goto end;//#debug
                 ///7.保存所有数据
 
-                var flage = true;
                 ///7.1保存读表信息
                 if (usedinfo.Id < 1)
                 {
                     if (Db.Insertable(usedinfo).ExecuteCommand() < 1)
                     {
-                        flage = false;
-                        msg.msg = "保存读表信息时发生错误！";
+                        throw new Exception("保存读表信息时发生错误！");
                     }
 
                 }
                 else if (Db.Updateable(usedinfo).ExecuteCommand() < 1)
                 {
-                    flage = false;
-                    msg.msg = "更新读表信息时发生错误！";
+                    throw new Exception("更新读表信息时发生错误！");
                 }
                 ///7.2保存账单
                 if (Db.Insertable(bill).ExecuteCommand() < 1)
                 {
-                    flage = false;
-                    msg.msg += "添加账单信息时发生错误！";
+                    throw new Exception("添加账单信息时发生错误！");
                 }
 
-                if (flage)
-                {
                     Db.Ado.CommitTran();// 提交事务
                     msg.code = 200;
                     msg.msg = "添加成功！";
-                }
             }
             catch (Exception ex)
             {
@@ -228,7 +211,6 @@ namespace sdglsys.Web.Controllers
                 msg.code = 500;
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -246,18 +228,22 @@ namespace sdglsys.Web.Controllers
             var msg = new Msg();
             msg.code = 500;
             var Db = new DbContext().Db;
-            var Used = new Useds();
             var Used_total = new Useds_total();
             try
             {
                 ///0.开始事务
                 Db.Ado.BeginTran();
                 ///1.获取记录数据
-                var used = Used.findById(id);
+                var used = Db.Context.Queryable<Entity.TUsed>().Where(u => u.Id == id).First();
                 if (used == null)
                 {
-                    msg.msg = "该记录已被删除";
-                    goto end;
+                    throw new Exception("该记录已被删除");
+                }
+                ///2.判断账单状态
+                var bill = Db.Ado.Context.Queryable<Entity.TBill>().Where(b => b.Pid == used.Id).First();
+                if (bill.Is_active != 1)
+                {
+                    throw new Exception("关联账单的状态已被更改，无法删除");
                 }
                 ///3.更新读表信息
                 var last = Used_total.Last(used.Pid);
@@ -280,30 +266,24 @@ namespace sdglsys.Web.Controllers
                 {
                     if (Db.Insertable(last).ExecuteCommand() < 1)
                     {
-                        msg.msg = "更新读表信息时发生错误！";
-                        Db.Ado.RollbackTran();
+                        throw new Exception("更新读表信息时发生错误！");
                     }
 
                 }
                 else if (Db.Updateable(last).ExecuteCommand() < 1)
                 {
-                    msg.msg = "更新读表信息时发生错误！";
-                    Db.Ado.RollbackTran();
+                    throw new Exception("更新读表信息时发生错误！");
                 }
-                else
-                {
-                    Used.Delete(id);
-                    Db.Ado.CommitTran();// 提交事务
-                    msg.code = 200;
-                    msg.msg = "删除成功！";
-                }
+                Db.Ado.Context.Deleteable(used).ExecuteCommand();
+                Db.Ado.CommitTran();// 提交事务
+                msg.code = 200;
+                msg.msg = "删除成功！";
             }
             catch (Exception ex)
             {
                 Db.Ado.RollbackTran();//发生错误，回滚操作
                 msg.msg += ex.Message;
             }
-            end:    // 不满足条件直接跳到这里
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -418,7 +398,9 @@ namespace sdglsys.Web.Controllers
                     {
                         Db.Insertable(usedinfo).ExecuteCommand();
                         //throw new Exception("插入读表记录时发生错误");
-                    }else if(Db.Updateable(usedinfo).ExecuteCommand()<1){
+                    }
+                    else if (Db.Updateable(usedinfo).ExecuteCommand() < 1)
+                    {
                         throw new Exception("更新读表记录时发生错误"); // 否则执行更新操作
                     }
                     msg.code = 200;
@@ -430,9 +412,8 @@ namespace sdglsys.Web.Controllers
             {
                 Db.Ado.RollbackTran();//发生错误，回滚操作
                 msg.code = 500;
-                msg.msg = "添加读表信息时发生错误："+ex.Message;
+                msg.msg = "添加读表信息时发生错误：" + ex.Message;
             }
-
             Response.Write(msg.ToJson());
             Response.End();
         }
