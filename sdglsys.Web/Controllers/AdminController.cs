@@ -50,6 +50,7 @@ namespace sdglsys.Web.Controllers
                         Ip = ip,
                         Login_name = login_name,
                     });
+                    HttpContext.Application["OnLineUserCount"] = Convert.ToInt32(HttpContext.Application["OnLineUserCount"]) + 1; // 登录成功，在线用户+1
                 }
                 else
                 {
