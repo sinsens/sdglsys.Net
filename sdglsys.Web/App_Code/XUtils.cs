@@ -110,7 +110,7 @@ namespace sdglsys.Web
         /// <returns>false</returns>
         public static bool NeedAudit(string url)
         {
-            url.ToLower();
+            url = url.ToLower();
             // 敏感操作列表
             string[] permit_list = {
                 "create","edit","delete","pay","createusedinfo","editusedinfo","deleteusedinfo","reset","update","quota","rate","charts","upload"
@@ -130,7 +130,7 @@ namespace sdglsys.Web
         public static void Log(HttpContextBase httpContext) {
             var request = httpContext.Request;
             var session = HttpContext.Current.Session;
-            if (NeedAudit(request.Url.AbsolutePath)&&request.HttpMethod.Equals("POST")) // 检查是否为敏感操作（涉及数据的增删改操作）
+            if (NeedAudit(request.Url.PathAndQuery)&&request.HttpMethod.Equals("POST")) // 检查是否为敏感操作（涉及数据的增删改操作）
             {
                 /// 加入日志
                 Log(new Entity.TLog()

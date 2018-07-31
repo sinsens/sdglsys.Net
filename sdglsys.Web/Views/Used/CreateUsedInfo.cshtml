@@ -73,26 +73,46 @@
 						"pid": $("#pid").val(),
 					}
 				// 更新下拉列表
-				$.post("/used/last", params, function(data) {
-					//#debug=console.log(data);
-                    $("#cold_water_value").val(0);
-                    $("#hot_water_value").val(0);
-                    $("#electric_value").val(0);
-                    if (data["content"] != null){
-                        $("#cold_water_value").attr('placeholder',"上期数值："+data["content"]["Cold_water_value"]);
-                        $("#hot_water_value").attr('placeholder', "上期数值：" + data["content"]["Hot_water_value"]);
-                        $("#electric_value").attr('placeholder', "上期数值：" + data["content"]["Electric_value"]);
-                        $("#cold_water_value").val(data["content"]["Cold_water_value"]);
-                        $("#hot_water_value").val(data["content"]["Hot_water_value"]);
-                        $("#electric_value").val(data["content"]["Electric_value"]);
-					}else{
-						$("#cold_water_value").attr('placeholder',"暂无数据");
-						$("#hot_water_value").attr('placeholder',"暂无数据");
-                        $("#electric_value").attr('placeholder', "暂无数据");
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "/used/last/",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        $("#cold_water_value").val(0);
+                        $("#hot_water_value").val(0);
+                        $("#electric_value").val(0);
+                        if (data["content"] != null) {
+                            $("#cold_water_value").attr('placeholder', "上期数值：" + data["content"]["Cold_water_value"]);
+                            $("#hot_water_value").attr('placeholder', "上期数值：" + data["content"]["Hot_water_value"]);
+                            $("#electric_value").attr('placeholder', "上期数值：" + data["content"]["Electric_value"]);
+                            $("#cold_water_value").val(data["content"]["Cold_water_value"]);
+                            $("#hot_water_value").val(data["content"]["Hot_water_value"]);
+                            $("#electric_value").val(data["content"]["Electric_value"]);
+                        } else {
+                            $("#cold_water_value").attr('placeholder', "暂无数据");
+                            $("#hot_water_value").attr('placeholder', "暂无数据");
+                            $("#electric_value").attr('placeholder', "暂无数据");
 
+                        }
+                        form.render();
+                        /*
+                        data = JSON.parse(data);
+                        layer.msg(data['msg'], {
+                            'icon': data['code'] == 200 ? 1 : 0,
+                        });*/
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
                     }
-                    form.render();
-				}, 'json');
+                });
 			}); //监听提交
 			form.on('submit(formDemo)', function(data) {
 				if($('#pid').val().trim().length < 1) {

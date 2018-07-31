@@ -173,7 +173,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [OutputCache(CacheProfile = "noticeview", Duration = 60)]
+        [OutputCache(Duration = 60)]
         public ActionResult View(int id)
         {
             var db = new Notices().NoticeDb;
@@ -216,7 +216,7 @@ namespace sdglsys.Web.Controllers
         /// 获取公告列表
         /// 测试Layui Table模板引擎
         /// </summary>
-        [OutputCache(CacheProfile = "noticeview", Duration = 60)]
+        [OutputCache(Duration = 60)]
         [HttpPost]
         public void GetList()
         {

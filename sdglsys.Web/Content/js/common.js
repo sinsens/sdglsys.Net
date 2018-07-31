@@ -102,7 +102,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		var id = $(this).attr('data-id');
 		var params = JSON.stringify({
 			"type": "del",
-			"content": id,
+			"id": id,
 		});
 
 		layer.confirm('将会同时删除相关联数据', {
@@ -140,10 +140,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		var id = $(this).attr('data-id');
 		var params = JSON.stringify({
 			"type": "del",
-			"content": {
-				'id': id,
-			},
-		});
+            'id': id
+        });
 		layer.confirm('将会同时删除账单记录！', {
 			icon: 10,
 			title: '您确定要进行删除吗？'
@@ -211,11 +209,9 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		var url = $(this).attr('data-url');
 		var id = $(this).attr('data-id');
 		var params = JSON.stringify({
-			"type": "changeStat",
-			"content": {
-				'id': id,
-				'is_active': 2
-			},
+            "type": "changeStat",
+			'id': id,
+			'is_active': 2
 		});
 		layer.confirm('确认把该账单设置成已缴费状态？', {
 			icon: 10,

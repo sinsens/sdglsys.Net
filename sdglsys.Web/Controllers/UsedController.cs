@@ -221,8 +221,9 @@ namespace sdglsys.Web.Controllers
         /// 删除登记信息
         /// </summary>
         /// <param name="id"></param>
-        // GET: Used/Delete/5
+        // Post: Used/Delete/5
         [NeedLogin]
+        [HttpPost]
         public void Delete(int id)
         {
             var msg = new Msg();
@@ -286,14 +287,6 @@ namespace sdglsys.Web.Controllers
             }
             Response.Write(msg.ToJson());
             Response.End();
-        }
-
-        // POST: Used/Delete/5
-        [HttpPost]
-        [NeedLogin]
-        public void Delete(int id, FormCollection collection)
-        {
-            this.Delete(id);
         }
 
         [NeedLogin]

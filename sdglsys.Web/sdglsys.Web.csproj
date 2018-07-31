@@ -210,13 +210,7 @@
     <Content Include="Content\js\pako.min.js" />
     <Content Include="Content\js\zip.js" />
     <Content Include="Content\layui\css\layui.css" />
-    <Content Include="Content\layui\css\layui.min.css">
-      <DependentUpon>layui.css</DependentUpon>
-    </Content>
     <Content Include="Content\layui\css\layui.mobile.css" />
-    <Content Include="Content\layui\css\layui.mobile.min.css">
-      <DependentUpon>layui.mobile.css</DependentUpon>
-    </Content>
     <Content Include="Content\layui\css\modules\code.css" />
     <Content Include="Content\layui\css\modules\laydate\default\laydate.css" />
     <Content Include="Content\layui\css\modules\laydate\icon.png" />

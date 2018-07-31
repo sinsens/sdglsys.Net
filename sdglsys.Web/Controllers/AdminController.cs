@@ -454,7 +454,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [IsAdmin]
-        [OutputCache(CacheProfile = "logCahce", Duration = 10)]
+        [OutputCache(Duration = 10)]
         public void GetLogList()
         {
             var msg = new ResponseData();
@@ -468,13 +468,13 @@ namespace sdglsys.Web.Controllers
                 keyword = Request["keyword"]; // 搜索关键词
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-                msg.count = count;
             }
             catch
             {
                 msg.code = 500;
             }
             msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
+            msg.count = count;
             Response.Write(msg.ToJson());
             Response.End();
         }
