@@ -206,7 +206,7 @@
     <Content Include="Content\js\module\dialog.js" />
     <Content Include="Content\js\module\formate.js" />
     <Content Include="Content\js\module\tool.js" />
-    <Content Include="Content\js\myChart.js" />
+    <Content Include="Content\js\myecharts.js" />
     <Content Include="Content\js\pako.min.js" />
     <Content Include="Content\js\zip.js" />
     <Content Include="Content\layui\css\layui.css" />
@@ -354,7 +354,6 @@
     <Content Include="Content\js\md5.min.js.map" />
     <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
-    <None Include="Views\Notice\Create.cshtml" />
     <Content Include="Views\Room\Create.cshtml" />
     <Content Include="Views\Room\Edit.cshtml" />
     <Content Include="Views\Room\Index.cshtml" />
@@ -394,6 +393,7 @@
     <Content Include="Views\Notice\List.cshtml" />
     <Content Include="Views\Admin\Log.cshtml" />
     <Content Include="Views\Notice\List2.cshtml" />
+    <Content Include="Views\Notice\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

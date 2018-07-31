@@ -184,7 +184,7 @@
                                         /*
                                          IE浏览器不显示快速进入面板
                                          */
-                                        if (navigator.appVersion.toLowerCase().indexOf("ie") > 0) {
+                                        if (navigator.appVersion.toLowerCase().indexOf("ie") > 0 || navigator.appVersion.toLowerCase().indexOf("wow")>-1) {
                                             document.getElementById("qlinks").style.display = "none";
                                         }
                                     </script>

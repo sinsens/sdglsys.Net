@@ -44,7 +44,7 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Notice/Create
-        [NotLowUser]
+        [IsAdmin]
         public ActionResult Create()
         {
             return View();
@@ -56,7 +56,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="collection"></param>
         [HttpPost]
-        [NotLowUser]
+        [IsAdmin]
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
@@ -92,7 +92,7 @@ namespace sdglsys.Web.Controllers
 
         // POST: Notice/Edit/5
         [HttpPost]
-        [NotLowUser]
+        [IsAdmin]
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();

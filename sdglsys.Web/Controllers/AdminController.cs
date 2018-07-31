@@ -30,7 +30,6 @@ namespace sdglsys.Web.Controllers
             string login_name = "";
             try
             {
-                var Log = new Logs();
                 ip = Request.UserHostAddress;
                 login_name = Request["login_name"];
                 var pwd = Request.Form["password"];
@@ -44,9 +43,9 @@ namespace sdglsys.Web.Controllers
                     Session["pid"] = user.Pid;
                     msg.msg = "登录成功！";
                     msg.content = "/admin/index";
-                    Log.Add(new Entity.TLog
+                    XUtils.Log(new Entity.TLog
                     {
-                        Info = "登录成功",
+                        Info = "Login in",
                         Ip = ip,
                         Login_name = login_name,
                     });
@@ -56,9 +55,9 @@ namespace sdglsys.Web.Controllers
                 {
                     msg.code = 400;
                     msg.msg = "用户名或密码错误！";
-                    Log.Add(new Entity.TLog
+                    XUtils.Log(new Entity.TLog
                     {
-                        Info = "登录失败",
+                        Info = "Login falied",
                         Ip = ip,
                         Login_name = login_name,
                     });

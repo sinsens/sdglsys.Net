@@ -63,15 +63,13 @@
                 </div>
             </div>
             <!--div class="layui-footer">
-                {%if 't' in session%}<p style="text-align: center;">页面执行时间：{{session['t']}}s</p>{%endif%}
+
             </div-->
-
         </div>
-
     </div>
-    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/Content/lib/echarts/echarts.min.js" charset="utf-8"></script>
-    <script src="~/Content/js/myChart.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Content/js/myecharts.js" charset="utf-8"></script>
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
         layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             var form = layui.form;
@@ -107,6 +105,7 @@
                         url = "";
                         break;
                 }
+                if (url.length < 3) return;
                 // 更新下拉列表
                 $.ajax({
                     async: "false",
@@ -127,13 +126,6 @@
                         });
                     }
                 });
-                /*
-                $.post(url, function (data) {
-                    data = JSON.parse(data);
-                    for (var i = 0; i < data.length; i++)
-                        $("<option value=" + data[i]["Id"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#suorce_id");
-                    form.render('select'); // 重新渲染下拉列表
-                });*/
             });
             form.on('submit(changeData)', function (data) {
                 var _start = $("#start_date").val();
@@ -153,9 +145,9 @@
                     'end_date': _end,
                     'start_date': _start,
                     'type': _type,
-                    'id': $("#suorce_id").val() == null ? 0:$("#suorce_id").val(),
+                    'id': $("#suorce_id").val() == null ? 0 : $("#suorce_id").val(),
                 }
-				$.ajax({
+                $.ajax({
                     async: "false",
                     type: "post",
                     data: params,
@@ -163,9 +155,9 @@
                     success: function (data) {
                         //data = JSON.parse(data);
                         if (data['msg'] != null)
-                        layer.msg(data['msg'])
-                    else
-                        ChartLoadData2(data)
+                            layer.msg(data['msg'])
+                        else
+                            ChartLoadData2(data)
                     },
                     error: function (e) {
                         layer.open({

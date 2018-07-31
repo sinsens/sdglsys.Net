@@ -43,7 +43,7 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Dorm/Create
-        [NeedLogin]
+        [IsAdmin]
         public ActionResult Create()
         {
             return View();
