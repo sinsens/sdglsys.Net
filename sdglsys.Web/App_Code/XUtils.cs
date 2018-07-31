@@ -93,8 +93,8 @@ namespace sdglsys.Web
         public static bool OutTrial()
         {
             DateTime trial_end_date;
-            DateTime.TryParse("2019-12-30 20:51", out trial_end_date);
-            return DateTime.Now >= trial_end_date;
+            DateTime.TryParse("2019-12-30 23:59", out trial_end_date);
+            return DateTime.Now > trial_end_date;
         }
 
         public static bool IsTrial {
@@ -130,7 +130,7 @@ namespace sdglsys.Web
         public static void Log(HttpContextBase httpContext) {
             var request = httpContext.Request;
             var session = HttpContext.Current.Session;
-            if (NeedAudit(request.Url.AbsolutePath)) // 检查是否为敏感操作（涉及数据的增删改操作）
+            if (NeedAudit(request.Url.AbsolutePath)&&request.HttpMethod.Equals("POST")) // 检查是否为敏感操作（涉及数据的增删改操作）
             {
                 /// 加入日志
                 Log(new Entity.TLog()

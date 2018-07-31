@@ -46,8 +46,9 @@ namespace sdglsys.Web
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            /// 系统启动后第一次接受请求的事件
-            Response.ContentEncoding = System.Text.Encoding.GetEncoding("gbk");
+            /// 系统启动后每次接受请求的事件
+            Response.Headers.Add("Content-Type", "text/html; charset=utf-8");
+            //Response.ContentEncoding = System.Text.Encoding.GetEncoding("gbk");
             /// #trial
             if (!XUtils.IsTrial)
             {
