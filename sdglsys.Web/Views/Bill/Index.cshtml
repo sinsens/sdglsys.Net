@@ -8,8 +8,7 @@
     <meta name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title>账单管理</title>
-    <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
-    <link rel="stylesheet" type="text/css" href="~/Content/css/admin.css" />
+    @Styles.Render("~/Content/css")
 </head>
 
 <body>
@@ -168,8 +167,7 @@
             </div>
         </div>
     </div>
-    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-    <script src="~/Content/js/common.js" type="text/javascript" charset="utf-8"></script>
+    @Scripts.Render("~/Content/js")
     <script>
         layui.use(['form', 'jquery'], function () {
             var form = layui.form;

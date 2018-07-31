@@ -11,8 +11,7 @@
                 location.href = "/browser.html";
             </script>
         <![endif]-->
-    <link rel="stylesheet" type="text/css" href="~/Content/css/admin.css" />
-    <link rel="stylesheet" type="text/css" href="~/Content/layui/css/layui.css" />
+    @Styles.Render("~/Content/css")
     <style>
         .layui-nav-tree {
             width: 220px; /*Sinsen at 2018年6月4日，适应长文菜单*/
@@ -202,8 +201,7 @@
 
         </div>
     </div>
-    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-    <script src="~/Content/js/common.js" type="text/javascript" charset="utf-8"></script>
+    @Scripts.Render("~/Content/js")
     <script src="~/Content/js/main.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>

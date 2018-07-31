@@ -176,6 +176,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\admin.css" />
+    <Content Include="Content\css\admin.min.css">
+      <DependentUpon>admin.css</DependentUpon>
+    </Content>
     <Content Include="Content\css\avatar.css" />
     <Content Include="Content\css\login.css" />
     <Content Include="Content\css\panel.css" />
@@ -207,7 +210,13 @@
     <Content Include="Content\js\pako.min.js" />
     <Content Include="Content\js\zip.js" />
     <Content Include="Content\layui\css\layui.css" />
+    <Content Include="Content\layui\css\layui.min.css">
+      <DependentUpon>layui.css</DependentUpon>
+    </Content>
     <Content Include="Content\layui\css\layui.mobile.css" />
+    <Content Include="Content\layui\css\layui.mobile.min.css">
+      <DependentUpon>layui.mobile.css</DependentUpon>
+    </Content>
     <Content Include="Content\layui\css\modules\code.css" />
     <Content Include="Content\layui\css\modules\laydate\default\laydate.css" />
     <Content Include="Content\layui\css\modules\laydate\icon.png" />
@@ -349,6 +358,7 @@
     <Content Include="Content\less\welcome.less" />
     <Content Include="Views\Admin\Upload.cshtml" />
     <Content Include="Content\js\md5.min.js.map" />
+    <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Views\Notice\Create.cshtml" />
     <Content Include="Views\Room\Create.cshtml" />

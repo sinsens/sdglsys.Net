@@ -1,0 +1,10 @@
+[
+  {
+    "outputFileName": "Content/css/admin.min.css",
+    "inputFiles": [
+      "Content/css/admin.css"
+    ],
+    "sourceMap": false,
+    "sourceMapRootPath": null
+  }
+]
