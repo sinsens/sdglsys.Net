@@ -30,7 +30,7 @@
                                     <ComboBoxItem>SQLite</ComboBoxItem>
                                     <ComboBoxItem>SQL Server</ComboBoxItem>
                                 </ComboBox>
-                                <Button x:Name="btnConnect" Style="{DynamicResource SquareButtonStyle}" Width="auto" Height="25" FontSize="11" Click="btnConnect_ClickAsync">连接到数据库</Button>
+                                <Button x:Name="btnConnect" Style="{DynamicResource SquareButtonStyle}" Width="auto" Height="25" FontSize="11" Click="BtnConnect_ClickAsync">连接到数据库</Button>
                             </WrapPanel>
 
                         </StackPanel>
@@ -56,7 +56,7 @@
                                 <WrapPanel Margin="0,10,0,0">
                                     <Label Content="请输入密码:   "/>
                                     <TextBox x:Name="newPwd" Width="200" Height="25" />
-                                    <Button Margin="10,0,0,0" x:Name="btnCreateAdmin" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="btnCreateAdmin_Click">创建</Button>
+                                    <Button Margin="10,0,0,0" x:Name="btnCreateAdmin" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="BtnCreateAdmin_Click">创建</Button>
                                 </WrapPanel>
                             </StackPanel>
                         </GroupBox>
@@ -65,7 +65,7 @@
                                 <WrapPanel>
                                     <Label Content="请输入用户名:"/>
                                     <TextBox x:Name="tbxLogin_name" Width="200" Height="25"></TextBox>
-                                    <Button Margin="10,0,0,0" x:Name="btnSearchUser" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="btnSearchUser_Click">查找</Button>
+                                    <Button Margin="10,0,0,0" x:Name="btnSearchUser" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="60" Height="25" Click="BtnSearchUser_Click">查找</Button>
                                 </WrapPanel>
                                 <WrapPanel Margin="0,10,0,0">
                                     <Label Content="用户名:"/>
@@ -82,7 +82,7 @@
                                 <WrapPanel Margin="0,10,0,0">
                                     <Label Content="权 限:"/>
                                     <TextBox Margin="51,0,0,0" Text="{Binding RoleName}" Width="200" Height="25" />
-                                    <Button Margin="10,0,0,0" Click="btnResetPwd_Click" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="120" Height="25">确认重置密码</Button>
+                                    <Button Margin="10,0,0,0" Click="BtnResetPwd_Click" Style="{DynamicResource SquareButtonStyle}" FontSize="11" Width="120" Height="25">确认重置密码</Button>
                                 </WrapPanel>
                             </StackPanel>
                         </GroupBox>
@@ -134,9 +134,9 @@
                                         <TextBox x:Name="roomVidExpr" MinWidth="180" Controls:TextBoxHelper.Watermark="A1D{0:d2}F{1:d2}R{1:d2}{2:d3}" Text="A1D{0:d2}F{1:d2}R{1:d2}{2:d3}"/>
                                     </WrapPanel>
                                     <WrapPanel>
-                                        <Button Name="btnGenBaseInfo" Margin="5,0,0,0" Click="btnGenBaseInfo_Click" Content="按参数生成基础数据" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
-                                        <Button Name="btnResetInput" Margin="15,0" Click="btnResetInput_Click" Content="重新设置参数" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
-                                        <Button Name="btnInsertBaseInfoToDatabase" Margin="90,0" Click="btnInsertBaseInfoToDatabase_Click" Content="将生成的数据插入数据库" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                        <Button Name="btnGenBaseInfo" Margin="5,0,0,0" Click="BtnGenBaseInfo_Click" Content="按参数生成基础数据" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                        <Button Name="btnResetInput" Margin="15,0" Click="BtnResetInput_Click" Content="重新设置参数" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
+                                        <Button Name="btnInsertBaseInfoToDatabase" Margin="90,0" Click="BtnInsertBaseInfoToDatabase_Click" Content="将生成的数据插入数据库" Style="{DynamicResource SquareButtonStyle}" FontSize="11"></Button>
                                     </WrapPanel>
                                 </StackPanel>
                             </Grid>
@@ -162,6 +162,26 @@
                             </GroupBox>
                         </StackPanel>
                     </StackPanel>
+                </Grid>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem >
+                <Controls:MetroTabItem.Header>
+                    <TextBlock FontSize="15" Padding="10" HorizontalAlignment="Left" Width="95">备份数据库</TextBlock>
+                </Controls:MetroTabItem.Header>
+                <Grid Margin="0,0,0,0" VerticalAlignment="Stretch" Background="#FFE5E5E5">
+                    <GroupBox Header="备份数据库" VerticalAlignment="Top" Padding="10" BorderBrush="Black">
+                        <StackPanel Margin="5" HorizontalAlignment="Left">
+                            <WrapPanel>
+                                <Label Content="请选择保存备份文件位置:" />
+                                <TextBox x:Name="tbxFilepathToBackup" Width="auto" MinWidth="300" IsReadOnly="True" />
+                                <Button x:Name="btnSelectFilepathToBackup" Click="BtnSelectFilepathToBackup_Click" FontSize="11" Style="{DynamicResource SquareButtonStyle}">浏览...</Button>
+                            </WrapPanel>
+                            <WrapPanel Margin="5,10,0,0">
+                                <Button x:Name="btnBackupDatabase" FontSize="11" Style="{DynamicResource SquareButtonStyle}" Click="BtnBackupDatabase_Click">立即备份数据库</Button>
+                            </WrapPanel>
+
+                        </StackPanel>
+                    </GroupBox>
                 </Grid>
             </Controls:MetroTabItem>
         </Controls:MetroAnimatedTabControl>

@@ -1,10 +1,6 @@
 ﻿using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -19,7 +15,7 @@ namespace sdglsys.DesktopUtils
         {
             InitializeComponent();
             TrialChk();
-            resetTextBox();
+            ResetTextBox();
         }
 
         private async void TrialChk()
@@ -33,7 +29,7 @@ namespace sdglsys.DesktopUtils
             }
         }
 
-        private async void btnSearchUser_Click(object sender, RoutedEventArgs e)
+        private async void BtnSearchUser_Click(object sender, RoutedEventArgs e)
         {
             if (DBInfo.DB == null)
             {
@@ -90,7 +86,7 @@ namespace sdglsys.DesktopUtils
             }
         }
 
-        private void btnConnect_ClickAsync(object sender, RoutedEventArgs e)
+        private void BtnConnect_ClickAsync(object sender, RoutedEventArgs e)
         {
             Connect();
         }
@@ -123,7 +119,7 @@ namespace sdglsys.DesktopUtils
             }
         }
 
-        private async void btnResetPwd_Click(object sender, RoutedEventArgs e)
+        private async void BtnResetPwd_Click(object sender, RoutedEventArgs e)
         {
             // 重置系统角色密码
             if (Login_name.Text.Length < 1)
@@ -153,7 +149,7 @@ namespace sdglsys.DesktopUtils
             }
         }
 
-        private async void btnCreateAdmin_Click(object sender, RoutedEventArgs e)
+        private async void BtnCreateAdmin_Click(object sender, RoutedEventArgs e)
         {
             var loginname = newLogin_name.Text.Trim();
             var pwd = newPwd.Text.Trim();
@@ -196,7 +192,7 @@ namespace sdglsys.DesktopUtils
             }
         }
 
-        private void btnGenBaseInfo_Click(object sender, RoutedEventArgs e)
+        private void BtnGenBaseInfo_Click(object sender, RoutedEventArgs e)
         {
             GenBaseInfo();
         }
@@ -326,20 +322,20 @@ namespace sdglsys.DesktopUtils
             await controller.CloseAsync();
         }
 
-        private async void btnResetInput_Click(object sender, RoutedEventArgs e)
+        private async void BtnResetInput_Click(object sender, RoutedEventArgs e)
         {
             // 重新设置生成参数
             MessageDialogResult result = await this.ShowMessageAsync("温馨提示", "是否重新设置参数？", MessageDialogStyle.AffirmativeAndNegative);
             if (!result.Equals(MessageDialogResult.Affirmative))
                 return;
-            resetTextBox();
+            ResetTextBox();
             await this.ShowMessageAsync("温馨提示", "参数已重置");
         }
 
         /// <summary>
         /// 重新设置生成参数及表达式
         /// </summary>
-        private void resetTextBox()
+        private void ResetTextBox()
         {
             buildingNameExpr.Text = "第{0:d2}栋";
             TextBoxHelper.SetWatermark(buildingNameExpr, "第{0:d2}栋");
@@ -363,7 +359,7 @@ namespace sdglsys.DesktopUtils
             dgRoom.Height = dgRoom.MaxHeight = (double) this.Height / 2 - dgBuilding.Height;
         }
 
-        private async void btnInsertBaseInfoToDatabase_Click(object sender, RoutedEventArgs e)
+        private async void BtnInsertBaseInfoToDatabase_Click(object sender, RoutedEventArgs e)
         {
             //将生成的数据插入数据库
             if (DBInfo.DB == null)
@@ -435,6 +431,69 @@ namespace sdglsys.DesktopUtils
             }
 
             return byte2String;
+        }
+
+        /// <summary>
+        /// 备份数据库选项卡-点击浏览按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnSelectFilepathToBackup_Click(object sender, RoutedEventArgs e)
+        {
+            var f = new Microsoft.Win32.SaveFileDialog();
+            f.DefaultExt = ".sql";
+            f.FileName = DateTime.Now.ToString("yyyy_MM_dd_HH-mm-ss-ffff");
+            f.Title = "请选择保存备份数据库文件的位置";
+            f.Filter = "SQL文件|*.sql";
+            f.ValidateNames = true;
+            f.CreatePrompt = true;
+            f.ShowDialog();
+            tbxFilepathToBackup.Text = f.FileName;
+        }
+
+        /// <summary>
+        /// 备份数据库选项卡-点击立即备份数据库按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void BtnBackupDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            await this.ShowMessageAsync("温馨提示", "该功能暂未完善");
+            return;
+            /*
+            if (DBInfo.DB == null)
+            {
+                await this.ShowMessageAsync("温馨提示", "请先连接数据库");
+                return;
+            }
+
+            if (tbxFilepathToBackup.Text.Length < 2)
+                await this.ShowMessageAsync("温馨提示", "请先点击“浏览”按钮选择保存备份文件位置");
+            var result = await this.ShowMessageAsync("温馨提示", "进行备份时将暂停业务处理，请确保在无人使用系统的时候进行备份操作。\n是否立即将数据库备份到：\n\n"+tbxFilepathToBackup.Text, MessageDialogStyle.AffirmativeAndNegative);
+            if (result == MessageDialogResult.Negative)
+            {
+                return; // 取消了操作
+            }
+
+            var t = DateTime.Now.Ticks;
+            var controller = await this.ShowProgressAsync("请稍后", "正在备份数据库。。。", true, new MetroDialogSettings
+            {
+                AnimateShow = true,
+            });
+            controller.SetIndeterminate(); // 显示动画效果
+            controller.SetCancelable(true);
+
+            try
+            {
+                if (DBInfo.BackupDataBase(tbxFilepathToBackup.Text)) {
+                    await this.ShowMessageAsync("温馨提示", "备份成功");
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("进行数据库备份时发生错误", ex.Message);
+            }
+            await controller.CloseAsync();*/
         }
     }
 }
