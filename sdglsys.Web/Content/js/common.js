@@ -256,7 +256,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		var title = That.attr('data-text') ? That.attr('data-text') : "编辑";
 		//将iframeObj传递给父级窗口
 		parent.page(title, url + "?id=" + id, iframeObj, w = "700px", h = "620px");
-	})
+	});
 });
 
 /**

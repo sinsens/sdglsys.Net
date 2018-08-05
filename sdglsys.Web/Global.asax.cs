@@ -172,7 +172,7 @@ namespace sdglsys.Web
                     new DbHelper.LoginInfo().DeleteBySessionId(Request.Cookies.Get("Session_ID").Value);
                     new DbHelper.Logs().Add(new Entity.TLog
                     {
-                        Info = "Log off",
+                        Info = "Auth Expired",
                         Ip = Request.UserHostAddress,
                         Login_name = Session["login_name"].ToString()
                     }); // 写入日志

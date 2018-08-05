@@ -6,8 +6,8 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 	var dialog = layui.dialog;
 	var hideBtn = $('#hideBtn');
 	var mainLayout = $('#main-layout');
-    var mainMask = $('.main-mask');
-    
+	var mainMask = $('.main-mask');
+	
 	//监听导航点击
 	element.on('nav(leftNav)', function(elem) {
 		var navA = elem[0];
@@ -16,7 +16,7 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 		var text = navA.getAttribute('data-text');
 		if(!url){
 			return;
-        }
+		}
 
 		var isActive = $('.main-layout-tab .layui-tab-title').find("li[lay-id=" + id + "]");
 		if(isActive.length > 0) {
@@ -31,7 +31,7 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 			element.tabChange('tab', id);
 		}
 		mainLayout.removeClass('hide-side');
-    });
+	});
 	//监听导航点击
 	element.on('nav(rightNav)', function(elem) {
 		var navA = $(elem).find('a');
@@ -65,49 +65,38 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 		}
 	});
 	//遮罩点击隐藏
-    mainMask.on('click', function () {
-        mainLayout.removeClass('hide-side');
-    });
+	mainMask.on('click', function () {
+		mainLayout.removeClass('hide-side');
+	});
 
-    /*
-     * 快捷操作菜单
-    var qlink = localStorage.getItem("qlinks");
-    
-    if (qlink !== null && qlink.length > 0) {
-        for (var i = 0; i < qlink.split(';').length; i++) {
-            var data = qlink.split(";")[i].split(",");
-            var id = data[0];
-            var title = data[1];
-            var url = data[2];
-            $("<a style='margin:10px' href='javascript:;' data-url='" + url + "' data-id='" + id + "' data-text='" + title + "'>" + title + "</a>").appendTo("#qlinks");
-        }
-    }*/
 
-    //监听快捷导航点击
-    $("#qlinks").on('click', function (elem) {
-        var navA = $(elem["toElement"]);
-        var id = navA.attr('data-id');
-        var url = navA.attr('data-url');
-        var text = navA.attr('data-text');
-        if (!url) {
-            return;
-        }
-        var isActive = $('.main-layout-tab .layui-tab-title').find("li[lay-id=" + id + "]");
-        if (isActive.length > 0) {
-            //切换到选项卡
-            element.tabChange('tab', id);
-        } else {
-            element.tabAdd('tab', {
-                title: text,
-                content: '<iframe src="' + url + '" name="iframe' + id + '" class="iframe" framborder="0" data-id="' + id + '" scrolling="auto" width="100%"  height="100%"></iframe>',
-                id: id
-            });
-            element.tabChange('tab', id);
-        }
-        mainLayout.removeClass('hide-side');
-    });
+	//快捷操作菜单
+	$("#qlinks").on('click', function (elem) {
+		var navA = $(elem["toElement"]);
+		var id = navA.attr('data-id');
+		var url = navA.attr('data-url');
+		var text = navA.attr('data-text');
+		if (!url) {
+			return;
+		}
+		var isActive = $('.main-layout-tab .layui-tab-title').find("li[lay-id=" + id + "]");
+		if (isActive.length > 0) {
+			//切换到选项卡
+			element.tabChange('tab', id);
+		} else {
+			element.tabAdd('tab', {
+				title: text,
+				content: '<iframe src="' + url + '" name="iframe' + id + '" class="iframe" framborder="0" data-id="' + id + '" scrolling="auto" width="100%"  height="100%"></iframe>',
+				id: id
+			});
+			element.tabChange('tab', id);
+		}
+		mainLayout.removeClass('hide-side');
+	});
+	
+	
 
-	//示范一个公告层
+//示范一个公告层
 //	layer.open({
 //		  type: 1
 //		  ,title: false //不显示标题栏
@@ -121,11 +110,20 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 //		  ,moveType: 1 //拖拽模式，0或者1
 //		  ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">后台模版1.1版本今日更新：<br><br><br>数据列表页...<br><br>编辑删除弹出功能<br><br>失去焦点排序功能<br>数据列表页<br>数据列表页<br>数据列表页</div>'
 //		  ,success: function(layero){
-//		    var btn = layero.find('.layui-layer-btn');
-//		    btn.find('.layui-layer-btn0').attr({
-//		      href: 'http://www.layui.com/'
-//		      ,target: '_blank'
-//		    });
+//			var btn = layero.find('.layui-layer-btn');
+//			btn.find('.layui-layer-btn0').attr({
+//			  href: 'http://www.layui.com/'
+//			  ,target: '_blank'
+//			});
 //		  }
 //		});
+
+	/*
+	 * Dog face
+	 * Sinsen 2018-08-05
+	 * */
+	$.get('/Content/js/dogface.txt',{},function(data){
+		console.clear();
+		console.log(data);
+	});
 });

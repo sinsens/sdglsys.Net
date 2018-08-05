@@ -107,6 +107,7 @@ namespace sdglsys.Web.Controllers
         /// 注销处理
         /// </summary>
         /// <returns></returns>
+        [NeedLogin]
         public ActionResult Logout()
         {
 
@@ -125,6 +126,7 @@ namespace sdglsys.Web.Controllers
                 XUtils.Log("system", "", ex.Message);
             }
             Session.Clear();
+            Response.Cookies.Clear();
             return Redirect("/");
         }
         #endregion

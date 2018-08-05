@@ -5,12 +5,27 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=5,user-scalable=yes" />
-    <title>后台管理 - 校园水电收费管理信息系统</title>
-    <!--[if lt IE 9]>
-            <script>
-                location.href = "/browser.html";
-            </script>
-        <![endif]-->
+    <title>后台管理 - 旅游文化学院校园水电收费管理信息系统</title>
+    <!-- 
+    	/*
+    	 * 这是我花了我不少心思才做出来的毕业设计作品。
+    	 * 设计和开发过程中学到了不少东西，可以说是承载着我的回忆。
+    	 * 所以如果你有缘看到这些话，请不要删除，否则我会很不开心。
+    	 * 并且诅咒你Debug时bug永远无法复现。
+    	 * 有什么问题可以电邮联系我，但不保证能帮你解决。
+    	 * Email：sinsens@outlook.com
+    	 */
+    -->
+	<!--[if lt IE 9]>
+		/*
+		 * Layui2.3不支持IE9一下版本的浏览器。
+		 * 我本人更是不喜欢IE浏览器。
+		 * 所以说要本系统支持IE6,7,8什么的上古浏览器，不存在的。
+		*/
+		<script>
+			location.href = "browser.html";
+		</script>
+	<![endif]-->
     @Styles.Render("~/Content/css")
     <style>
         .layui-nav-tree {
@@ -182,11 +197,13 @@
                                     </div>
                                     <script>
                                         /*
-                                         IE浏览器不显示快速进入面板
+                                         Chrome浏览器才有“快速进入”面板
                                          */
-                                        if (navigator.appVersion.toLowerCase().indexOf("ie") > 0 || navigator.appVersion.toLowerCase().indexOf("wow")>-1) {
-                                            document.getElementById("qlinks").style.display = "none";
+                                        // 判断浏览器版本是否包含目标关键字
+                                        function IsChrome() {
+                                            return navigator.appVersion.toLowerCase().indexOf('chrome') > -1;
                                         }
+                                        document.getElementById("qlinks").style.display = IsChrome()? '' : "none";
                                     </script>
                                 </div>
                             </div>

@@ -191,6 +191,7 @@
     <Content Include="Content\fonts\iconfont.js" />
     <Content Include="Content\fonts\iconfont.svg" />
     <Content Include="Content\images\chrome.jpg" />
+    <Content Include="Content\images\dogface.png" />
     <Content Include="Content\images\firefox.jpg" />
     <Content Include="Content\images\ie.jpg" />
     <Content Include="Content\images\l-line-white.png" />
@@ -201,6 +202,7 @@
     <Content Include="Content\images\opera.jpg" />
     <Content Include="Content\images\safari.jpg" />
     <Content Include="Content\js\common.js" />
+    <Content Include="Content\js\dogface.txt" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\md5.min.js" />
     <Content Include="Content\js\module\dialog.js" />
