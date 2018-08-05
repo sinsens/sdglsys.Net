@@ -26,7 +26,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUsed_total findById(int id)
+        public Entity.TUsed_total FindById(int id)
         {
             return Used_totalDb.GetById(id);
         }
@@ -76,7 +76,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public VUsed_total FindById(int id) {
+        public VUsed_total FindVUsedById(int id) {
             return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where((u, r, b, d)=>u.Id==id).
                   Select((u, r, b, d) => new VUsed_total

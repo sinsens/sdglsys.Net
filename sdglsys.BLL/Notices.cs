@@ -23,7 +23,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TNotice findById(int id)
+        public Entity.TNotice FindById(int id)
         {
             return NoticeDb.GetById(id);
         }

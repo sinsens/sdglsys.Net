@@ -17,17 +17,17 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TBill findById(int id)
+        public Entity.TBill FindById(int id)
         {
             return BillDb.GetById(id);
         }
 
         /// <summary>
-        /// 通过ID查询
+        /// 通过ID查询账单视图
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.VBill FindById(int id)
+        public Entity.VBill FindVBillById(int id)
         {
             return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
                 Where(e => e.Id == id).

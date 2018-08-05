@@ -114,7 +114,7 @@ namespace sdglsys.Web.Controllers
             var Dorm = new Dorms();
             ViewBag.dorms = Dorm.getAll();
             var Buidling = new Buildings();
-            return View(Buidling.findById(id));
+            return View(Buidling.FindById(id));
         }
 
         // POST: Dorm/Edit/5
@@ -126,7 +126,7 @@ namespace sdglsys.Web.Controllers
             try
             {
                 var buildings = new Buildings();
-                var b = buildings.findById(id);
+                var b = buildings.FindById(id);
                 if (b == null)
                 {
                     msg.code = 404;
@@ -169,7 +169,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Buildings = new Buildings();
-            var user = Buildings.findById(id);
+            var user = Buildings.FindById(id);
             if (user == null)
             {
                 msg.msg = "该园区不存在！";

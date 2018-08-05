@@ -80,7 +80,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TRoom findById(int id)
+        public Entity.TRoom FindById(int id)
         {
             return RoomDb.GetById(id);
         }

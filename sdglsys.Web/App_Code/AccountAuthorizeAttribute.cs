@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Mvc;
 
 namespace sdglsys.Web
@@ -12,13 +13,12 @@ namespace sdglsys.Web
     {
         public override void OnAuthorization(AuthorizationContext authorizationContext)
         {
-
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
+            var session = HttpContext.Current.Session;
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            var session = HttpContext.Current.Session;
 
             /// 如果开启调试模式，直接赋值登录用户给Session
             if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "login_name" ] == null)
@@ -60,13 +60,12 @@ namespace sdglsys.Web
     {
         public override void OnAuthorization(AuthorizationContext authorizationContext)
         {
-
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
+            var session = HttpContext.Current.Session;
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            var session = HttpContext.Current.Session;
             /// 如果开启调试模式，直接赋值登录用户给Session
             if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
             {
@@ -110,10 +109,11 @@ namespace sdglsys.Web
         {
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
+            var session = HttpContext.Current.Session;
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            var session = HttpContext.Current.Session;
+            
 
             /// 如果开启调试模式，直接赋值登录用户给Session
             if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)

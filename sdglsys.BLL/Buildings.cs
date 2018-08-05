@@ -37,7 +37,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TBuilding findById(int id)
+        public Entity.TBuilding FindById(int id)
         {
             return BuildingDb.GetById(id);
         }

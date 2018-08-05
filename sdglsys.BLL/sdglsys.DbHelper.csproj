@@ -50,6 +50,7 @@
     <Compile Include="Buildings.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="Dorms.cs" />
+    <Compile Include="LoginInfo.cs" />
     <Compile Include="Logs.cs" />
     <Compile Include="Notices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

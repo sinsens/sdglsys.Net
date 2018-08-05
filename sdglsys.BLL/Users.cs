@@ -10,11 +10,11 @@ namespace sdglsys.DbHelper
         }
 
         /// <summary>
-        /// 通过ID查询
+        /// 通过用户ID查询
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUser findById(int id)
+        public Entity.TUser FindById(int id)
         {
             return Db.Queryable<Entity.TUser>().Where((u) => u.Id == id).First();
         }

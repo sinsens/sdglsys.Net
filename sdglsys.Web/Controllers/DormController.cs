@@ -93,7 +93,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Edit(int id)
         {
             var Dorm = new Dorms();
-            return View(Dorm.findById(id));
+            return View(Dorm.FindById(id));
         }
 
         // POST: Dorm/Edit/5
@@ -103,7 +103,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Dorm = new Dorms();
-            var dorm = Dorm.findById(id);
+            var dorm = Dorm.FindById(id);
 
             try
             {
@@ -133,7 +133,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Dorms();
-            var user = User.findById(id);
+            var user = User.FindById(id);
             if (user == null)
             {
                 msg.msg = "该园区不存在！";

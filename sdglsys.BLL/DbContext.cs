@@ -84,6 +84,7 @@ namespace sdglsys.DbHelper
         public SimpleClient<Entity.TBill> BillDb { get { return new SimpleClient<Entity.TBill>(Db); } }
         public SimpleClient<Entity.TUsed> UsedDb { get { return new SimpleClient<Entity.TUsed>(Db); } }
         public SimpleClient<Entity.TUsed_total> Used_totalDb { get { return new SimpleClient<Entity.TUsed_total>(Db); } }
+        public SimpleClient<Entity.TLogin_Info> LoginInfoDb { get { return new SimpleClient<Entity.TLogin_Info>(Db); } }
 
         
         /// <summary>

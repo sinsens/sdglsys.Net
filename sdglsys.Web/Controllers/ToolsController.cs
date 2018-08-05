@@ -31,5 +31,26 @@ namespace sdglsys.Web.Controllers
             }
             return View();
         }
+
+        public void Stat() {
+            string cookie= null;
+            if (Request.Cookies.Get("Session_ID") == null)
+            {
+                Response.SetCookie(new HttpCookie("Session_ID", Session.SessionID));
+                cookie = Session.SessionID;
+            }
+            else {
+                cookie = Request.Cookies.Get("Session_ID").Value;
+            }
+            
+            Response.Write(new Msg {
+                content = new {
+                    Is_NewSession = Session.IsNewSession,
+                    Session_Id = Session.SessionID,
+                    Cookie_Session_Id = cookie ,
+                     Add_ten_minutes = DateTime.Now.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes
+                 }
+            }.ToJson());
+        }
     }
 }

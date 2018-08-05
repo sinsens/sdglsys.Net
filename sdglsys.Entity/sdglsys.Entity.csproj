@@ -48,6 +48,7 @@
     <Compile Include="TBuilding.cs" />
     <Compile Include="TDorm.cs" />
     <Compile Include="TLog.cs" />
+    <Compile Include="TLogin_Info.cs" />
     <Compile Include="TNotice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TQuota.cs" />

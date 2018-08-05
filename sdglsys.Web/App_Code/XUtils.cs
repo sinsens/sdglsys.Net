@@ -169,5 +169,15 @@ namespace sdglsys.Web
         public static Entity.TUser GetAdminUser() {
             return new DbHelper.Users().Db.Queryable<Entity.TUser>().Where(u => u.Is_active == true && u.Role == 3).First();
         }
+
+
+        /// <summary>
+        /// 获取在线人数
+        /// </summary>
+        /// <returns></returns>
+        public static int CountOnLineUser() {
+            return new DbHelper.LoginInfo().LoginInfoDb.Count(u=>u.Expired_Date > DateTime.Now);
+        }
+
     }
 }

@@ -18,7 +18,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUsed findById(int id)
+        public Entity.TUsed FindById(int id)
         {
             return UsedDb.GetById(id);
         }
@@ -193,7 +193,7 @@ namespace sdglsys.DbHelper
                 case 1:
                     // 获取园区信息
                     var Dorm = new Dorms();
-                    var dorm = Dorm.findById(_id);
+                    var dorm = Dorm.FindById(_id);
                     if (dorm == null) {
                         data.info = "找不到编号为 "+ _id + " 的园区";
                         break;
@@ -210,7 +210,7 @@ namespace sdglsys.DbHelper
                 case 2:
                     // 获取宿舍楼信息
                     var B = new Buildings();
-                    var b = B.findById(_id);
+                    var b = B.FindById(_id);
                     if (b == null)
                     {
                         data.info = "找不到编号为 " + _id + " 的宿舍楼";
@@ -228,7 +228,7 @@ namespace sdglsys.DbHelper
                 case 3:
                     // 获取宿舍信息
                     var R = new Buildings();
-                    var r = R.findById(_id);
+                    var r = R.FindById(_id);
                     if (r == null)
                     {
                         data.info = "找不到编号为 " + _id + " 的宿舍";

@@ -87,7 +87,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Edit(int id)
         {
             var Notice = new Notices();
-            return View(Notice.findById(id));
+            return View(Notice.FindById(id));
         }
 
         // POST: Notice/Edit/5
@@ -97,7 +97,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Notice = new Notices();
-            var notice = Notice.findById(id);
+            var notice = Notice.FindById(id);
             if (notice == null)
             {
                 msg.code = 404;
@@ -138,7 +138,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Notices();
-            var user = User.findById(id);
+            var user = User.FindById(id);
             if (user == null)
             {
                 msg.msg = "该公告不存在！";

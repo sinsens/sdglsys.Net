@@ -426,7 +426,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Used = new Useds_total();
-            var used = Used.findById(id);
+            var used = Used.FindById(id);
             if (used == null)
             {
                 msg.msg = "该宿舍读表信息不存在！";

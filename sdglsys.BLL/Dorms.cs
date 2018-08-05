@@ -23,7 +23,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TDorm findById(int id)
+        public Entity.TDorm FindById(int id)
         {
             return DormDb.GetById(id);
         }

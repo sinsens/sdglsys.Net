@@ -49,7 +49,35 @@ namespace sdglsys.Web.Controllers
                         Ip = ip,
                         Login_name = login_name,
                     });
-                    HttpContext.Application["OnLineUserCount"] = Convert.ToInt32(HttpContext.Application["OnLineUserCount"]) + 1; // 登录成功，在线用户+1
+                    /// #Dv0.1请求处理
+                    var Session_ID = Guid.NewGuid().ToString("N"); // cookie端的Session_ID
+                    Response.SetCookie(new HttpCookie("Session_ID", Session_ID)); // 设置cookie
+                    var Login_Info = new DbHelper.LoginInfo();
+                    var login_info = Login_Info.GetByUserId(user.Id);
+                    if (login_info != null)
+                    {
+                        // 更新登录信息
+                        login_info.Ip = ip;
+                        login_info.Uid = user.Id;
+                        login_info.Login_name = login_name;
+                        login_info.Session_id = Session_ID;
+                        login_info.Login_date = DateTime.Now;
+                        login_info.Expired_Date = DateTime.Now.AddHours(2);
+                        Login_Info.Update(login_info);
+                    }
+                    else {
+                        // 添加登录信息
+                        Login_Info.Add(new Entity.TLogin_Info
+                        {
+                            Ip = ip,
+                            Login_name = login_name,
+                            Session_id = Session_ID,
+                            Uid = user.Id
+                        });
+                    }
+                    
+                    /// #end of Dv0.1请求处理
+                    // HttpContext.Application["OnLineUserCount"] = Convert.ToInt32(HttpContext.Application["OnLineUserCount"]) + 1; // 登录成功，在线用户+1
                 }
                 else
                 {
@@ -81,6 +109,21 @@ namespace sdglsys.Web.Controllers
         /// <returns></returns>
         public ActionResult Logout()
         {
+
+            try
+            {
+                new DbHelper.LoginInfo().DeleteBySessionId(Request.Cookies.Get("Session_ID").Value);
+                new DbHelper.Logs().Add(new Entity.TLog
+                {
+                    Info = "Log off",
+                    Ip = Request.UserHostAddress,
+                    Login_name = Session["login_name"].ToString()
+                }); // 写入日志
+            }
+            catch (Exception ex)
+            {
+                XUtils.Log("system", "", ex.Message);
+            }
             Session.Clear();
             return Redirect("/");
         }
@@ -96,6 +139,7 @@ namespace sdglsys.Web.Controllers
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
             }
+            HttpContext.Application["OnLineUserCount"] = XUtils.CountOnLineUser(); // 更新在线人数统计
             return View();
         }
 
@@ -103,7 +147,7 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public ActionResult Info()
         {
-            return View(new Users().findById((int) Session["id"]));
+            return View(new Users().FindById((int) Session["id"]));
         }
 
         // GET: Admin/Info:修改个人信息
@@ -113,7 +157,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.findById((int) Session["id"]);
+            var user = User.FindById((int) Session["id"]);
             try
             {
                 user.Nickname = collection["nickname"];
@@ -145,7 +189,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.findById((int) Session["id"]);
+            var user = User.FindById((int) Session["id"]);
             try
             {
                 var pwd_old = collection["pwd_old"];

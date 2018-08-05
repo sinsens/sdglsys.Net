@@ -37,7 +37,7 @@ CREATE TABLE `t_dorm` (
   UNIQUE KEY `id` (`id`) USING BTREE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`type` in (0,1)),
   CONSTRAINT `CONSTRAINT_2` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '园区信息表';
 
 
 -- ----------------------------
@@ -56,7 +56,7 @@ CREATE TABLE `t_building` (
   KEY `pid` (`pid`),
   CONSTRAINT `t_building_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `t_dorm` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '宿舍楼信息表';
 
 
 -- ----------------------------
@@ -78,7 +78,7 @@ CREATE TABLE `t_room` (
   CONSTRAINT `t_room_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `t_building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_room_ibfk_2` FOREIGN KEY (`dorm_id`) REFERENCES `t_dorm` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '宿舍信息表';
 
 
 -- ----------------------------
@@ -89,11 +89,11 @@ DROP TABLE IF EXISTS `t_log`;
 CREATE TABLE `t_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login_name` varchar(15) DEFAULT NULL COMMENT '用户名',
-  `ip` varchar(20) DEFAULT NULL COMMENT "操作IP",
+  `ip` varchar(46) DEFAULT NULL COMMENT "操作IP",
   `info` text DEFAULT NULL COMMENT '日志信息',
-  `log_date` datetime DEFAULT NULL COMMENT '发生时间',
+  `log_date` datetime DEFAULT NOW() COMMENT '发生时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '日志信息表';
 
 /* 对日志表进行分区 */
 ALTER TABLE t_log PARTITION BY RANGE (id)(
@@ -115,14 +115,14 @@ CREATE TABLE `t_notice` (
   `login_name` varchar(15) DEFAULT NULL  COMMENT '发布者用户名',
   `title` varchar(40) DEFAULT NULL COMMENT '标题',
   `content` text DEFAULT NULL COMMENT '内容（经过ZIP压缩的HTML文档）',
-  `post_date` datetime DEFAULT NULL COMMENT '发布时间',
+  `post_date` datetime DEFAULT NOW() COMMENT '发布时间',
   `mod_date` datetime DEFAULT NULL COMMENT '修改时间',
   `is_active` tinyint(1) DEFAULT 1 COMMENT '状态：1激活，0注销',
   PRIMARY KEY (`id`),
   KEY `login_name` (`login_name`),
   CONSTRAINT `t_notice_ibfk_1` FOREIGN KEY (`login_name`) REFERENCES `t_user` (`login_name`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '公告信息表';
 
 
 -- ----------------------------
@@ -132,7 +132,7 @@ CREATE TABLE `t_notice` (
 DROP TABLE IF EXISTS `t_quota`;
 CREATE TABLE `t_quota` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '基础配额ID',
-  `post_date` datetime DEFAULT NULL COMMENT '更新时间',
+  `post_date` datetime DEFAULT NOW() COMMENT '更新时间',
   `cold_water_value` float DEFAULT NULL COMMENT '冷水配额',
   `hot_water_value` float DEFAULT NULL COMMENT '热水配额',
   `electric_value` float DEFAULT NULL COMMENT '电力配额',
@@ -140,7 +140,7 @@ CREATE TABLE `t_quota` (
   `is_active` tinyint(1) DEFAULT 1 COMMENT'状态：1激活，0注销',
   PRIMARY KEY (`id`),
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '基础配额信息表';
 
 
 -- ----------------------------
@@ -150,7 +150,7 @@ CREATE TABLE `t_quota` (
 DROP TABLE IF EXISTS `t_rate`;
 CREATE TABLE `t_rate` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '费率ID',
-  `post_date` datetime DEFAULT NULL COMMENT '更新时间',
+  `post_date` datetime DEFAULT NOW() COMMENT '更新时间',
   `cold_water_value` float DEFAULT NULL COMMENT '冷水费率',
   `hot_water_value` float DEFAULT NULL COMMENT '热水费率',
   `electric_value` float DEFAULT NULL COMMENT'电力费率',
@@ -158,7 +158,7 @@ CREATE TABLE `t_rate` (
   `is_active` tinyint(1) DEFAULT 1 COMMENT '状态：1激活，0注销',
   PRIMARY KEY (`id`),
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '费率信息表';
 
 
 -- ----------------------------
@@ -175,12 +175,29 @@ CREATE TABLE `t_user` (
   `phone` varchar(11) DEFAULT NULL COMMENT '联系电话',
   `pid` int(11) DEFAULT NULL COMMENT '所属园区ID',
   `role` int(11) NOT NULL COMMENT '权限：1辅助登记员，2宿舍管理员，3系统管理员',
-  `reg_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `reg_date` datetime DEFAULT NOW() COMMENT '创建时间',
   `is_active` tinyint(1) DEFAULT 1 COMMENT '状态：1激活，0注销',
   PRIMARY KEY (`id`,`login_name`),
   UNIQUE KEY `login_name` (`login_name`),
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COMMENT '系统角色信息表';
+
+
+-- ----------------------------
+-- Table structure for t_login_info
+-- 已登录用户信息表
+-- ----------------------------
+DROP TABLE IF EXISTS `t_login_info`;
+CREATE TABLE `t_login_info` (
+`session_id`  varchar(60) NOT NULL COMMENT 'Session_ID' ,
+`ip`  varchar(46) DEFAULT NULL COMMENT '操作IP' ,
+`uid`  int(11) NOT NULL COMMENT '用户ID' ,
+`login_name`  varchar(15) NOT NULL COMMENT '用户名' ,
+`login_date`  datetime DEFAULT  NOW() COMMENT '登录时间' ,
+`expired_date`  datetime DEFAULT NULL COMMENT '身份认证过期时间' ,
+PRIMARY KEY (`session_id`, `uid`),
+UNIQUE INDEX `uid` (`uid`) USING BTREE 
+) ENGINE=InnoDB COMMENT='已登录信息表' DEFAULT CHARSET=utf8 COMMENT '已登录用户信息表';
 
 
 -- ----------------------------
@@ -193,7 +210,7 @@ CREATE TABLE `t_used` (
   `pid` int(11) DEFAULT NULL COMMENT '宿舍ID',
   `dorm_id` int(11) NOT NULL COMMENT '园区ID',
   `building_id` int(11) NOT NULL COMMENT '宿舍楼ID',
-  `post_date` datetime DEFAULT NULL COMMENT '登记时间',
+  `post_date` datetime DEFAULT NOW() COMMENT '登记时间',
   `post_uid` int(11) DEFAULT NULL COMMENT '登记者用户ID',
   `cold_water_value` float DEFAULT NULL COMMENT '冷水用量',
   `hot_water_value` float DEFAULT NULL COMMENT '热水用量',
@@ -210,7 +227,7 @@ CREATE TABLE `t_used` (
   CONSTRAINT `t_used_ibfk_3` FOREIGN KEY (`building_id`) REFERENCES `t_building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_used_ibfk_4` FOREIGN KEY (`post_uid`) REFERENCES `t_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`is_active` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '用量登记表';
 
 
 -- ----------------------------
@@ -235,7 +252,7 @@ CREATE TABLE `t_used_total` (
   CONSTRAINT `t_used_total_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `t_room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_used_total_ibfk_2` FOREIGN KEY (`dorm_id`) REFERENCES `t_dorm` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_used_total_ibfk_3` FOREIGN KEY (`building_id`) REFERENCES `t_building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '宿舍水电表读数表';
 
 
 -- ----------------------------
@@ -255,7 +272,7 @@ CREATE TABLE `t_bill` (
   `hot_water_cost` decimal(8,2) DEFAULT NULL COMMENT '热水费用',
   `electric_cost` decimal(8,2) DEFAULT NULL COMMENT '电费',
   `note` varchar(255) DEFAULT NULL COMMENT '备注',
-  `post_date` datetime DEFAULT NULL COMMENT '生成时间',
+  `post_date` datetime DEFAULT NOW() COMMENT '生成时间',
   `mod_date` datetime DEFAULT NULL COMMENT '修改时间',
   `is_active` tinyint(2) DEFAULT 1 COMMENT '状态：0已注销，1已登记，2已结算',
   PRIMARY KEY (`id`),
@@ -269,7 +286,7 @@ CREATE TABLE `t_bill` (
   CONSTRAINT `t_bill_ibfk_3` FOREIGN KEY (`dorm_id`) REFERENCES `t_dorm` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_bill_ibfk_4` FOREIGN KEY (`building_id`) REFERENCES `t_building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `t_bill_ibfk_5` FOREIGN KEY (`room_id`) REFERENCES `t_room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '账单信息表';
 
 
 SET FOREIGN_KEY_CHECKS=1;	-- 开启外键检查

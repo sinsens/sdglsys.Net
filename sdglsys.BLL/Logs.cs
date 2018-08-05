@@ -13,7 +13,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TLog findById(int id)
+        public Entity.TLog FindById(int id)
         {
             return LogDb.GetById(id);
         }

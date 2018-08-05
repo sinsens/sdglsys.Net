@@ -123,7 +123,7 @@ namespace sdglsys.Web.Controllers
             var Dorm = new Dorms();
             ViewBag.dorms = Dorm.getAll();
             var User = new Users();
-            return View(User.findById(id));
+            return View(User.FindById(id));
         }
 
         /// <summary>
@@ -140,8 +140,8 @@ namespace sdglsys.Web.Controllers
             try
             {
                 var User = new Users();
-                var user = User.findById(id);
-                if (User.findById(user.Id) == null)
+                var user = User.FindById(id);
+                if (User.FindById(user.Id) == null)
                 {
                     msg.msg = "该用户不存在！";
                     msg.code = 404;
@@ -188,7 +188,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.findById(id);
+            var user = User.FindById(id);
             if (user == null)
             {
                 msg.msg = "该用户不存在！";
@@ -231,7 +231,7 @@ namespace sdglsys.Web.Controllers
             var Dorm = new Dorms();
             ViewBag.dorms = Dorm.getAll();
             var User = new Users();
-            return View(User.findById(id));
+            return View(User.FindById(id));
         }
 
         // POST: Users/Reset/5；重置默认密码
@@ -245,7 +245,7 @@ namespace sdglsys.Web.Controllers
                 
                 var User = new Users();
                 // 初始化对象
-                var user = User.findById(id);
+                var user = User.FindById(id);
 
                 if ((int) Session[ "role" ] < 3 && (int) Session[ "role" ] < user.Role + 1)
                 {
@@ -253,7 +253,7 @@ namespace sdglsys.Web.Controllers
                     msg.code = 403;
                     msg.msg = "权限不足";
                 }
-                else if (User.findById(user.Id) == null)
+                else if (User.FindById(user.Id) == null)
                 {
                     msg.msg = "该用户不存在！";
                     msg.code = 404;

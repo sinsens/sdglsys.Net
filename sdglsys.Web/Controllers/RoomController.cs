@@ -108,7 +108,7 @@ namespace sdglsys.Web.Controllers
             var Buidling = new Buildings();
             var Room = new Rooms();
             ViewBag.buildings = Buidling.getAll();
-            return View(Room.findById(id));
+            return View(Room.FindById(id));
         }
 
         // POST: Room/Edit/5
@@ -120,7 +120,7 @@ namespace sdglsys.Web.Controllers
             try
             {
                 var Room = new Rooms();
-                var r = Room.findById(id);
+                var r = Room.FindById(id);
                 if (r == null)
                 {
                     msg.code = 404;
@@ -152,7 +152,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Room = new Rooms();
-            var user = Room.findById(id);
+            var user = Room.FindById(id);
             if (user == null)
             {
                 msg.msg = "该园区不存在！";
