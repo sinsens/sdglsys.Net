@@ -80,8 +80,9 @@
                     // 更新宿舍列表
                     $("#pid").empty(); //清空原有数据
                     var params = {
-                        "pid": $("#bid").val(),
-                    }
+                        "pid": data.value
+                    };
+                    if (data.value == null || data.value < 1) { return; }
                     $.ajax({
                         async: "false",
                         type: "post",
@@ -135,8 +136,9 @@
                         url: "/Bill/create",
                         success: function (data) {
                             data = JSON.parse(data);
+                            var icon = data['code'] == 200 ? 1 : 0;
                             layer.open({
-                                'icon': 1,
+                                'icon': icon,
                                 'title': "温馨提示",
                                 'content': data['msg']
                             });

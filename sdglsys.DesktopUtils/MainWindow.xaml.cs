@@ -51,34 +51,19 @@ namespace sdglsys.DesktopUtils
                 }
                 else
                 {
-                    var user = new Entity.VUser
-                    {
-                        Pid = u.Pid,
-                        Id = u.Id,
-                        Nickname = u.Nickname,
-                        Login_name = u.Login_name,
-                        Is_active = u.Is_active,
-                        Note = u.Note,
-                        Phone = u.Phone,
-                        Reg_date = u.Reg_date,
-                        Role = u.Role
-                    };
-                    if (user == null)
-                        user = new Entity.VUser();
-                    else
-                    {
-                        foreach (var item in DBInfo.DB.Db.Queryable<Entity.TDorm>().ToList())
-                        {
-                            if (item.Id == user.Pid)
-                            {
-                                user.DormName = item.Nickname;
-                            }
-                        }
-                    }
+                    var user = new Entity.VUser();
+                    user.Pid = u.Pid;
+                    user.Id = u.Id;
+                    user.Nickname = u.Nickname;
+                    user.Login_name = u.Login_name;
+                    user.Is_active = u.Is_active;
+                    user.Role = u.Role;
+                    var dorm = DBInfo.DB.Db.Queryable<Entity.TDorm>().Where(x => x.Id == user.Id).First();
+                    if (dorm != null)
+                    { user.DormName = dorm.Nickname; }
                     user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
                     userinfo.DataContext = user;
                 }
-
             }
             catch (Exception ex)
             {
@@ -96,9 +81,18 @@ namespace sdglsys.DesktopUtils
         /// </summary>
         private async void Connect()
         {
-            if (tbxConnectString.Text.Trim().Length < 10)
+            if (tbxServer.Text.Trim().Length < 5)
             {
-                await this.ShowMessageAsync("温馨提示", "数据库连接字符串长度必须大于10个字符");
+                await this.ShowMessageAsync("温馨提示", "请输入数据库服务器IP或域名");
+                return;
+            }
+            if (tbxDBName.Text.Trim().Length < 1) {
+                await this.ShowMessageAsync("温馨提示", "请输入数据库名称");
+                return;
+            }
+            if (tbxDBUserName.Text.Trim().Length < 1)
+            {
+                await this.ShowMessageAsync("温馨提示", "请输入数据库用户名");
                 return;
             }
             if (sltDBType.Text.ToString().Length < 2)
@@ -108,7 +102,8 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                DBInfo.DB = new DbHelper.DbContext(tbxConnectString.Text, sltDBType.Text);
+                var ConnectString = "Server={0};Database={1};UID={2};Password={3};Allow User Variables=True;AllowZeroDateTime=True;ConvertZeroDateTime=True;SslMode=none";
+                DBInfo.DB = new DbHelper.DbContext(String.Format(ConnectString, tbxServer.Text.Trim(), tbxDBName.Text.Trim(), tbxDBUserName.Text.Trim(), tbxDBPassword.Password), sltDBType.Text);
                 DBInfo.DB.Db.Open();
                 await this.ShowMessageAsync("温馨提示", "连接数据库成功");
             }

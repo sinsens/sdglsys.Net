@@ -10,171 +10,181 @@
     @Styles.Render("~/Content/css")
 </head>
 
-	<body>
-		<div class="layui-tab page-content-wrap">
-			<ul class="layui-tab-title">
-				<li class="layui-this">费率设置</li>
-				<li>基础配额设置</li>
-			</ul>
-			<div class="layui-tab-content">
-				<!--费率设置-->
-				<div class="layui-tab-item layui-show">
-                    <form class="layui-form" style="width: 90%;padding-top: 20px;">
-                        @{
-                            var Cold_water_rate = Math.Round(ViewBag.rate.Cold_water_value, 2, MidpointRounding.AwayFromZero);
-                            var Hot_water_rate = Math.Round(ViewBag.rate.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                            var Electric_rate = Math.Round(ViewBag.rate.Electric_value, 2, MidpointRounding.AwayFromZero);
-                            var Cold_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                            var Hot_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                            var Electric_value = Math.Round(ViewBag.quota.Electric_value, 2, MidpointRounding.AwayFromZero);
-                        }
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">冷水费率：</label>
-                            <div class="layui-input-block">
-                                <input name="cold_water_value" value="@Cold_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
-                            </div>
+<body>
+    <div class="layui-tab page-content-wrap">
+        <ul class="layui-tab-title">
+            <li class="layui-this">费率设置</li>
+            <li>基础配额设置</li>
+        </ul>
+        <div class="layui-tab-content">
+            <!--费率设置-->
+            <div class="layui-tab-item layui-show">
+                <form class="layui-form" style="width: 90%;padding-top: 20px;">
+                    @{
+                        var Cold_water_rate = Math.Round(ViewBag.rate.Cold_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Hot_water_rate = Math.Round(ViewBag.rate.Hot_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Electric_rate = Math.Round(ViewBag.rate.Electric_value, 2, MidpointRounding.AwayFromZero);
+                        var Cold_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Hot_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Electric_value = Math.Round(ViewBag.quota.Electric_value, 2, MidpointRounding.AwayFromZero);
+                    }
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">冷水费率：</label>
+                        <div class="layui-input-block">
+                            <input name="cold_water_value" value="@Cold_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">热水费率：</label>
-                            <div class="layui-input-block">
-                                <input name="hot_water_value" value="@Hot_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">热水费率：</label>
+                        <div class="layui-input-block">
+                            <input name="hot_water_value" value="@Hot_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">电力费率：</label>
-                            <div class="layui-input-block">
-                                <input name="electric_value" value="@Electric_rate" type="text" placeholder="元/千瓦时" autocomplete="off" class="layui-input">
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">电力费率：</label>
+                        <div class="layui-input-block">
+                            <input name="electric_value" value="@Electric_rate" type="text" placeholder="元/千瓦时" autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-form-item layui-form-text">
-                            <label class="layui-form-label">描述：</label>
-                            <div class="layui-input-block">
-                                <textarea name="note" placeholder="费率描述" class="layui-textarea">@ViewBag.rate.Note</textarea>
-                            </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">描述：</label>
+                        <div class="layui-input-block">
+                            <textarea name="note" placeholder="费率描述" class="layui-textarea">@ViewBag.rate.Note</textarea>
                         </div>
-                        <div class="layui-form-item">
-                            <div class="layui-input-block">
-                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="rateInfo">保存</button>
-                                <input type="reset" class="layui-btn layui-btn-normal" value="重置" onclick="layer.closeAll()" />
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="rateInfo">保存</button>
+                            <input type="reset" class="layui-btn layui-btn-normal" value="重置" onclick="layer.closeAll()" />
                         </div>
-                    </form>
-					</div>
-					<!--基础配额设置-->
-					<div class="layui-tab-item">
-						<form class="layui-form" style="width: 90%;padding-top: 20px;">
-								<div class="layui-form-item">
-									<label class="layui-form-label">启用：</label>
-									<div class="layui-input-block">
-										<input type="checkbox" name="is_active" lay-skin="switch" title="开启" checked="">
-									</div>
-								</div>
-								<div class="layui-form-item">
-									<label class="layui-form-label">冷水配额：</label>
-									<div class="layui-input-block">
-										<input name="cold_water_value" value="@Cold_water_value" type="text" placeholder="吨" autocomplete="off" class="layui-input">
-									</div>
-								</div>
-								<div class="layui-form-item">
-									<label class="layui-form-label">热水配额：</label>
-									<div class="layui-input-block">
-										<input name="hot_water_value" value="@Hot_water_value" type="text" placeholder="吨" autocomplete="off" class="layui-input">
-									</div>
-								</div>
-								<div class="layui-form-item">
-									<label class="layui-form-label">电力配额：</label>
-									<div class="layui-input-block">
-										<input name="electric_value" value="@Electric_value" type="text" placeholder="千瓦时" autocomplete="off" class="layui-input">
-									</div>
-								</div>
-								<div class="layui-form-item layui-form-text">
-									<label class="layui-form-label">描述：</label>
-									<div class="layui-input-block">
-                                        <textarea name="note" placeholder="费率描述" class="layui-textarea">@ViewBag.rate.Note</textarea>
-									</div>
-								</div>
-								<div class="layui-form-item">
-									<div class="layui-input-block">
-										<button class="layui-btn layui-btn-normal" lay-submit lay-filter="quotaInfo">保存</button>
-									</div>
-								</div>
-						</form>
-						</div>
-					</div>
-				</div>
-				<script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-				<script>
-					//Demo
-					layui.use(['form', 'element', 'jquery'], function() {
-						var form = layui.form;
-                        var element = layui.element;
-                        var $ = layui.jquery;
-						form.render();
-						//监听信息提交
-						form.on('submit(rateInfo)', function(data) {
-							var data = data.field;
-							var params = {
-									'note': data['note'],
-									'cold_water_value': data['cold_water_value'],
-									'hot_water_value': data['hot_water_value'],
-									'electric_value': data['electric_value'],
-								}
-                            $.ajax({
-                                async: "false",
-                                type: "post",
-                                //dataType: "json",
-                                //contentType: "application/json",
-                                data: params,
-                                url: "/admin/rate",
-                                success: function (data) {data=JSON.parse(data);
-                                    layer.msg(data['msg'], {
-                                        'icon': data['code'] == 200 ? 1 : 0,
-                                    });
-                                },
-                                error: function (e) {
-                                    layer.open({
-                                        'icon': 0,
-                                        'title': "发生错误",
-                                        'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
-                                    });
-                                }
-                            });
-							return false;
-						});
-						//监听seo提交
-						form.on('submit(quotaInfo)', function(data) {
-							var data = data.field;
-							var params = {
-									'is_active': data['switch'] == "on" ? true : false,
-									'note': data['note'],
-									'cold_water_value': data['cold_water_value'],
-									'hot_water_value': data['hot_water_value'],
-									'electric_value': data['electric_value'],
-								}
-                            $.ajax({
-                                async: "false",
-                                type: "post",
-                                //dataType: "json",
-                                //contentType: "application/json",
-                                data: params,
-                                url: "/admin/quota",
-                                success: function (data) {data=JSON.parse(data);
-                                    layer.msg(data['msg'], {
-                                        'icon': data['code'] == 200 ? 1 : 0,
-                                    });
-                                },
-                                error: function (e) {
-                                    layer.open({
-                                        'icon': 0,
-                                        'title': "发生错误",
-                                        'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
-                                    });
-                                }
-                            });
-							return false;
-						});
-					});
-				</script>
-	</body>
+                    </div>
+                </form>
+            </div>
+            <!--基础配额设置-->
+            <div class="layui-tab-item">
+                <form class="layui-form" style="width: 90%;padding-top: 20px;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">启用：</label>
+                        <div class="layui-input-block">
+                            @if ((bool) ViewBag.quota.Is_active)
+                            {
+                                <input type="checkbox" name="is_active" lay-skin="switch" title="开启" checked="checked">
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="is_active" lay-skin="switch" title="开启">
+                            }
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">冷水配额：</label>
+                        <div class="layui-input-block">
+                            <input name="cold_water_value" value="@Cold_water_value" type="text" placeholder="吨" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">热水配额：</label>
+                        <div class="layui-input-block">
+                            <input name="hot_water_value" value="@Hot_water_value" type="text" placeholder="吨" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">电力配额：</label>
+                        <div class="layui-input-block">
+                            <input name="electric_value" value="@Electric_value" type="text" placeholder="千瓦时" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">描述：</label>
+                        <div class="layui-input-block">
+                            <textarea name="note" placeholder="费率描述" class="layui-textarea">@ViewBag.rate.Note</textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="quotaInfo">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        //Demo
+        layui.use(['form', 'element', 'jquery'], function () {
+            var form = layui.form;
+            var element = layui.element;
+            var $ = layui.jquery;
+            form.render();
+            //监听费率信息提交
+            form.on('submit(rateInfo)', function (datas) {
+                var data = datas.field;
+                var params = {
+                    'note': data['note'],
+                    'cold_water_value': data['cold_water_value'],
+                    'hot_water_value': data['hot_water_value'],
+                    'electric_value': data['electric_value'],
+                }
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "/admin/rate",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['msg'], {
+                            'icon': data['code'] == 200 ? 1 : 0,
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+                return false;
+            });
+            //监听配额信息提交
+            form.on('submit(quotaInfo)', function (datas) {
+                var data = datas.field;
+                var params = {
+                    'note': data['note'],
+                    'cold_water_value': data['cold_water_value'],
+                    'hot_water_value': data['hot_water_value'],
+                    'electric_value': data['electric_value'],
+                    'is_active': datas.field['is_active'] === "on" ? true : false,
+                };
+                console.log(params);
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "/admin/quota",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['msg'], {
+                            'icon': data['code'] == 200 ? 1 : 0,
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
 
 </html>

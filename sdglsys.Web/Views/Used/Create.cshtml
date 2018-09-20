@@ -75,8 +75,9 @@
                     // 更新宿舍列表
                     $("#pid").empty(); //清空原有数据
                     var params = {
-                        "pid": $("#bid").val(),
-                    }                    
+                        "pid": data.value
+                    };
+                    if (data.value == null || data.value<1) { return; }
                     $.ajax({
                         async: "false",
                         type: "post",
@@ -84,9 +85,9 @@
                         //contentType: "application/json",
                         data: params,
                         url: "/room/list",
-                        success: function (data) {
-                            var data = JSON.parse(data);
-                            if (data != null) {
+                        success: function (datas) {
+                            var data = JSON.parse(datas);
+                            if (data !== null) {
                                 for (var i = 0; i < data.length; i++)
                                     $("<option value=" + data[i]["Id"] + " dorm-id=" + data[i]["Dorm_id"] + " building-id=" + data[i]["Pid"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#pid");
                                 form.render('select'); // 重新渲染下拉列表
@@ -104,8 +105,9 @@
                 form.on('select(changeRoom)', function (data) {
                     var params = {
                         "type": 'last_data',
-                        "pid": $("#pid").val(),
-                    }
+                        "pid": data.value
+                    };
+                    if (data.value == null || data.value < 1) { return; }
                     // 更新读数信息
                     $.ajax({
                         async: "false",
