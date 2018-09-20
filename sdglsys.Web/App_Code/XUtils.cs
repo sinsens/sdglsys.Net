@@ -39,7 +39,7 @@ namespace sdglsys.Web
         /// <param name="pwd">密码明文</param>
         /// <param name="hashpwd">密码hash</param>
         /// <returns></returns>
-        public static bool checkpw(string pwd, string hashpwd)
+        public static bool CheckPasswd(string pwd, string hashpwd)
         {
             return BCrypt.Net.BCrypt.Verify(pwd, hashpwd);
         }
@@ -65,7 +65,7 @@ namespace sdglsys.Web
         {
             DbHelper.Users u = new DbHelper.Users();
             Entity.TUser user = u.findByLoginName(login_name);
-            return (user == null || user.Is_active == false || checkpw(pwd, user.Pwd) == false) ? null : user;
+            return (user == null || user.Is_active == false || CheckPasswd(pwd, user.Pwd) == false) ? null : user;
         }
 
         /// <summary>

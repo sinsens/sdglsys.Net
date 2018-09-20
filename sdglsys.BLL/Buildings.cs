@@ -87,7 +87,6 @@ namespace sdglsys.DbHelper
                   Select((b, d) => new VBuilding{ Id=b.Id,Pid=b.Pid,Vid=b.Vid, Nickname = b.Nickname,Note = b.Note,PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where((b,d)=> b.Vid.Contains(where)||b.Nickname.Contains(where)||b.Note.Contains(where)).OrderBy((b, d) => b.Id, OrderByType.Desc).
                   Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>

@@ -197,7 +197,7 @@ namespace sdglsys.Web.Controllers
                 var pwd_old = collection["pwd_old"];
                 var pwd_new = collection["pwd_new"];
                 // 验证原密码
-                if (XUtils.checkpw(pwd_old, user.Pwd))
+                if (XUtils.CheckPasswd(pwd_old, user.Pwd))
                 {
                     user.Pwd = XUtils.hashpwd(pwd_new);
                     if (User.Update(user))

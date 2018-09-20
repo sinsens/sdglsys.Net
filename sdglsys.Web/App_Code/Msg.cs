@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace sdglsys.Web
 {
-    public class Msg : Entity.Msg
+    public class Msg:Entity.Msg
     {
         /// <summary>
         /// 返回Json

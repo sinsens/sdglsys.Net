@@ -6,12 +6,6 @@ namespace sdglsys.DbHelper
 {
     public class Bills : DbContext
     {
-        public List<Entity.TBill> getAll()
-        {
-            return Db.Queryable<Entity.TBill>().ToList();
-        }
-
-
         /// <summary>
         /// 通过ID查询
         /// </summary>
@@ -188,7 +182,6 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
                   }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
@@ -301,7 +294,6 @@ namespace sdglsys.DbHelper
                       Electric_value = u.Electric_value,
                       Hot_water_value = u.Hot_water_value
                   }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace sdglsys.Web.Controllers
             var hash = Request["hash"];
             var txt = Request["txt"];
             if (hash != null&&hash.Length>20) {
-                Response.Write(XUtils.checkpw(txt, hash)?true:false);
+                Response.Write(XUtils.CheckPasswd(txt, hash)?true:false);
                 Response.End();
             }
             if (txt != null&&txt.Length>0) {

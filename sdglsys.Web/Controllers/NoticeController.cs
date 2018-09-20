@@ -11,7 +11,7 @@ namespace sdglsys.Web.Controllers
     public class NoticeController : Controller
     {
         // GET: Notice
-        [IsAdmin]
+        [NotLowUser]
         public ActionResult Index()
         {
             string keyword = "";
@@ -37,14 +37,14 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Notice/Details/5
-        [IsAdmin]
+        [NotLowUser]
         public ActionResult Details(int id)
         {
             return View();
         }
 
         // GET: Notice/Create
-        [IsAdmin]
+        [NotLowUser]
         public ActionResult Create()
         {
             return View();
@@ -56,7 +56,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="collection"></param>
         [HttpPost]
-        [IsAdmin]
+        [NotLowUser]
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
@@ -83,7 +83,7 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Notice/Edit/5
-        [IsAdmin]
+        [NotLowUser]
         public ActionResult Edit(int id)
         {
             var Notice = new Notices();
@@ -92,7 +92,7 @@ namespace sdglsys.Web.Controllers
 
         // POST: Notice/Edit/5
         [HttpPost]
-        [IsAdmin]
+        [NotLowUser]
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
@@ -133,7 +133,7 @@ namespace sdglsys.Web.Controllers
         }
 
         // GET: Notice/Delete/5
-        [IsAdmin]
+        [NotLowUser]
         public void Delete(int id)
         {
             var msg = new Msg();
@@ -161,7 +161,7 @@ namespace sdglsys.Web.Controllers
 
         // POST: Notice/Delete/5
         [HttpPost]
-        [IsAdmin]
+        [NotLowUser]
         public void Delete(int id, FormCollection collection)
         {
             Delete(id);

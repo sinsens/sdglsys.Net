@@ -5,7 +5,7 @@
     /// 针对Layui的Table模块的返回数据
     /// 2018年7月2日 21点38分 sinsen
     /// </summary>
-    public class ResponseData: Msg
+    public class ResponseData:Web.Msg
     {
         public ResponseData() {
             this.code = 0;
