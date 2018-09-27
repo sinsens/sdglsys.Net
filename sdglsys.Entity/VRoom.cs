@@ -65,5 +65,9 @@ namespace sdglsys.Entity
         {
             get; set;
         }
+        /// <summary>
+        /// ÈËÊı
+        /// </summary>
+        public short Number { get; set; }
     }
 }

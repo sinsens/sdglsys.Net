@@ -50,8 +50,8 @@ namespace sdglsys.Web.Controllers
                         Login_name = login_name,
                     });
                     /// #Dv0.1请求处理
-                    var Session_ID = Guid.NewGuid().ToString("N"); // cookie端的Session_ID
-                    Response.SetCookie(new HttpCookie("Session_ID", Session_ID)); // 设置cookie
+                    var Session_ID = Session.SessionID;//Guid.NewGuid().ToString("N"); // cookie端的Session_ID
+                    Response.SetCookie(new HttpCookie("Session_ID", Session.SessionID)); // 设置cookie
                     var Login_Info = new DbHelper.LoginInfo();
                     var login_info = Login_Info.GetByUserId(user.Id);
                     if (login_info != null)
@@ -65,17 +65,20 @@ namespace sdglsys.Web.Controllers
                         login_info.Expired_Date = DateTime.Now.AddHours(2);
                         Login_Info.Update(login_info);
                     }
-                    else {
+                    else
+                    {
                         // 添加登录信息
                         Login_Info.Add(new Entity.TLogin_Info
                         {
                             Ip = ip,
                             Login_name = login_name,
                             Session_id = Session_ID,
-                            Uid = user.Id
+                            Uid = user.Id,
+                            Login_date = DateTime.Now,
+                            Expired_Date = DateTime.Now.AddHours(2)
                         });
                     }
-                    
+
                     /// #end of Dv0.1请求处理
                     // HttpContext.Application["OnLineUserCount"] = Convert.ToInt32(HttpContext.Application["OnLineUserCount"]) + 1; // 登录成功，在线用户+1
                 }
@@ -113,7 +116,7 @@ namespace sdglsys.Web.Controllers
 
             try
             {
-                new DbHelper.LoginInfo().DeleteBySessionId(Request.Cookies.Get("Session_ID").Value);
+                new DbHelper.LoginInfo().DeleteBySessionId(Session.SessionID);
                 new DbHelper.Logs().Add(new Entity.TLog
                 {
                     Info = "Log off",
@@ -141,7 +144,7 @@ namespace sdglsys.Web.Controllers
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
             }
-            HttpContext.Application["OnLineUserCount"] = XUtils.CountOnLineUser(); // 更新在线人数统计
+            //HttpContext.Application["OnLineUserCount"] = XUtils.CountOnLineUser(); // 更新在线人数统计
             return View();
         }
 
@@ -270,6 +273,20 @@ namespace sdglsys.Web.Controllers
                 quota.Electric_value = Convert.ToSingle(collection["electric_value"]);
                 quota.Is_active = Convert.ToBoolean(collection["is_active"]);
                 quota.Note = collection["note"];
+                /// 检查输入
+                if (quota.Cold_water_value < 0 || quota.Cold_water_value > 99999) {
+                    throw new Exception("冷水配额应在0~99999之间");
+                }
+                if (quota.Hot_water_value < 0 || quota.Hot_water_value > 99999)
+                {
+                    throw new Exception("热水配额应在0~99999之间");
+                }
+                if (quota.Electric_value < 0 || quota.Electric_value > 99999)
+                {
+                    throw new Exception("电力配额应在0~99999之间");
+                }
+
+                /// 保存数据
                 if (Quota.Update(quota))
                 {
                     msg.msg = "保存成功！";
@@ -308,6 +325,21 @@ namespace sdglsys.Web.Controllers
                 rate.Hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
                 rate.Electric_value = Convert.ToSingle(collection["electric_value"]);
                 //rate.Is_active = Convert.ToBoolean(collection["is_active"]);
+                /// 检查输入
+                if (rate.Cold_water_value < 0 || rate.Cold_water_value > 99999.99)
+                {
+                    throw new Exception("冷水费率应在0.0~99999.99之间");
+                }
+                if (rate.Hot_water_value < 0 || rate.Hot_water_value > 99999.99)
+                {
+                    throw new Exception("热水费率应在0.0~99999.99之间");
+                }
+                if (rate.Electric_value < 0 || rate.Electric_value > 99999.99)
+                {
+                    throw new Exception("电力费率应在0.0~99999.99之间");
+                }
+
+                /// 保存数据
                 rate.Note = collection["note"];
                 if (Rate.Update(rate))
                 {

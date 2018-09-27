@@ -90,7 +90,7 @@ namespace sdglsys.Web
             else if (Session["login_name"] != null && Request.Cookies.Get("Session_ID") != null)
             { // 预防正在操作时身份验证突然过期
                 var login_info = new DbHelper.LoginInfo().GetBySessionId(Request.Cookies.Get("Session_ID").Value);
-                if (login_info!=null && login_info.Expired_Date.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes < 10) // Session还剩20分钟过期
+                if (login_info != null && login_info.Expired_Date.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes < 10) // Session还剩20分钟过期
                 {
                     login_info.Expired_Date.AddHours(1); // 过期时间增加1个小时
                     new DbHelper.LoginInfo().Update(login_info);
@@ -108,27 +108,7 @@ namespace sdglsys.Web
         {
             /// 系统发生错误时的事件
             Exception ex = Server.GetLastError();
-            if (ex is HttpException && (bool) XUtils.GetAppSetting("Debug", typeof(bool)) == false)
-            {
-                //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
-                var msg = new Msg();
-                msg.code = ((HttpException) ex).GetHttpCode();
-                switch (msg.code)
-                {
-                    case 404:
-                        msg.msg = "找不到该页面，可能是输入的参数有误";
-                        break;
-                    case 500:
-                        msg.msg = "发生了系统内部错误<br/>" + ex.Message;
-                        break;
-                    default:
-                        msg.msg = ex.Message;
-                        break;
-                }
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
-            else
+            if (ex is HttpException)
             {
                 XUtils.Log(new Entity.TLog
                 {
@@ -136,6 +116,26 @@ namespace sdglsys.Web
                     Login_name = "system",
                     Ip = "127.0.0.1"
                 });
+                if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) == false)
+                {
+                    //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
+                    var msg = new Msg();
+                    msg.code = ((HttpException) ex).GetHttpCode();
+                    switch (msg.code)
+                    {
+                        case 404:
+                            msg.msg = "找不到该页面，可能是输入的参数有误";
+                            break;
+                        case 500:
+                            msg.msg = "发生了系统内部错误<br/>" + ex.Message;
+                            break;
+                        default:
+                            msg.msg = ex.Message;
+                            break;
+                    }
+                    Response.Write(msg.ToJson());
+                    Response.End();
+                }
             }
         }
 
@@ -158,7 +158,7 @@ namespace sdglsys.Web
         {
             /// 用户关闭所有相关页面时的事件
             /// 先判断该用户是否已登录
-            if (Session["login_name"] != null && Request.Cookies.Get("Session_ID") != null)
+            if (Session["login_name"] != null)
             {
                 /*
                 /// 删减在线统计人数
@@ -169,7 +169,7 @@ namespace sdglsys.Web
                 /// 删除数据库中关联的已登录信息
                 try
                 {
-                    new DbHelper.LoginInfo().DeleteBySessionId(Request.Cookies.Get("Session_ID").Value);
+                    new DbHelper.LoginInfo().DeleteBySessionId(Session.SessionID);
                     new DbHelper.Logs().Add(new Entity.TLog
                     {
                         Info = "Auth Expired",
@@ -182,6 +182,7 @@ namespace sdglsys.Web
                     XUtils.Log("system", "", ex.Message);
                 }
             }
+            Session.Clear();
         }
         #endregion
     }

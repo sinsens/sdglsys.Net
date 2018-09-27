@@ -90,23 +90,34 @@ namespace sdglsys.Web.Controllers
                 var Bill = new Bills();
 
                 ///1.获取数据
+
                 var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
                 var hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
                 var electric_value = Convert.ToSingle(collection["electric_value"]);
                 ///1.1判断输入数值
-                if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
+                if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0 || cold_water_value > 9999999 || hot_water_value > 9999999 || electric_value > 9999999)
                 {
-                    throw new Exception("数值输入有误，读表数值不能小于0");
+                    throw new Exception("数值输入有误，读表数值应在0~999999之间");
                 }
-                var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
+                //var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
+                //var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
                 var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
                 var Note = collection["note"];
-                if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
+                if (Pid < 0 || Pid > 99999999)
                 {
-                    throw new Exception("宿舍ID或宿舍楼ID或园区ID输入有误");
+                    throw new Exception("宿舍ID输入有误，应在1~99999999之间");
                 }
-                ///1.2判断该宿舍是否已登记, 避免重复操作
+                ///1.2获取宿舍信息
+                var room = Db.Queryable<Entity.TRoom>().Where(r => r.Id == Pid).First();
+                if (room == null)
+                {
+                    throw new Exception("该宿舍不存在");
+                }
+                else if (room.Number < 1)
+                {
+                    throw new Exception("该宿舍无人居住，无需登记");
+                }
+                ///1.3判断该宿舍是否已登记, 避免重复操作
                 if (Used.IsRecord(Pid))
                 {
                     throw new Exception("该宿舍本月已经登记过了，无需再次登记");
@@ -123,7 +134,7 @@ namespace sdglsys.Web.Controllers
                     ///3.1判断本次数值是否大于等于上次数值
                     if (this_cold_water_value < usedinfo.Cold_water_value || this_hot_water_value < usedinfo.Hot_water_value || this_electric_value < usedinfo.Electric_value)
                     {
-                        throw new Exception("数值输入有误，水表电表通常是不会装着转滴");
+                        throw new Exception("数值输入有误，本期水表电表数值应大于等于上期读表数值");
                     }
                     // 本次数值=本次读数-上次读数
                     this_cold_water_value -= usedinfo.Cold_water_value;
@@ -134,24 +145,32 @@ namespace sdglsys.Web.Controllers
                 {
                     usedinfo = new TUsed_total();
                 }
-                usedinfo.Dorm_id = Dorm_id;
-                usedinfo.Building_id = Building_id;
+                usedinfo.Dorm_id = room.Dorm_id;
+                usedinfo.Building_id = room.Pid;
                 usedinfo.Pid = Pid;
                 usedinfo.Hot_water_value = hot_water_value;
                 usedinfo.Cold_water_value = cold_water_value;
                 usedinfo.Electric_value = electric_value;
-                ///3.2生成用量单
+
+                ///3.1生成用量单
                 var used = new TUsed()
                 {
                     Electric_value = this_electric_value,
                     Hot_water_value = this_hot_water_value,
                     Cold_water_value = this_cold_water_value,
-                    Building_id = Building_id,
-                    Dorm_id = Dorm_id,
+                    Building_id = room.Pid,
+                    Dorm_id = room.Dorm_id,
                     Note = Note,
                     Pid = Pid,
                     Post_uid = (int) Session["id"],
                 };
+                ///3.2扣除基础配额数据，最终使用量 =（本次读表数值-上次读表数值）-（基础配额*人数）
+                if (quota != null && quota.Is_active)
+                {
+                    this_cold_water_value -= quota.Cold_water_value * room.Number;
+                    this_hot_water_value -= quota.Hot_water_value * room.Number;
+                    this_electric_value -= quota.Electric_value * room.Number;
+                }
                 Db.Ado.BeginTran(); // 开始事务
                 ///3.3保存用量单
                 var uid = Db.Insertable(used).ExecuteReturnEntity();
@@ -160,23 +179,27 @@ namespace sdglsys.Web.Controllers
                 {
                     throw new Exception("保存登记信息时发生错误！");
                 }
-                ///4.获取基础配额数据
-                if (quota != null && quota.Is_active)
-                {
-                    this_cold_water_value -= quota.Cold_water_value;
-                    this_hot_water_value -= quota.Hot_water_value;
-                    this_electric_value -= quota.Electric_value;
-                }
 
-                ///5.计算本次费用并生成账单
+                ///5.计算本次费用并生成账单，费用 = 最终使用量*费率，（无阶梯计费）
                 var bill = new TBill();
                 bill.Pid = uid.Id;
-                bill.Room_id = Pid;
-                bill.Building_id = Building_id;
-                bill.Dorm_id = Dorm_id;
-                bill.Cold_water_cost = (decimal) this_cold_water_value * (decimal) rate.Cold_water_value;
-                bill.Electric_cost = (decimal) this_electric_value * (decimal) rate.Electric_value;
-                bill.Hot_water_cost = (decimal) this_hot_water_value * (decimal) rate.Hot_water_value;
+                bill.Room_id = room.Id;
+                bill.Building_id = room.Pid;
+                bill.Dorm_id = room.Dorm_id;
+                ///6.超过基础配额的才计费
+                if (this_cold_water_value > 0)
+                { // 冷水费
+                    bill.Cold_water_cost = (decimal) this_cold_water_value * (decimal) rate.Cold_water_value;
+                }
+                if (this_hot_water_value > 0)
+                { // 热水费
+                    bill.Hot_water_cost = (decimal) this_hot_water_value * (decimal) rate.Hot_water_value;
+                }
+                if (this_electric_value > 0)
+                { // 电费
+                    bill.Electric_cost = (decimal) this_electric_value * (decimal) rate.Electric_value;
+                }
+
                 bill.Rates_id = rate.Id;
                 bill.Quota_id = quota.Id;
                 ///7.保存所有数据
@@ -200,9 +223,9 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("添加账单信息时发生错误！");
                 }
 
-                    Db.Ado.CommitTran();// 提交事务
-                    msg.code = 200;
-                    msg.msg = "添加成功！";
+                Db.Ado.CommitTran();// 提交事务
+                msg.code = 200;
+                msg.msg = "添加成功！";
             }
             catch (Exception ex)
             {
@@ -414,7 +437,7 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult EditUsedInfo(int id)
         {
-            return View(new Useds_total().FindById(id));
+            return View(new Useds_total().FindVUsedById(id));
         }
 
         /// <summary>

@@ -37,7 +37,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.VRoom> getAllVRoomActive()
         {
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r=>r.Vid).
+            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Vid).
                   Select((r, b, d) => new VRoom
                   {
                       Id = r.Id,
@@ -59,8 +59,8 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.VRoom> getAllVRoomActive(int id)
         {
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r=>r.Vid).
-                Where(r=>r.Dorm_id == id).
+            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Vid).
+                Where(r => r.Dorm_id == id).
                   Select((r, b, d) => new VRoom
                   {
                       Id = r.Id,
@@ -126,7 +126,7 @@ namespace sdglsys.DbHelper
         public List<VRoom> getByPages(int page, int limit, ref int totalCount, string where = null)
         {
             if (where == null)
-                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r=>r.Id, OrderByType.Desc).
+                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Id, OrderByType.Desc).
                   Select((r, b, d) => new VRoom
                   {
                       Id = r.Id,
@@ -136,10 +136,11 @@ namespace sdglsys.DbHelper
                       Note = r.Note,
                       PNickname = b.Nickname,
                       Is_active = r.Is_active,
-                      Dorm_Nickname = d.Nickname
+                      Dorm_Nickname = d.Nickname,
+                      Number = r.Number
                   }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
-                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r=>r.Id, OrderByType.Desc).
+                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
                  Select((r, b, d) => new VRoom
                  {
                      Id = r.Id,
@@ -149,9 +150,10 @@ namespace sdglsys.DbHelper
                      Note = r.Note,
                      PNickname = b.Nickname,
                      Is_active = r.Is_active,
-                     Dorm_Nickname = d.Nickname
+                     Dorm_Nickname = d.Nickname,
+                     Number = r.Number
                  }).ToPageList(page, limit, ref totalCount);
-            
+
         }
 
         /// <summary>
@@ -163,10 +165,10 @@ namespace sdglsys.DbHelper
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VRoom> getByPages(int pid,int page, int limit, ref int totalCount, string where = null)
+        public List<VRoom> getByPages(int pid, int page, int limit, ref int totalCount, string where = null)
         {
             if (where == null)
-                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).Where(r=>r.Dorm_id==pid).OrderBy(r => r.Id, OrderByType.Desc).
+                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).Where(r => r.Dorm_id == pid).OrderBy(r => r.Id, OrderByType.Desc).
                   Select((r, b, d) => new VRoom
                   {
                       Id = r.Id,
@@ -179,7 +181,7 @@ namespace sdglsys.DbHelper
                       Dorm_Nickname = d.Nickname
                   }).ToPageList(page, limit, ref totalCount);
             return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
-                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where(r=>r.Dorm_id==pid).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
+                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where(r => r.Dorm_id == pid).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
                  Select((r, b, d) => new VRoom
                  {
                      Id = r.Id,
@@ -209,7 +211,7 @@ namespace sdglsys.DbHelper
 
             return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
                 JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Dorm_id ==id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
+                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Dorm_id == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
               Select((r, b, d) => new VRoom
               {
                   Id = r.Id,
@@ -264,7 +266,7 @@ namespace sdglsys.DbHelper
             var rooms = Db.Queryable<TUsed>().
                 Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
                 SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-            return Db.Queryable<TRoom>().Where((r) => r.Pid == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
+            return Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Pid == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
                 ToJson();
         }
 

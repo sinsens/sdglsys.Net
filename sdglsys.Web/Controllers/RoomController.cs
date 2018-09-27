@@ -27,14 +27,15 @@ namespace sdglsys.Web.Controllers
             catch
             {
             }
-            if ((int)Session["role"] < 3)
+            if ((int) Session["role"] < 3)
             {
-                ViewBag.rooms = new Rooms().getByPages((int)Session["pid"], page, limit, ref count, keyword); // 获取列表
+                ViewBag.rooms = new Rooms().getByPages((int) Session["pid"], page, limit, ref count, keyword); // 获取列表
             }
-            else {
+            else
+            {
                 ViewBag.rooms = new Rooms().getByPages(page, limit, ref count, keyword); // 获取列表
             }
-            
+
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
             ViewBag.keyword = keyword;
@@ -76,6 +77,7 @@ namespace sdglsys.Web.Controllers
                     Nickname = collection["name"],
                     Note = collection["note"],
                     Vid = collection["vid"],
+                    Number = Convert.ToInt16(collection["number"]),
                     Pid = Convert.ToInt32(collection["pid"]),
                 };
                 var Room = new Rooms();
@@ -126,24 +128,26 @@ namespace sdglsys.Web.Controllers
                     msg.code = 404;
                     msg.msg = "该宿舍楼不存在！";
                 }
-                else {
+                else
+                {
                     r.Nickname = collection["name"];
                     r.Note = collection["note"];
                     r.Is_active = Convert.ToBoolean(collection["is_active"]);
                     r.Dorm_id = Convert.ToInt32(collection["dorm_id"]);
                     r.Vid = collection["vid"];
+                    r.Number = Convert.ToInt16(collection["number"]);
                     r.Pid = Convert.ToInt32(collection["pid"]);
                     msg.msg = (Room.Update(r)) ? "保存成功！" : "发生未知错误，保存失败！";
                 }
-                
+
             }
             catch (Exception ex)
             {
                 msg.code = 500;
                 msg.msg = ex.Message;
             }
-                Response.Write(msg.ToJson());
-                Response.End();
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // GET: Room/Delete/5

@@ -58,7 +58,7 @@
             </div>
             <ul class="layui-nav layui-nav-tree" lay-filter="leftNav">
                 <li class="layui-nav-item">
-                    <a href="javascript:;" data-url="/used/index" data-id='10' data-text="登记信息管理"><i class="layui-icon">&#xe60e;</i>用量登记管理</a>
+                    <a href="javascript:;" data-url="/used/index" data-id='10' data-text="用量登记管理"><i class="layui-icon">&#xe60e;</i>用量登记管理</a>
                 </li>
                 @if (Convert.ToInt32(Session["role"]) > 1)
                 {
@@ -96,21 +96,21 @@
                             }
                         </dl>
                     </li>
-                    <!--
+                    /*
                         作者：sinsen
                         时间：2018-06-09
                         描述：宿舍管理员菜单开始
-                    -->
+                    */
                     <li class="layui-nav-item">
                         <a href="javascript:;"><i class="layui-icon">&#xe656;</i>基础数据管理</a>
                         <dl class="layui-nav-child">
                             @if (Convert.ToInt32(Session["role"]) > 2)
                             {
-                                <!--
+                                /*
                                     作者：sinsen
                                     时间：2018-06-10
                                     描述：系统管理员菜单
-                                -->
+                                */
                                 <dd>
                                     <a href="javascript:;" data-url="/dorm/index" data-id='50' data-text="园区管理"><span class="l-line"></span>园区管理</a>
                                 </dd>
@@ -123,25 +123,26 @@
                                 <a href="javascript:;" data-url="/room/index" data-id='52' data-text="宿舍管理"><span class="l-line"></span>宿舍管理</a>
                             </dd>
                             <dd>
-                                <a href="javascript:;" data-url="/used/UsedInfo" data-id='53' data-text="宿舍水电表管理"><span class="l-line"></span>宿舍水电表管理</a>
+                                <a href="javascript:;" data-url="/used/UsedInfo" data-id='53' data-text="宿舍读表数值管理"><span class="l-line"></span>宿舍读表数值管理</a>
                             </dd>
                         </dl>
                     </li>
-                    <!--
+                    /*
                         作者：sinsen
                         时间：2018-06-09
                         描述：宿舍管理员菜单结束
-                    -->}
+                    */
+                }
                 <li class="layui-nav-item">
-                    <a href="javascript:;" data-url="/admin/info" data-id='99' data-text="个人信息"><i class="layui-icon">&#xe66f;</i>个人信息</a>
+                    <a href="javascript:;" data-url="/admin/info" data-id='99' data-text="个人信息管理"><i class="layui-icon">&#xe66f;</i>个人信息管理</a>
                 </li>
                 @if (Convert.ToInt32(Session["role"]) > 1)
                 {
-                    <!--
+                    /*
                         作者：sinsen
                         时间：2018-06-09
-                        描述：
-                    -->
+                        描述：宿舍管理员及以上级别才能使用数据图表功能
+                    */
                     <li class="layui-nav-item">
                         <a href="javascript:;" data-url="/admin/charts" data-id='100' data-text="数据图表"><i class="layui-icon">&#xe62c;</i>数据图表</a>
                     </li>}
@@ -184,7 +185,8 @@
                                     <div class="layui-card">
                                         <div class="layui-card-header" style="margin-top:10px">@Session["login_name"]，欢迎回来</div>
                                         <div class="layui-card-body">
-                                            <p>当前系统在线人数：@System.Web.HttpContext.Current.Application["OnLineUserCount"]</p>
+                                            欢迎使用旅游文化校园水电校园水电收费管理信息系统。
+                                            @{/*<p>当前系统在线人数：@{System.Web.HttpContext.Current.Application["OnLineUserCount"]}</p>*/}
                                         </div>
                                     </div>
                                     <div class="layui-card" id="qlinks">

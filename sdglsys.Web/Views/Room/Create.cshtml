@@ -26,6 +26,12 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">人数：</label>
+                <div class="layui-input-block">
+                    <input maxlength="2" id='number' type="number" required lay-verify="required" placeholder="该宿舍现有人数" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">所属宿舍楼：</label>
                 <div class="layui-input-block">
                     <select class="layui-select" id="pid" lay-search>
@@ -67,10 +73,16 @@
                     layer.msg("编号不能为空");
                     return false;
                 }
+                var number = parseInt($("#number").val())
+                if (number < 0 || number > 99) {
+                    layer.msg("宿舍人数应在0~99之间");
+                    return false;
+                }
                 if ($('#pid').val().trim().length < 1) {
                     layer.msg("请选择所属宿舍楼");
                     return false;
                 }
+                
 
                 var pid = $("#pid").val();
                 var params = {
@@ -78,6 +90,7 @@
                     "name": $('#name').val(),
                     "vid": $("#vid").val(),
                     "pid": pid,
+                    "number": number,
                     "note": $("#note").val()
                 }
                 $.ajax({

@@ -51,5 +51,13 @@ namespace sdglsys.Entity
         /// 状态：0已注销，1启用，默认1
         /// </summary>
         public System.Boolean Is_active { get { return this._Is_active; } set { this._Is_active = value; } }
+
+        /// <summary>
+        /// 宿舍人数
+        /// </summary>
+        public short Number { get => _number; set => _number = value; }
+
+        private short _number = 0;
+
     }
 }
