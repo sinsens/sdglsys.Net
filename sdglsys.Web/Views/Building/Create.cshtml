@@ -9,48 +9,49 @@
     @Styles.Render("~/Content/css")
 </head>
 
-	<body>
-		<div class="wrap-container">
-			<div class="layui-form" style="width: 90%;padding-top: 20px;">
-				<div class="layui-form-item">
-					<label class="layui-form-label">名称：</label>
-					<div class="layui-input-block">
-						<input maxlength="20" id='name' type="text" required lay-verify="required" placeholder="宿舍楼名称" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">编号：</label>
-					<div class="layui-input-block">
-						<input maxlength="15" id='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">所属园区：</label>
-					<div class="layui-input-block">
-						<select class="layui-select" id="pid" lay-search>
-							<option value="">请选择一个园区</option>
-							@foreach(var dorm in ViewBag.dorms){
-							<option value="@dorm.Id">@dorm.Nickname</option>
-							}
-						</select>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">备注：</label>
-					<div class="layui-input-block">
-						<textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<div class="layui-input-block">
-						<button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">保存</button>
-					</div>
-				</div>
-			</div>
-		</div>
+<body>
+    <div class="wrap-container">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称：</label>
+                <div class="layui-input-block">
+                    <input maxlength="20" id='name' type="text" required lay-verify="required" placeholder="宿舍楼名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">编号：</label>
+                <div class="layui-input-block">
+                    <input maxlength="15" id='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属园区：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" id="pid" lay-search>
+                        <option value="">请选择一个园区</option>
+                        @foreach (var dorm in ViewBag.dorms)
+                        {
+                            <option value="@dorm.Id">@dorm.Nickname</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注：</label>
+                <div class="layui-input-block">
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-		<script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-		<script>
+    <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
 			layui.use(['form', 'jquery'], function() {
 				var form = layui.form;
 				$ = layui.jquery,
@@ -97,7 +98,7 @@
                     });
 				});
 			});
-		</script>
-	</body>
+    </script>
+</body>
 
 </html>

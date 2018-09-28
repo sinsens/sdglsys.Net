@@ -185,7 +185,7 @@
                                     <div class="layui-card">
                                         <div class="layui-card-header" style="margin-top:10px">@Session["login_name"]，欢迎回来</div>
                                         <div class="layui-card-body">
-                                            欢迎使用旅游文化校园水电校园水电收费管理信息系统。
+                                            欢迎使用旅游文化校园水电收费管理信息系统。
                                             @{/*<p>当前系统在线人数：@{System.Web.HttpContext.Current.Application["OnLineUserCount"]}</p>*/}
                                         </div>
                                     </div>
@@ -197,6 +197,19 @@
                                             <a style="margin:10px" href="javascript:;" data-url="/notice/list" data-id='30' data-text="查看公告"><span class="l-line"></span>查看公告</a>
                                         </div>
                                     </div>
+                                    <div class="layui-card" id="statistic">
+                                        <div class="layui-card-header">本月统计</div>
+                                        <div class="layui-card-body">
+                                            <div class="layui-form">
+                                                <ul>
+                                                    <li>宿舍&emsp;@ViewBag.room_count&emsp;间</li>
+                                                    <li>未登记&emsp;@ViewBag.room_count2&emsp;间</li>
+                                                    @{/*<li>应收费用&emsp;@ViewBag.balance&emsp;￥</li>*/}
+                                                    @{/*<li>已收费用&emsp;@ViewBag.balance2&emsp;￥</li>*/}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <script>
                                         /*
                                          Chrome浏览器才有“快速进入”面板
@@ -205,7 +218,7 @@
                                         function IsChrome() {
                                             return navigator.appVersion.toLowerCase().indexOf('chrome') > -1;
                                         }
-                                        document.getElementById("qlinks").style.display = IsChrome()? '' : "none";
+                                        document.getElementById("qlinks").style.display = IsChrome() ? '' : "none";
                                     </script>
                                 </div>
                             </div>

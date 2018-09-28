@@ -271,6 +271,22 @@ namespace sdglsys.DbHelper
         }
 
         /// <summary>
+        /// 返回本月未登记的宿舍数量
+        /// </summary>
+        /// <param name="dorm_id">园区ID：默认全部</param>
+        /// <returns></returns>
+        public short CountNoRecord(int dorm_id = 0) {
+            var rooms = Db.Queryable<TUsed>().
+                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
+                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
+            if(dorm_id==0)
+                return (short) Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Is_active == true && !rooms.Contains(r.Id))
+                .OrderBy(r => r.Vid).Count();
+            return (short)Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Dorm_id == dorm_id && r.Is_active == true && !rooms.Contains(r.Id))
+                .OrderBy(r => r.Vid).Count();
+        }
+
+        /// <summary>
         /// 查找没有读表信息的宿舍
         /// </summary>
         /// <returns></returns>
@@ -304,7 +320,6 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<VRoom> GetVRoomWithoutUsedInfo(int id)
         {
-
             /// 先获取已存在于宿舍读表数值的宿舍ID
             var rooms = Db.Queryable<TUsed_total>().Select(u => u.Dorm_id).ToList();
 
@@ -323,6 +338,30 @@ namespace sdglsys.DbHelper
                   Is_active = r.Is_active,
                   Dorm_Nickname = d.Nickname
               }).ToList();
+        }
+
+        /// <summary>
+        /// 返回宿舍数量
+        /// </summary>
+        /// <param name="dorm_id">园区ID：默认全部</param>
+        /// <returns></returns>
+        public short Count(int dorm_id = 0)
+        {
+            if (dorm_id == 0)
+                return (short) RoomDb.Count(r => r.Is_active == true);
+            return (short) RoomDb.Count(r => r.Is_active == true && r.Dorm_id == dorm_id);
+        }
+
+        /// <summary>
+        /// 返回人数大于1人的宿舍数量
+        /// </summary>
+        /// <param name="dorm_id">园区ID：默认全部</param>
+        /// <returns></returns>
+        public short CountWithPeople(int dorm_id = 0)
+        {
+            if (dorm_id == 0)
+                return (short) RoomDb.Count(r => r.Is_active == true && r.Number > 0);
+            return (short) RoomDb.Count(r => r.Is_active == true && r.Dorm_id == dorm_id && r.Number > 0);
         }
     }
 }

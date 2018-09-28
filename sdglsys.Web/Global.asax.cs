@@ -154,8 +154,10 @@ namespace sdglsys.Web
             //Application.UnLock();
         }
 
+
         protected void Session_End(object sender, EventArgs e)
         {
+            /*
             /// 用户关闭所有相关页面时的事件
             /// 先判断该用户是否已登录
             if (Session["login_name"] != null)
@@ -165,7 +167,7 @@ namespace sdglsys.Web
                 Application.Lock();
                 Application["OnLineUserCount"] = Convert.ToInt32(Application["OnLineUserCount"]) - 1; // 在线人数-1
                 Application.UnLock();
-                */
+                **
                 /// 删除数据库中关联的已登录信息
                 try
                 {
@@ -181,8 +183,7 @@ namespace sdglsys.Web
                 {
                     XUtils.Log("system", "", ex.Message);
                 }
-            }
-            Session.Clear();
+            }*/
         }
         #endregion
     }

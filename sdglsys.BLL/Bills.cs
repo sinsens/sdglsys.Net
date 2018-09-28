@@ -295,5 +295,29 @@ namespace sdglsys.DbHelper
                       Hot_water_value = u.Hot_water_value
                   }).ToPageList(page, limit, ref totalCount);
         }
+
+        /// <summary>
+        /// 计算本月账单总额
+        /// </summary>
+        /// <param name="dorm_id">园区ID：默认所有</param>
+        /// <returns></returns>
+        public decimal SumTotal(int dorm_id = 0)
+        {
+            if (dorm_id == 0)
+                return Db.Queryable<TBill>().Where(b => b.Is_active != 0).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
+            return Db.Queryable<TBill>().Where(b => b.Is_active == 1 && b.Dorm_id == dorm_id).GroupBy(b => b.Id).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
+        }
+
+        /// <summary>
+        /// 计算本月未结算账单总额
+        /// </summary>
+        /// <param name="dorm_id">园区ID：默认所有</param>
+        /// <returns></returns>
+        public decimal SumNoPay(int dorm_id = 0)
+        {
+            if (dorm_id == 0)
+                return Db.Queryable<TBill>().Where(b => b.Is_active == 1).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
+            return Db.Queryable<TBill>().Where(b => b.Is_active == 1 && b.Dorm_id == dorm_id).GroupBy(b=>b.Id).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
+        }
     }
 }

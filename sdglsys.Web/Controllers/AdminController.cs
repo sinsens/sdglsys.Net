@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using sdglsys.DbHelper;
+using sdglsys.Entity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -145,6 +146,10 @@ namespace sdglsys.Web.Controllers
                 Response.End();
             }
             //HttpContext.Application["OnLineUserCount"] = XUtils.CountOnLineUser(); // 更新在线人数统计
+            ViewBag.room_count = new DbHelper.Rooms().CountWithPeople((int)Session["pid"]);
+            ViewBag.room_count2 = new DbHelper.Rooms().CountNoRecord((int)Session["pid"]);
+            //ViewBag.balance = new DbHelper.Bills().SumTotal((int)Session["pid"]);
+            //ViewBag.balance2 = new DbHelper.Bills().SumNoPay((int)Session["pid"]);
             return View();
         }
 
