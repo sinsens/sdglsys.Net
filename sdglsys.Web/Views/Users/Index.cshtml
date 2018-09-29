@@ -23,7 +23,7 @@
 
                         <input value="@ViewBag.keyword" type="text" name="keyword" placeholder="关键字" autocomplete="off" class="layui-input">
                     </div>
-                    <button class="layui-btn layui-btn-normal" lay-submit="search">搜索</button>
+                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search">搜索</button>
                 </div>
             </form>
             <div class="layui-form" id="table-list">
@@ -35,7 +35,7 @@
                         <col>
                         @if ((int) Session["role"] > 2)
                         {
-                            <col class="hidden-xs">}
+                            <col>}
                         <col>
                         <col>
                     </colgroup>
@@ -47,7 +47,7 @@
                             <th>类型</th>
                             @if ((int) Session["role"] > 2)
                             {
-                                <th class="hidden-xs">所属园区</th>
+                                <th>所属园区</th>
                             }
                             <th>状态</th>
                             <th>操作</th>
@@ -80,7 +80,7 @@
                                 </td>
                                 @if ((int) Session["role"] > 2)
                                 {
-                                    <td class="hidden-xs">
+                                    <td>
                                         @foreach (var dorm in ViewBag.dorms)
                                         {
                                             if (user.Pid == dorm.Id)
@@ -113,13 +113,13 @@
                     <ul class="pagination">
                         <li>
                             <span>
-                                @if (ViewBag.page == 1)
+                                @if (ViewBag.page <= 1)
                                 {
                                     <a disabled="disabled"><</a>
                                 }
                                 else
                                 {
-                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)"><</a>
+                                    <a href="?page=@(ViewBag.page - 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)"><</a>
                                 }
                             </span>
                         </li>

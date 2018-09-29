@@ -78,13 +78,13 @@
                     <ul class="pagination">
                         <li>
                             <span>
-                                @if (ViewBag.page == 1)
+                                @if (ViewBag.page <= 1)
                                 {
                                     <a disabled="disabled"><</a>
                                 }
                                 else
                                 {
-                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)"><</a>
+                                    <a href="?page=@(ViewBag.page - 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)"><</a>
                                 }
                             </span>
                         </li>
