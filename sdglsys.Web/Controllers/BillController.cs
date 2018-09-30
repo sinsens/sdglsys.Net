@@ -275,7 +275,7 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult Edit(int id)
         {
-            return View(new Bills().FindById(id));
+            return View(new Bills().FindVBillById(id));
         }
 
         /// <summary>

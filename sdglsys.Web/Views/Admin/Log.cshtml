@@ -6,7 +6,7 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>查看系统日志</title>
+    <title>查看日志</title>
     @Styles.Render("~/Content/css")
 </head>
 
@@ -16,13 +16,12 @@
             <div class="layui-form">
                 <div class="layui-form-item">
                     <div class="layui-inline tool-btn">
-                        <button class="layui-btn layui-btn-sm layui-btn-normal addBtn" data-url="/notice/create" data-text="发布新公告"><i class="layui-icon">&#xe654;</i></button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal reloadBtn"><i class="layui-icon layui-icon-refresh"></i></button>
                     </div>
                     <div class="layui-inline">
                         <input type="text" id="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
                     </div>
-                    <button class="layui-btn layui-btn-normal" lay-filter="search" lay-submit>搜索</button>
+                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-filter="search" lay-submit>搜索</button>
                 </div>
             </div>
             <div class="layui-form" id="table-list">

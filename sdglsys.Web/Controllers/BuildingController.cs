@@ -172,7 +172,7 @@ namespace sdglsys.Web.Controllers
             var user = Buildings.FindById(id);
             if (user == null)
             {
-                msg.msg = "该园区不存在！";
+                msg.msg = "该宿舍楼不存在！";
                 msg.code = 404;
             }
             else
