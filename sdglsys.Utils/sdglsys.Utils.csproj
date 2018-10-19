@@ -4,18 +4,19 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6DB0BF4A-A0B2-4486-9C9F-9C934EC121A2}</ProjectGuid>
+    <ProjectGuid>{771C7FE7-7C69-4C81-9EF0-0EAEE7171EB9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sdglsys.Entity</RootNamespace>
-    <AssemblyName>sdglsys.Entity</AssemblyName>
+    <RootNamespace>sdglsys.Utils</RootNamespace>
+    <AssemblyName>sdglsys.Utils</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -29,12 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>computer_128px_1206682_easyicon.net.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SqlSugar, Version=4.8.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.4.8.1\lib\SqlSugar.dll</HintPath>
+    <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,30 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Msg.cs" />
-    <Compile Include="TBill.cs" />
-    <Compile Include="TBuilding.cs" />
-    <Compile Include="TDorm.cs" />
-    <Compile Include="TLog.cs" />
-    <Compile Include="TLogin_Info.cs" />
-    <Compile Include="TNotice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TQuota.cs" />
-    <Compile Include="TRate.cs" />
-    <Compile Include="TRoom.cs" />
-    <Compile Include="TUsed.cs" />
-    <Compile Include="TUsed_total.cs" />
-    <Compile Include="Used_datas.cs" />
-    <Compile Include="VUser.cs" />
-    <Compile Include="TUser.cs" />
-    <Compile Include="VBill.cs" />
-    <Compile Include="VBuilding.cs" />
-    <Compile Include="VRoom.cs" />
-    <Compile Include="VUsed.cs" />
-    <Compile Include="VUsed_total.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="computer_128px_1206682_easyicon.net.ico" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

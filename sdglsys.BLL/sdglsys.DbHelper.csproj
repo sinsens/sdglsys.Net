@@ -36,8 +36,8 @@
     <Reference Include="MySql.Data">
       <HintPath>..\sdglsys.Web\obj\Release\AspnetCompileMerge\Source\bin\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="SqlSugar, Version=4.6.4.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.4.6.4.9\lib\SqlSugar.dll</HintPath>
+    <Reference Include="SqlSugar, Version=4.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlSugar.4.8.1\lib\SqlSugar.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,10 +71,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Content Include="computer_128px_1206682_easyicon.net.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="computer_128px_1206682_easyicon.net.ico" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
