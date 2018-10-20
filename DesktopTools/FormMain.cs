@@ -188,6 +188,8 @@ namespace DesktopTools
                         selectBuilding.Id = item.Id;
                         selectBuilding.Pid = item.Pid;
                         label4.Text = "已选择：" + item.Vid + "|" + item.PNickname + item.Nickname;
+                        /// 获取其他信息
+                        label4.Text += "当前该宿舍楼共有宿舍数量："+DbContext.Client.Queryable<TRoom>().Count(x => x.Pid == item.Id);
                         break;
                     }
                 }
