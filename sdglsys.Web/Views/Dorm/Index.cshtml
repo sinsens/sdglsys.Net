@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.T_Dorm>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -43,23 +44,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var dorm in ViewBag.dorms)
+                        @foreach (var dorm in Model)
                         {
                             <tr>
-                                <td class="hidden-xs">@dorm.Id</td>
-                                <td>@dorm.Nickname</td>
+                                <td class="hidden-xs">@dorm.Dorm_id</td>
+                                <td>@dorm.Dorm_nickname</td>
                                 <td class="hidden-xs">
                                     <i class="layui-icon">
-                                        @{ var icon = "&#xe661";}
-                                        @if (dorm.Type == true)
-                                        {
-                                            icon = "&#xe662";
-                                        }
+                                        @{ var icon = dorm.Dorm_type? "&#xe662":"&#xe661";}
                                         @Html.Raw(@icon)
                                     </i>
                                 </td>
                                 <td>
-                                    @if (dorm.Is_active)
+                                    @if (dorm.Dorm_is_active)
                                     {
                                         <div class="layui-btn layui-btn-xs layui-btn-normal">正常</div>}
                                     else
@@ -68,8 +65,8 @@
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-id="@dorm.Id" data-url="/dorm/edit/@dorm.Id" data-text="编辑：@dorm.Nickname"><i class="layui-icon">&#xe642;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@dorm.Id" data-url="/dorm/delete/@dorm.Id"><i class="layui-icon">&#xe640;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-id="@dorm.Dorm_id" data-url="/dorm/edit/@dorm.Dorm_id" data-text="编辑：@dorm.Dorm_nickname"><i class="layui-icon">&#xe642;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@dorm.Dorm_id" data-url="/dorm/delete/@dorm.Dorm_id"><i class="layui-icon">&#xe640;</i></button>
                                     </div>
                                 </td>
                             </tr>

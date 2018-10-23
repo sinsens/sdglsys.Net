@@ -27,7 +27,7 @@ namespace sdglsys.Entity
         /// 加入一个列表
         /// </summary>
         /// <param name="used_Data"></param>
-        public void Add(List<used_data> used_Data) {
+        public void Add(List<Used_data> used_Data) {
             data.AddRange(used_Data);
         }
 
@@ -35,7 +35,7 @@ namespace sdglsys.Entity
         /// 加入一个对象
         /// </summary>
         /// <param name="used_Data"></param>
-        public void Add(used_data used_Data)
+        public void Add(Used_data used_Data)
         {
             data.Add(used_Data);
         }
@@ -66,7 +66,7 @@ namespace sdglsys.Entity
             this.Hot_water_value = new List<float>();
         }
 
-        public void Add(used_data used_Data) {
+        public void Add(Used_data used_Data) {
             Date.Add(used_Data.Date);
             Electric_value.Add(used_Data.Electric_value);
             Cold_water_value.Add(used_Data.Cold_water_value);
@@ -74,20 +74,19 @@ namespace sdglsys.Entity
         }
 
 
-        public void AddRange(List<used_data> used_Data)
+        public void AddRange(List<Used_data> used_Data)
         {
             foreach (var item in used_Data)
             {
                 Add(item);
             }
-            
         }
     }
 
     /// <summary>
     /// 用量数据
     /// </summary>
-    public class used_data
+    public class Used_data
     {
         /// <summary>
         /// 日期

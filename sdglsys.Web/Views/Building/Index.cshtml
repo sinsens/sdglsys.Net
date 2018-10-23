@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VBuilding>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -45,17 +46,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var b in ViewBag.buildings)
+                        @foreach (var building in Model)
                         {
                             <tr>
-                                <td class="hidden-xs" width="50">@b.Id</td>
-                                <td>@b.Nickname</td>
-                                <td class="hidden-xs">@b.Vid</td>
+                                <td class="hidden-xs" width="50">@building.Building_Id</td>
+                                <td>@building.Building_Nickname</td>
+                                <td class="hidden-xs">@building.Building_Vid</td>
                                 <td>
-                                    @b.PNickname
+                                    @building.Building_Dorm_Nickname
                                 </td>
                                 <td>
-                                    @if (b.Is_active)
+                                    @if (building.Building_Is_active)
                                     {
                                         <div class="layui-btn layui-btn-xs layui-btn-normal">正常</div>}
                                     else
@@ -64,8 +65,8 @@
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@b.Nickname" data-id="@b.Id" data-url="/building/edit"><i class="layui-icon">&#xe642;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@b.Id" data-url="/building/delete/@b.Id"><i class="layui-icon">&#xe640;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@building.Building_Nickname" data-id="@building.Building_Id" data-url="/building/edit"><i class="layui-icon">&#xe642;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@building.Building_Id" data-url="/building/delete/@building.Building_Id"><i class="layui-icon">&#xe640;</i></button>
                                     </div>
                                 </td>
                             </tr>

@@ -21,27 +21,30 @@
             <div class="layui-tab-item layui-show">
                 <form class="layui-form" style="width: 90%;padding-top: 20px;">
                     @{
-                        var Cold_water_rate = Math.Round(ViewBag.rate.Cold_water_value, 2, MidpointRounding.AwayFromZero);
-                        var Hot_water_rate = Math.Round(ViewBag.rate.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                        var Electric_rate = Math.Round(ViewBag.rate.Electric_value, 2, MidpointRounding.AwayFromZero);
-                        var Cold_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                        var Hot_water_value = Math.Round(ViewBag.quota.Hot_water_value, 2, MidpointRounding.AwayFromZero);
-                        var Electric_value = Math.Round(ViewBag.quota.Electric_value, 2, MidpointRounding.AwayFromZero);
+                        sdglsys.Entity.T_Rate rate = ViewBag.rate;
+                        var Cold_water_rate = Math.Round(rate.Rate_cold_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Hot_water_rate = Math.Round(rate.Rate_hot_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Electric_rate = Math.Round(rate.Rate_electric_value, 2, MidpointRounding.AwayFromZero);
+
+                        sdglsys.Entity.T_Quota quota = ViewBag.quota;
+                        var Cold_water_value = Math.Round(quota.Quota_cold_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Hot_water_value = Math.Round(quota.Quota_hot_water_value, 2, MidpointRounding.AwayFromZero);
+                        var Electric_value = Math.Round(quota.Quota_electric_value, 2, MidpointRounding.AwayFromZero);
                     }
                     <div class="layui-form-item">
-                        <label class="layui-form-label">冷水费率：</label>
+                        <label class="layui-form-label">冷水费率(m³/元)：</label>
                         <div class="layui-input-block">
                             <input name="cold_water_value" value="@Cold_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">热水费率：</label>
+                        <label class="layui-form-label">热水费率(m³/元)：</label>
                         <div class="layui-input-block">
                             <input name="hot_water_value" value="@Hot_water_rate" type="text" placeholder="元/吨" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">电力费率：</label>
+                        <label class="layui-form-label">电力费率(千瓦时/元)：</label>
                         <div class="layui-input-block">
                             <input name="electric_value" value="@Electric_rate" type="text" placeholder="元/千瓦时" autocomplete="off" class="layui-input">
                         </div>
@@ -49,7 +52,7 @@
                     <div class="layui-form-item layui-form-text">
                         <label class="layui-form-label">备注：</label>
                         <div class="layui-input-block">
-                            <textarea name="note" placeholder="备注" class="layui-textarea">@ViewBag.rate.Note</textarea>
+                            <textarea name="note" placeholder="备注" class="layui-textarea">@rate.Rate_note</textarea>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -66,7 +69,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">启用：</label>
                         <div class="layui-input-block">
-                            @if ((bool) ViewBag.quota.Is_active)
+                            @if ((bool) quota.Quota_is_active)
                             {
                                 <input type="checkbox" name="is_active" lay-skin="switch" title="开启" checked="checked">
                             }
@@ -77,27 +80,27 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">冷水配额：</label>
+                        <label class="layui-form-label">冷水配额(m³/每人)：</label>
                         <div class="layui-input-block">
                             <input name="cold_water_value" value="@Cold_water_value" type="text" placeholder="吨/每人" autocomplete="off" class="layui-input">
-                        </div>吨/每人
+                        </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">热水配额：</label>
+                        <label class="layui-form-label">热水配额(m³/每人)：</label>
                         <div class="layui-input-block">
                             <input name="hot_water_value" value="@Hot_water_value" type="text" placeholder="吨/每人" autocomplete="off" class="layui-input">
-                        </div>吨/每人
+                        </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">电力配额：</label>
+                        <label class="layui-form-label">电力配额(千瓦时/每人)：</label>
                         <div class="layui-input-block">
                             <input name="electric_value" value="@Electric_value" type="text" placeholder="千瓦时/每人" autocomplete="off" class="layui-input">
-                        </div>千瓦时/每人
+                        </div>
                     </div>
                     <div class="layui-form-item layui-form-text">
                         <label class="layui-form-label">备注：</label>
                         <div class="layui-input-block">
-                            <textarea name="note" placeholder="备注" class="layui-textarea">@ViewBag.rate.Note</textarea>
+                            <textarea name="note" placeholder="备注" class="layui-textarea">@rate.Rate_note</textarea>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -121,6 +124,7 @@
             form.on('submit(rateInfo)', function (datas) {
                 var data = datas.field;
                 var params = {
+                    'token': localStorage.token,
                     'note': data['note'],
                     'cold_water_value': data['cold_water_value'],
                     'hot_water_value': data['hot_water_value'],
@@ -135,8 +139,8 @@
                     url: "/admin/rate",
                     success: function (data) {
                         data = JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {
@@ -153,6 +157,7 @@
             form.on('submit(quotaInfo)', function (datas) {
                 var data = datas.field;
                 var params = {
+                    'token': localStorage.token,
                     'note': data['note'],
                     'cold_water_value': data['cold_water_value'],
                     'hot_water_value': data['hot_water_value'],
@@ -169,8 +174,8 @@
                     url: "/admin/quota",
                     success: function (data) {
                         data = JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {

@@ -21,7 +21,7 @@ namespace sdglsys.Web.Controllers
         public void Login()
         {
             /// #trial
-            if (!XUtils.IsTrial)
+            if (!WebUtils.IsTrial())
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -29,77 +29,70 @@ namespace sdglsys.Web.Controllers
             var msg = new Msg();
             string ip = "";
             string login_name = "";
+            var Utils = new WebUtils();
             try
             {
                 ip = Request.UserHostAddress;
                 login_name = Request["login_name"];
                 var pwd = Request.Form["password"];
-                var user = XUtils.Login(login_name, pwd);
+                var user = new Users().Login(login_name, pwd);
                 if (user != null)
                 {
-                    Session["id"] = user.Id;
-                    Session["login_name"] = user.Login_name;
-                    Session["nickname"] = user.Nickname;
-                    Session["role"] = user.Role;
-                    Session["pid"] = user.Pid;
-                    msg.msg = "登录成功！";
-                    msg.content = "/admin/index";
-                    XUtils.Log(new Entity.TLog
+                    Session["id"] = user.User_id;
+                    Session["login_name"] = user.User_login_name;
+                    Session["nickname"] = user.User_nickname;
+                    Session["role"] = user.User_role;
+                    Session["pid"] = user.User_dorm_id;
+                    msg.Message = "登录成功！";
+                    msg.Content = "/admin/index";
+                    /// 记录登录日志
+                    Utils.Log(new Entity.T_Log
                     {
-                        Info = "Login in",
-                        Ip = ip,
-                        Login_name = login_name,
+                        Log_info = "Login in",
+                        Log_ip = ip,
+                        Log_login_name = login_name,
                     });
-                    /// #Dv0.1请求处理
-                    var Session_ID = Session.SessionID;//Guid.NewGuid().ToString("N"); // cookie端的Session_ID
-                    Response.SetCookie(new HttpCookie("Session_ID", Session.SessionID)); // 设置cookie
-                    var Login_Info = new DbHelper.LoginInfo();
-                    var login_info = Login_Info.GetByUserId(user.Id);
-                    if (login_info != null)
+                    /// 创建Token
+                    var token_id = Guid.NewGuid().ToString("N"); // Guid
+                    var Token = new DbHelper.Token();
+                    var token = Token.GetByUserId(user.User_id);
+                    if (token != null)
                     {
                         // 更新登录信息
-                        login_info.Ip = ip;
-                        login_info.Uid = user.Id;
-                        login_info.Login_name = login_name;
-                        login_info.Session_id = Session_ID;
-                        login_info.Login_date = DateTime.Now;
-                        login_info.Expired_Date = DateTime.Now.AddHours(2);
-                        Login_Info.Update(login_info);
+                        token.Token_id = token_id;
+                        token.Token_login_date = DateTime.Now;
+                        token.Token_expired_date = DateTime.Now.AddMonths(1);
+                        Token.Update(token);
                     }
                     else
                     {
+                        token = new T_Token();
                         // 添加登录信息
-                        Login_Info.Add(new Entity.TLogin_Info
+                        Token.Add(new Entity.T_Token
                         {
-                            Ip = ip,
-                            Login_name = login_name,
-                            Session_id = Session_ID,
-                            Uid = user.Id,
-                            Login_date = DateTime.Now,
-                            Expired_Date = DateTime.Now.AddHours(2)
+                            Token_id = token_id,
+                            Token_user_id = user.User_id
                         });
                     }
-
-                    /// #end of Dv0.1请求处理
-                    // HttpContext.Application["OnLineUserCount"] = Convert.ToInt32(HttpContext.Application["OnLineUserCount"]) + 1; // 登录成功，在线用户+1
+                    msg.Token = token_id;
                 }
                 else
                 {
-                    msg.code = 400;
-                    msg.msg = "用户名或密码错误！";
-                    XUtils.Log(new Entity.TLog
+                    msg.Message = "用户名或密码错误！";
+                    msg.Code = -1;
+                    Utils.Log(new Entity.T_Log
                     {
-                        Info = "Login falied",
-                        Ip = ip,
-                        Login_name = login_name,
+                        Log_info = "Login falied",
+                        Log_ip = ip,
+                        Log_login_name = login_name,
                     });
                 }
 
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg += ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -117,17 +110,24 @@ namespace sdglsys.Web.Controllers
 
             try
             {
-                new DbHelper.LoginInfo().DeleteBySessionId(Session.SessionID);
-                new DbHelper.Logs().Add(new Entity.TLog
+                var Logs = new DbHelper.Logs();
+                Logs.Add(new Entity.T_Log
                 {
-                    Info = "Log off",
-                    Ip = Request.UserHostAddress,
-                    Login_name = Session["login_name"].ToString()
+                    Log_info = "Log off",
+                    Log_ip = Request.UserHostAddress,
+                    Log_login_name = Session["login_name"].ToString()
                 }); // 写入日志
+                // 清除Token
+                new Token().Delete((int)Session["id"]);
+                Logs.Add(new T_Log
+                {
+                    Log_info = "Clear Token By User Id:" + Session["id"],
+                    Log_login_name = "system"
+                });
             }
             catch (Exception ex)
             {
-                XUtils.Log("system", "", ex.Message);
+                new WebUtils().Log("system", "", ex.Message);
             }
             Session.Clear();
             Response.Cookies.Clear();
@@ -140,7 +140,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Index()
         {
             /// #trial
-            if (!XUtils.IsTrial)
+            if (!WebUtils.IsTrial())
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -157,6 +157,11 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public ActionResult Info()
         {
+            /*
+            if ((bool)HttpContext.Application["debug"]) {
+                Response.Write("当前为调试模式");
+                Response.End();
+            }*/
             return View(new Users().FindById((int) Session["id"]));
         }
 
@@ -166,27 +171,29 @@ namespace sdglsys.Web.Controllers
         public void UpdateInfo(FormCollection collection)
         {
             var msg = new Msg();
-            var User = new Users();
-            var user = User.FindById((int) Session["id"]);
             try
             {
-                user.Nickname = collection["nickname"];
-                user.Note = collection["note"];
-                user.Phone = collection["phone"];
+                var User = new Users();
+                var user = User.FindById((int)Session["id"]);
+                if (user == null) {
+                    throw new Exception("非法访问！");
+                }
+                user.User_nickname = collection["nickname"];
+                user.User_note = collection["note"];
+                user.User_phone = collection["phone"];
                 if (User.Update(user))
                 {
-                    msg.msg = "保存成功！";
+                    msg.Message = "保存成功！";
                 }
                 else
                 {
-                    msg.code = 500;
-                    msg.msg = "发生未知错误！";
+                    throw new Exception("发生未知错误！");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -204,30 +211,30 @@ namespace sdglsys.Web.Controllers
             {
                 var pwd_old = collection["pwd_old"];
                 var pwd_new = collection["pwd_new"];
+                var Utils = new Utils.Utils();
                 // 验证原密码
-                if (XUtils.CheckPasswd(pwd_old, user.Pwd))
+                if (Utils.CheckPasswd(pwd_old, user.User_pwd))
                 {
-                    user.Pwd = XUtils.hashpwd(pwd_new);
+                    user.User_pwd = Utils.HashBcrypt(pwd_new);
                     if (User.Update(user))
                     {
-                        msg.msg = "修改密码成功！";
+                        msg.Message = "修改密码成功";
                     }
                     else
                     {
-                        msg.code = 500;
-                        msg.msg = "发生未知错误！";
+                        throw new Exception("发生未知错误");
                     }
                 }
                 else
                 {
-                    msg.code = 403;
-                    msg.msg = "原密码输入有误";
+                    
+                    throw new Exception("原密码输入有误");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -239,20 +246,20 @@ namespace sdglsys.Web.Controllers
         {
             var Rate = new Rates();
             var Quota = new Quotas();
-            var rate = Rate.getLast();
+            var rate = Rate.GetLast();
             if (rate == null)
             {
-                rate = new Entity.TRate()
+                rate = new Entity.T_Rate()
                 {
-                    Note = "暂未设置费率",
+                    Rate_note = "暂未设置费率",
                 };
             }
-            var quota = Quota.getLast();
+            var quota = Quota.GetLast();
             if (quota == null)
             {
-                quota = new Entity.TQuota()
+                quota = new Entity.T_Quota()
                 {
-                    Note = "暂未设置基础配额"
+                    Quota_note = "暂未设置基础配额"
                 };
             }
             ViewBag.rate = rate;
@@ -270,23 +277,23 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Quota = new Quotas();
-            var quota = new Entity.TQuota();
+            var quota = new Entity.T_Quota();
             try
             {
-                quota.Cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
-                quota.Hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
-                quota.Electric_value = Convert.ToSingle(collection["electric_value"]);
-                quota.Is_active = Convert.ToBoolean(collection["is_active"]);
-                quota.Note = collection["note"];
+                quota.Quota_cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
+                quota.Quota_hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
+                quota.Quota_electric_value = Convert.ToSingle(collection["electric_value"]);
+                quota.Quota_is_active = Convert.ToBoolean(collection["is_active"]);
+                quota.Quota_note = collection["note"];
                 /// 检查输入
-                if (quota.Cold_water_value < 0 || quota.Cold_water_value > 99999) {
+                if (quota.Quota_cold_water_value < 0 || quota.Quota_cold_water_value > 99999) {
                     throw new Exception("冷水配额应在0~99999之间");
                 }
-                if (quota.Hot_water_value < 0 || quota.Hot_water_value > 99999)
+                if (quota.Quota_hot_water_value < 0 || quota.Quota_hot_water_value > 99999)
                 {
                     throw new Exception("热水配额应在0~99999之间");
                 }
-                if (quota.Electric_value < 0 || quota.Electric_value > 99999)
+                if (quota.Quota_electric_value < 0 || quota.Quota_electric_value > 99999)
                 {
                     throw new Exception("电力配额应在0~99999之间");
                 }
@@ -294,17 +301,17 @@ namespace sdglsys.Web.Controllers
                 /// 保存数据
                 if (Quota.Update(quota))
                 {
-                    msg.msg = "保存成功！";
+                    msg.Message = "保存成功";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，保存失败！";
+                    throw new Exception("发生未知错误，保存失败");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             finally
             {
@@ -323,42 +330,42 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var Rate = new Rates();
-            var rate = new Entity.TRate();
+            var rate = new Entity.T_Rate();
             try
             {
-                rate.Cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
-                rate.Hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
-                rate.Electric_value = Convert.ToSingle(collection["electric_value"]);
+                rate.Rate_cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
+                rate.Rate_hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
+                rate.Rate_electric_value = Convert.ToSingle(collection["electric_value"]);
                 //rate.Is_active = Convert.ToBoolean(collection["is_active"]);
                 /// 检查输入
-                if (rate.Cold_water_value < 0 || rate.Cold_water_value > 99999.99)
+                if (rate.Rate_cold_water_value < 0 || rate.Rate_cold_water_value > 99999.99)
                 {
                     throw new Exception("冷水费率应在0.0~99999.99之间");
                 }
-                if (rate.Hot_water_value < 0 || rate.Hot_water_value > 99999.99)
+                if (rate.Rate_hot_water_value < 0 || rate.Rate_hot_water_value > 99999.99)
                 {
                     throw new Exception("热水费率应在0.0~99999.99之间");
                 }
-                if (rate.Electric_value < 0 || rate.Electric_value > 99999.99)
+                if (rate.Rate_electric_value < 0 || rate.Rate_electric_value > 99999.99)
                 {
                     throw new Exception("电力费率应在0.0~99999.99之间");
                 }
 
                 /// 保存数据
-                rate.Note = collection["note"];
+                rate.Rate_note = collection["note"];
                 if (Rate.Update(rate))
                 {
-                    msg.msg = "保存成功！";
+                    msg.Message = "保存成功";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，保存失败！";
+                    throw new Exception("发生未知错误，保存失败");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -382,7 +389,7 @@ namespace sdglsys.Web.Controllers
         /// <returns></returns>
         public ActionResult Charts()
         {
-            return View(new DbHelper.Useds().GetUsedDatas());
+            return View(new DbHelper.Useds().GeT_UsedDatas());
         }
 
         /// <summary>
@@ -410,8 +417,8 @@ namespace sdglsys.Web.Controllers
             {
                 data.info = "请求参数有误";
             }
-            data = Used_data.GetUsedDatas(_type, _id, _start, _end);
-            Response.Write(XUtils.ToJson(data));
+            data = Used_data.GeT_UsedDatas(_type, _id, _start, _end);
+            Response.Write(new Utils.Utils().ToJson(data));
             Response.End();
         }
 
@@ -436,36 +443,26 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public void Upload(FormCollection collection)
         {
-            if (Request.Files.Count > 0 && Request.Files["file"] != null && Request.Files["file"].ContentLength > 128)
+            var Utils = new Utils.Utils();
+            try
             {
-                var file_ext = Request.Files["file"].FileName.Split('.').Reverse().First();
-                /// 文件后缀名过滤
-                var flage = false;
-                foreach (var item in XUtils.GetAppSetting("AllowFiles", typeof(string)).ToString().Split(','))
+                if (Request.Files.Count > 0 && Request.Files["file"] != null && Request.Files["file"].ContentLength > 128)
                 {
-                    if (item.Equals(file_ext))
-                        flage = true;
-                }
-                if (!flage)
-                {
-                    var msg = new
+                    var file_ext = Request.Files["file"].FileName.Split('.').Reverse().First();
+                    /// 文件后缀名过滤
+                    var flage = false;
+                    foreach (var item in Utils.GetAppSetting("AllowFiles", typeof(string)).ToString().Split(','))
                     {
-                        code = 0,
-                        msg = "禁止上传该类型的文件！当前上传的文件类型为：" + file_ext,
-                        data = new
-                        {
-                            src = "",
-                            title = "",
-                        }
-                    };
-                    Response.Write(XUtils.ToJson(msg));
-                    Response.End();
-                }
-                var upload_dir = Server.MapPath("~/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/");
-                var now = DateTime.Now.ToString("_yyyy_MM_dd_HHmmss");
-                var filename = Session["login_name"].ToString() + now + '.' + file_ext;
-                try
-                {
+                        if (item.Equals(file_ext))
+                            flage = true;
+                    }
+                    if (!flage)
+                    {
+                        throw new Exception("禁止上传该类型的文件！当前上传的文件类型为：" + file_ext);
+                    }
+                    var upload_dir = Server.MapPath("~/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/");
+                    var now = DateTime.Now.ToString("_yyyy_MM_dd_HHmmss");
+                    var filename = Session["login_name"].ToString() + now + '.' + file_ext;
                     var FileInfo = new System.IO.DirectoryInfo(upload_dir);
                     if (!FileInfo.Exists)
                     {
@@ -475,46 +472,35 @@ namespace sdglsys.Web.Controllers
                     var msg = new
                     {
                         code = 0,
-                        msg = "文件上传成功！",
+                        msg = "文件上传成功",
                         data = new
                         {
                             src = "/Uploads/" + DateTime.Now.ToString("yyyy_MM") + "/" + filename,
                             title = Request.Files["file"].FileName,
-                            files = XUtils.ToJson(Request.Files.AllKeys),
+                            files = Utils.ToJson(Request.Files.AllKeys),
                         }
                     };
-                    Response.Write(XUtils.ToJson(msg));
+                    Response.Write(Utils.ToJson(msg));
                 }
-                catch (Exception ex)
-                {
-                    var msg = new
-                    {
-                        code = 500,
-                        msg = ex.Message,
-                        data = new
-                        {
-                            src = "",
-                            title = "",
-                            files = XUtils.ToJson(Request.Files.AllKeys),
-                        }
-                    };
-                    Response.Write(XUtils.ToJson(msg));
+                else {
+                    throw new Exception("请求参数不正确");
                 }
             }
-            else
+            catch (Exception ex)
             {
                 var error = new
                 {
-                    code = 0,
-                    msg = "请求参数不正确",
+                    code = -1,
+                    msg = "发生错误："+ex.Message,
                     data = new
                     {
                         src = "",
                         title = "",
                     }
                 };
-                Response.Write(XUtils.ToJson(error));
+                Response.Write(Utils.ToJson(error));
             }
+            
             Response.End();
         }
         #endregion
@@ -540,25 +526,27 @@ namespace sdglsys.Web.Controllers
         public void GetLogList()
         {
             var msg = new ResponseData();
-            var Log = new DbHelper.Logs();
+            
             string keyword = "";
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
+                var Log = new DbHelper.Logs();
                 keyword = Request["keyword"]; // 搜索关键词
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+
+                msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
+                msg.count = count;
+                Response.Write(msg.ToJson());
+                Response.End();
             }
-            catch
+            catch(Exception)
             {
-                msg.code = 500;
+                throw;
             }
-            msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
-            msg.count = count;
-            Response.Write(msg.ToJson());
-            Response.End();
         }
     }
 }

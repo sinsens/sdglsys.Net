@@ -1,4 +1,4 @@
-﻿@model sdglsys.Entity.TUser
+﻿@model sdglsys.Entity.T_User
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,13 +16,13 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">用户名：</label>
                 <div class="layui-input-block">
-                    <input disabled value="@Model.Login_name" maxlength="15" id='login_name' type="text" required lay-verify="required" placeholder="用来登录的名称" autocomplete="off" class="layui-input">
+                    <input disabled value="@Model.User_login_name" maxlength="15" id='login_name' type="text" required lay-verify="required" placeholder="用来登录的名称" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">姓名：</label>
                 <div class="layui-input-block">
-                    <input disabled value="@Model.Nickname" maxlength="15" id='nickname' type="text" required lay-verify="required" placeholder="姓名" autocomplete="off" class="layui-input">
+                    <input disabled value="@Model.User_nickname" maxlength="15" id='nickname' type="text" required lay-verify="required" placeholder="姓名" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -43,15 +43,15 @@
                 <div class="layui-input-block">
                     <select disabled class="layui-select" id='pid' lay-search>
                         <option value="0">请选择所属园区</option>
-                        @foreach (var dorm in ViewBag.dorms)
+                        @foreach (sdglsys.Entity.T_Dorm dorm in ViewBag.dorms)
                         {
-                            if (dorm.Id == Model.Pid)
+                            if (dorm.Dorm_id == Model.User_dorm_id)
                             {
-                                <option selected value="@dorm.Id">@dorm.Nickname</option>
+                                <option selected value="@dorm.Dorm_id">@dorm.Dorm_nickname</option>
                             }
                             else
                             {
-                                <option value="@dorm.Id">@dorm.Nickname</option>
+                                <option value="@dorm.Dorm_id">@dorm.Dorm_nickname</option>
                             }
                         }
                     </select>
@@ -60,19 +60,19 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">联系电话：</label>
                 <div class="layui-input-block">
-                    <input disabled value="@Model.Phone" maxlength="11" id='phone' type="text" placeholder="联系电话" autocomplete="off" class="layui-input">
+                    <input disabled value="@Model.User_phone" maxlength="11" id='phone' type="text" placeholder="联系电话" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
-                    <textarea disabled maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                    <textarea disabled maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.User_note</textarea>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
                 <div class="layui-input-block">
-                    @if ((bool)Model.Is_active)
+                    @if ((bool)Model.User_is_active)
                     {
                         <input id="is_active" type="checkbox" name="switch" lay-skin="switch" checked="checked">
                     }
@@ -96,7 +96,7 @@
 			layui.use(['form', 'jquery'], function() {
 				var form = layui.form;
 				var $ = layui.jquery;
-				$("#role").find("option[value='" + (@Model.Role) + "']").prop("selected", true);
+				$("#role").find("option[value='" + (@Model.User_role) + "']").prop("selected", true);
 				form.render();
 				//监听提交
 				form.on('submit(formDemo)', function(data) {
@@ -105,7 +105,8 @@
 						return false;
                     }
                     var params = {
-                        "id" :@Model.Id,
+                        "id":@Model.User_id,
+                        "token": localStorage.token,
                     };
                     $.ajax({
                         async: "false",
@@ -115,8 +116,8 @@
                         data: params,
                         url: "",
                         success: function (data) {data=JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
+                            layer.msg(data['Message'], {
+                                'icon': data['Code']+1,
                             });
                         },
                         error: function (e) {

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using sdglsys.DbHelper;
 using sdglsys.Entity;
 using sdglsys.Web;
+using SqlSugar;
+
 namespace sdglsys.Web.Controllers
 {
     public class RoomController : Controller
@@ -14,32 +16,39 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult Index()
         {
-            string keyword = "";
+            string keyword = null;
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-            }
-            catch
-            {
-            }
-            if ((int) Session["role"] < 3)
-            {
-                ViewBag.rooms = new Rooms().getByPages((int) Session["pid"], page, limit, ref count, keyword); // 获取列表
-            }
-            else
-            {
-                ViewBag.rooms = new Rooms().getByPages(page, limit, ref count, keyword); // 获取列表
-            }
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
 
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
-            ViewBag.keyword = keyword;
-            return View();
+                var vrooms = new Rooms().GetVRoomByPages(page, limit, ref count, keyword, (int)Session["pid"]);
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+                ViewBag.keyword = keyword;
+                return View(vrooms);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         // GET: Room/Details/5
@@ -54,8 +63,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var Building = new Buildings();
-            ViewBag.buildings = Building.getAllActive();
-            return View();
+            return View(Building.GetAllActive());
         }
 
         // POST: Room/Create
@@ -71,30 +79,30 @@ namespace sdglsys.Web.Controllers
             try
             {
                 // 初始化对象
-                Entity.TRoom room = new Entity.TRoom()
+                Entity.T_Room room = new Entity.T_Room()
                 {
-                    Dorm_id = Convert.ToInt32(collection["dorm_id"]),
-                    Nickname = collection["name"],
-                    Note = collection["note"],
-                    Vid = collection["vid"],
-                    Number = Convert.ToInt16(collection["number"]),
-                    Pid = Convert.ToInt32(collection["pid"]),
+                    Room_dorm_id = Convert.ToInt32(collection["dorm_id"]),
+                    Room_nickname = collection["name"],
+                    Room_note = collection["note"],
+                    Room_vid = collection["vid"],
+                    Number = Convert.ToSByte(collection["number"]),
+                    Room_building_id = Convert.ToInt32(collection["pid"]),
                 };
                 var Room = new Rooms();
                 if (Room.Add(room))
                 {
-                    msg.msg = "添加成功！";
+                    msg.Message = "添加成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，添加失败！";
-                    msg.code = 500;
+                    throw new Exception("发生未知错误，添加失败！");
+
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             finally
             {
@@ -109,7 +117,7 @@ namespace sdglsys.Web.Controllers
         {
             var Buidling = new Buildings();
             var Room = new Rooms();
-            ViewBag.buildings = Buidling.getAll();
+            ViewBag.buildings = Buidling.GetAll();
             return View(Room.FindById(id));
         }
 
@@ -122,29 +130,32 @@ namespace sdglsys.Web.Controllers
             try
             {
                 var Room = new Rooms();
-                var r = Room.FindById(id);
-                if (r == null)
+                var room = Room.FindById(id);
+                if (room == null)
                 {
-                    msg.code = 404;
-                    msg.msg = "该宿舍楼不存在！";
+
+                    throw new Exception("该宿舍不存在！");
                 }
                 else
                 {
-                    r.Nickname = collection["name"];
-                    r.Note = collection["note"];
-                    r.Is_active = Convert.ToBoolean(collection["is_active"]);
-                    r.Dorm_id = Convert.ToInt32(collection["dorm_id"]);
-                    r.Vid = collection["vid"];
-                    r.Number = Convert.ToInt16(collection["number"]);
-                    r.Pid = Convert.ToInt32(collection["pid"]);
-                    msg.msg = (Room.Update(r)) ? "保存成功！" : "发生未知错误，保存失败！";
+                    room.Room_nickname = collection["name"];
+                    room.Room_note = collection["note"];
+                    room.Room_is_active = Convert.ToBoolean(collection["is_active"]);
+                    room.Room_dorm_id = Convert.ToInt32(collection["dorm_id"]);
+                    room.Room_vid = collection["vid"];
+                    room.Number = Convert.ToSByte(collection["number"]);
+                    room.Room_building_id = Convert.ToInt32(collection["pid"]);
+                    if (Room.Update(room)) { msg.Message = "保存成功！"; }
+                    else
+                    {
+                        throw new Exception("发生未知错误，保存失败！");
+                    }
                 }
-
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -155,24 +166,29 @@ namespace sdglsys.Web.Controllers
         public void Delete(int id)
         {
             var msg = new Msg();
-            var Room = new Rooms();
-            var user = Room.FindById(id);
-            if (user == null)
+            try
             {
-                msg.msg = "该园区不存在！";
-                msg.code = 404;
-            }
-            else
-            {
-                if (Room.Delete(id))
+                var Room = new Rooms();
+                var user = Room.FindById(id);
+                if (user == null)
                 {
-                    msg.msg = "删除成功！";
+                    throw new Exception("该园区不存在！");
+                }
+                else if (Room.Delete(id))
+                {
+                    msg.Message = "删除成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，删除失败！";
+                    throw new Exception("发生未知错误，删除失败！");
                 }
             }
+            catch (Exception ex)
+            {
+                msg.Code = -1;
+                msg.Message = ex.Message;
+            }
+
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -189,7 +205,7 @@ namespace sdglsys.Web.Controllers
         public void List()
         {
             var db = new Rooms().Db;
-            Response.Write(db.Queryable<TRoom>().Where(d => d.Is_active == true).ToJson());
+            Response.Write(db.Queryable<T_Used>().Where(u => u.Used_model_state && u.Used_is_active).ToJson());
         }
 
         [HttpPost]
@@ -197,7 +213,7 @@ namespace sdglsys.Web.Controllers
         public void List(int pid)
         {
             var room = new Rooms();
-            Response.Write(room.getJsonAllNoRecordByBuilding(pid));
+            Response.Write(room.GetJsonAllNoRecordByBuilding(pid));
         }
     }
 }

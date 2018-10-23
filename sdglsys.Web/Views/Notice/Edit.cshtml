@@ -1,4 +1,4 @@
-﻿@model sdglsys.Entity.TNotice
+﻿@model sdglsys.Entity.T_Notice
 <!DOCTYPE html>
 <html>
 
@@ -19,7 +19,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">标题：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Title" maxlength="40" id='title' type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    <input value="@Model.Notice_title" maxlength="40" id='title' type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -29,19 +29,14 @@
                 </div>
                 <script>
                     var content = document.getElementById("content");
-                    content.innerHTML = (unzip('@Html.Raw(Model.Content)'));
+                    content.innerHTML = (unzip('@Html.Raw(Model.Notice_content)'));
                 </script>
 
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
                 <div class="layui-input-block">
-                    @if ((bool) Model.Is_active)
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch" checked="checked"> }
-                    else
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch">}
+                    <input id="is_active" type="checkbox" name="switch" lay-skin="switch">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -56,6 +51,7 @@
         layui.use(['form', 'layedit', 'jquery'], function () {
             var $ = layui.jquery;
             var form = layui.form;
+            $("#is_active").attr("checked", @Model.Notice_is_active.ToString().ToLower());
             form.render();
             var layedit = layui.layedit;
             layedit.set({
@@ -74,6 +70,7 @@
                     return false;
                 }
                 var params = {
+                    "token": localStorage.token,
                     "title": $('#title').val(),
                     "content": zip(layedit.getContent(editor)),
                     "is_active": data.field['switch'] == "on" ? true : false,
@@ -88,9 +85,9 @@
                     success: function (data) {
                         data = JSON.parse(data);
                         layer.open({
-                            'icon': 1,
+                            'icon': data["Code"]+1,
                             'title': "温馨提示",
-                            'content': data['msg']
+                            'content': data['Message']
                         });
                     },
                     error: function (e) {

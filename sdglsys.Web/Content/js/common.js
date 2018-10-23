@@ -47,10 +47,10 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		dialog.confirm({
 			message: '您确定要进行排序吗？',
 			success: function() {
-				layer.msg('确定了')
+				layer.Message('确定了')
 			},
 			cancel: function() {
-				layer.msg('取消了')
+				layer.Message('取消了')
 			}
 		})
 		return false;
@@ -66,10 +66,10 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 		dialog.confirm({
 			message: '您确定要删除选中项',
 			success: function() {
-				layer.msg('删除了')
+				layer.Message('删除了')
 			},
 			cancel: function() {
-				layer.msg('取消了')
+				layer.Message('取消了')
 			}
 		})
 		return false;
@@ -105,7 +105,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 			"id": id,
 		});
 
-		layer.confirm('将会同时删除相关联数据', {
+		layer.confirm('删除后系统无法再访问，但可以通过数据库管理软件恢复数据', {
 			icon: 10,
             title: '您确定要进行删除吗？'
         }, function (index) {
@@ -118,8 +118,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
                 url: url,
                 success: function (data) {
                     data = JSON.parse(data);
-                    layer.msg(data['msg'], {
-                        'icon': data['code'] == 200 ? 1 : 0,
+                    layer.msg(data['Message'], {
+                        'icon': data['Code']+1,
                     });
                     reloadPage();
                 },
@@ -155,8 +155,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
                 url: url,
                 success: function (data) {
                     data = JSON.parse(data);
-                    layer.msg(data['msg'], {
-                        'icon': data['code'] == 200 ? 1 : 0,
+                    layer.msg(data['Message'], {
+                        'icon': data['Code']+1,
                     });
                     reloadPage();
                 },
@@ -188,8 +188,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
                 url: url,
                 success: function (data) {
                     data = JSON.parse(data);
-                    layer.msg(data['msg'], {
-                        'icon': data['code'] == 200 ? 1 : 0,
+                    layer.msg(data['Message'], {
+                        'icon': data['Code']+1,
                     });
                     reloadPage();
                 },
@@ -226,8 +226,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
                 url: url,
                 success: function (data) {
                     data = JSON.parse(data);
-                    layer.msg(data['msg'], {
-                        'icon': data['code'] == 200 ? 1 : 0,
+                    layer.msg(data['Message'], {
+                        'icon': data['Code']+1,
                     });
                     reloadPage();
                 },

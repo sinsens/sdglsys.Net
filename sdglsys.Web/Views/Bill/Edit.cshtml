@@ -22,26 +22,26 @@
                     }
                     else
                     {
-                        <input id="pid" disabled value="@Model.Dorm_Nickname,@Model.Building_Nickname,@Model.PNickname" class="layui-input" />
+                        <input id="pid" disabled value="@Model.Bill_Dorm_Nickname,@Model.Bill_Building_Nickname,@Model.Bill_Room_Nickname" class="layui-input" />
                     }
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">冷水费用：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Cold_water_cost" maxlength="11" id='cold_water_cost' type="text" placeholder="@Model.Cold_water_cost" autocomplete="off" class="layui-input">
+                    <input value="@Model.Bill_Cold_water_cost" maxlength="11" id='cold_water_cost' type="text" placeholder="@Model.Bill_Cold_water_cost" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">热水费用：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Hot_water_cost" maxlength="11" id='hot_water_cost' type="text" placeholder="@Model.Hot_water_cost" autocomplete="off" class="layui-input">
+                    <input value="@Model.Bill_Hot_water_cost" maxlength="11" id='hot_water_cost' type="text" placeholder="@Model.Bill_Hot_water_cost" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">电力费用：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Electric_cost" maxlength="11" id='electric_cost' type="text" placeholder="@Model.Electric_cost" autocomplete="off" class="layui-input">
+                    <input value="@Model.Bill_Electric_cost" maxlength="11" id='electric_cost' type="text" placeholder="@Model.Bill_Electric_cost" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -57,7 +57,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
-                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Bill_Note</textarea>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -73,7 +73,7 @@
         layui.use(['form', 'jquery'], function () {
             var form = layui.form;
             var $ = layui.jquery;
-            $("#stat").find("option[value='@Model.Is_active']").attr("selected", true);
+            $("#stat").find("option[value='@Model.Bill_Is_active']").attr("selected", true);
             form.render();
                 // 监听下拉列表
                 form.on('submit(formDemo)', function (data) {
@@ -91,9 +91,8 @@
                     }
                     var pid = $("#pid").val();
                     var params = {
-                        "dorm_id": @(Model.Dorm_id),
-                        "building_id": @(Model.Building_id),
-                        "pid": @(Model.Pid),
+                        "token": localStorage.token,
+                        "pid": @(Model.Bill_Room_id),
                         "cold_water_cost": $("#cold_water_cost").val(),
                         "hot_water_cost": $("#hot_water_cost").val(),
                         "electric_cost": $("#electric_cost").val(),
@@ -112,7 +111,7 @@
                             layer.open({
                                 'icon': 1,
                                 'title': "温馨提示",
-                                'content': data['msg']
+                                'content': data['Message']
                             });
                         },
                         error: function (e) {

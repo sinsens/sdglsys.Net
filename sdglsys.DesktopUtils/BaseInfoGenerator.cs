@@ -120,7 +120,7 @@ namespace sdglsys.DesktopUtils
                 /// 开始事务
                 db.Ado.BeginTran();
                 /// 插入园区记录
-                var dormId = db.Insertable(new Entity.TDorm
+                var dormId = db.Insertable(new Entity.T_Dorm
                 {
                     Nickname = DormName,
                     Note = "使用桌面工具生成的园区信息",
@@ -134,7 +134,7 @@ namespace sdglsys.DesktopUtils
                 /// 循环插入宿舍楼数据和宿舍数据
                 for (; i < b.Rows.Count; i++)
                 {
-                    var buildingId = db.Insertable(new Entity.TBuilding
+                    var buildingId = db.Insertable(new Entity.T_Building
                     {
                         Nickname = b.Rows[i]["Nickname"].ToString(),
                         Note = b.Rows[i]["Note"].ToString(),
@@ -148,7 +148,7 @@ namespace sdglsys.DesktopUtils
                     }
                     while (j < r.Rows.Count)
                     {
-                        var roomId = db.Insertable(new Entity.TRoom
+                        var roomId = db.Insertable(new Entity.T_Used
                         {
                             Dorm_id = dormId,
                             Pid = buildingId,

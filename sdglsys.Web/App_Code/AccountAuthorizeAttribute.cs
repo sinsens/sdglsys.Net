@@ -19,35 +19,14 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-
-            /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "login_name" ] == null)
-            {
-                var user = XUtils.GetAdminUser();
-                if (user != null)
-                {
-                    session[ "id" ] = user.Id;
-                    session[ "login_name" ] = user.Login_name;
-                    session[ "role" ] = 3;
-                    session[ "nickname" ] = user.Nickname;
-                }
-                else
-                {
-                    UrlHelper urlHelper = new UrlHelper(request.RequestContext);
-                    //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                    string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
-                    actionResult = new RedirectResult(returnUrl);
-                }
-
-            }
-            else if (session[ "login_name" ] == null)
+            if (session[ "login_name" ] == null)
             {
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            XUtils.Log(httpContext);
+            new WebUtils().Log(httpContext);
             authorizationContext.Result = actionResult;
         }
     }
@@ -66,34 +45,15 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
-            {
-                var user = XUtils.GetAdminUser();
-                if (user != null)
-                {
-                    session[ "id" ] = user.Id;
-                    session[ "login_name" ] = user.Login_name;
-                    session[ "role" ] = 3;
-                    session[ "nickname" ] = user.Nickname;
-                }
-                else
-                {
-                    UrlHelper urlHelper = new UrlHelper(request.RequestContext);
-                    //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                    string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
-                    actionResult = new RedirectResult(returnUrl);
-                }
-            }
-            else if (session[ "role" ] == null || (int) session[ "role" ] < 3)
+            if (session[ "role" ] == null || (int) session[ "role" ] < 3)
             {
 
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
+                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message });
                 actionResult = new RedirectResult(returnUrl);
             }
-            XUtils.Log(httpContext);
+            new WebUtils().Log(httpContext);
 
             authorizationContext.Result = actionResult;
         }
@@ -110,40 +70,54 @@ namespace sdglsys.Web
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
             var session = HttpContext.Current.Session;
-
+            
             ActionResult actionResult = null;
             string message = string.Empty;
-            
-
-            /// 如果开启调试模式，直接赋值登录用户给Session
-            if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) && session[ "role" ] == null)
-            {
-                var user = XUtils.GetAdminUser();
-
-                if (user != null)
-                {
-                    session[ "id" ] = user.Id;
-                    session[ "login_name" ] = user.Login_name;
-                    session[ "role" ] = 3;
-                    session[ "nickname" ] = user.Nickname;
-                }
-                else
-                {
-                    UrlHelper urlHelper = new UrlHelper(request.RequestContext);
-                    //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                    string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
-                    actionResult = new RedirectResult(returnUrl);
-                }
-            }
-            else if (session[ "role" ] == null || (int) session[ "role" ] < 2)
+            if (session[ "role" ] == null || (int) session[ "role" ] < 2)
             {
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message = message });
+                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message});
                 actionResult = new RedirectResult(returnUrl);
             }
-            XUtils.Log(httpContext);
+            new WebUtils().Log(httpContext);
             authorizationContext.Result = actionResult;
+        }
+    }
+
+    /// <summary>
+    /// 自动登录
+    /// </summary>
+    public class AutoLogin  {
+        public void LoginMe(HttpRequestBase request) {
+            var session = request.RequestContext.HttpContext.Session;
+            if (session["login_name"] == null && request["token"] != null)
+            {
+                /*
+                 Cookies中有Token
+                 */
+                var Token = new DbHelper.Token();
+                var token = Token.GetToken(request["token"]);
+                if (token != null && token.Token_expired_date > DateTime.Now) // 登录信息不是null且未过期
+                {
+                    var user = Token.GetUserById(token.Token_id);
+                    if (user != null)
+                    {
+                        session["id"] = user.User_id;
+                        session["login_name"] = user.User_login_name;
+                        session["nickname"] = user.User_nickname;
+                        session["role"] = user.User_role;
+                        session["pid"] = user.User_dorm_id;
+                        /// 预防身份过期
+                        if (token.Token_expired_date < DateTime.Now.AddDays(1))
+                        {
+                            token.Token_expired_date = DateTime.Now.AddDays(1);
+                            Token.Update(token);
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

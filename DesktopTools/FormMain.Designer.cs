@@ -35,6 +35,8 @@
             this.mySQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.AdminMgrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.园区信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.宿舍楼信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -60,8 +62,8 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.园区信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.宿舍楼信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -93,7 +95,7 @@
             this.mySQLToolStripMenuItem.Name = "mySQLToolStripMenuItem";
             this.mySQLToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.mySQLToolStripMenuItem.Text = "连接到数据库";
-            this.mySQLToolStripMenuItem.Click += new System.EventHandler(this.mySQLToolStripMenuItem_Click);
+            this.mySQLToolStripMenuItem.Click += new System.EventHandler(this.MySQLToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -108,9 +110,22 @@
             // AdminMgrToolStripMenuItem
             // 
             this.AdminMgrToolStripMenuItem.Name = "AdminMgrToolStripMenuItem";
-            this.AdminMgrToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.AdminMgrToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.AdminMgrToolStripMenuItem.Text = "系统角色管理";
             this.AdminMgrToolStripMenuItem.Click += new System.EventHandler(this.AdminMgrToolStripMenuItem_Click);
+            // 
+            // 园区信息管理ToolStripMenuItem
+            // 
+            this.园区信息管理ToolStripMenuItem.Name = "园区信息管理ToolStripMenuItem";
+            this.园区信息管理ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.园区信息管理ToolStripMenuItem.Text = "园区信息管理";
+            this.园区信息管理ToolStripMenuItem.Click += new System.EventHandler(this.园区信息管理ToolStripMenuItem_Click);
+            // 
+            // 宿舍楼信息管理ToolStripMenuItem
+            // 
+            this.宿舍楼信息管理ToolStripMenuItem.Name = "宿舍楼信息管理ToolStripMenuItem";
+            this.宿舍楼信息管理ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.宿舍楼信息管理ToolStripMenuItem.Text = "宿舍楼信息管理";
             // 
             // 关于ToolStripMenuItem
             // 
@@ -248,7 +263,7 @@
             this.cbxRoomCode.TabIndex = 16;
             this.cbxRoomCode.Text = "宿舍自编号格式：";
             this.cbxRoomCode.UseVisualStyleBackColor = true;
-            this.cbxRoomCode.CheckedChanged += new System.EventHandler(this.cbxRoomCode_CheckedChanged);
+            this.cbxRoomCode.CheckedChanged += new System.EventHandler(this.CbxRoomCode_CheckedChanged);
             // 
             // label7
             // 
@@ -295,7 +310,7 @@
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.List;
-            this.listView1.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
+            this.listView1.ItemActivate += new System.EventHandler(this.ListView1_ItemActivate);
             // 
             // btnSaveDataToDB
             // 
@@ -305,7 +320,7 @@
             this.btnSaveDataToDB.TabIndex = 20;
             this.btnSaveDataToDB.Text = "保存到数据库";
             this.btnSaveDataToDB.UseVisualStyleBackColor = true;
-            this.btnSaveDataToDB.Click += new System.EventHandler(this.btnSaveDataToDB_Click);
+            this.btnSaveDataToDB.Click += new System.EventHandler(this.BtnSaveDataToDB_Click);
             // 
             // btnGen
             // 
@@ -315,7 +330,7 @@
             this.btnGen.TabIndex = 20;
             this.btnGen.Text = "开始生成";
             this.btnGen.UseVisualStyleBackColor = true;
-            this.btnGen.Click += new System.EventHandler(this.btnGen_Click);
+            this.btnGen.Click += new System.EventHandler(this.BtnGen_Click);
             // 
             // btnReloadDorm
             // 
@@ -325,7 +340,7 @@
             this.btnReloadDorm.TabIndex = 2;
             this.btnReloadDorm.Text = "刷新宿舍楼信息";
             this.btnReloadDorm.UseVisualStyleBackColor = true;
-            this.btnReloadDorm.Click += new System.EventHandler(this.btnReloadDorm_Click);
+            this.btnReloadDorm.Click += new System.EventHandler(this.BtnReloadDorm_Click);
             // 
             // label1
             // 
@@ -339,7 +354,9 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel2});
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel3});
             this.statusStrip1.Location = new System.Drawing.Point(0, 488);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
@@ -372,17 +389,18 @@
             this.dataGridView1.Size = new System.Drawing.Size(776, 195);
             this.dataGridView1.TabIndex = 3;
             // 
-            // 园区信息管理ToolStripMenuItem
+            // toolStripStatusLabel1
             // 
-            this.园区信息管理ToolStripMenuItem.Name = "园区信息管理ToolStripMenuItem";
-            this.园区信息管理ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.园区信息管理ToolStripMenuItem.Text = "园区信息管理";
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(492, 17);
+            this.toolStripStatusLabel1.Spring = true;
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
-            // 宿舍楼信息管理ToolStripMenuItem
+            // toolStripStatusLabel3
             // 
-            this.宿舍楼信息管理ToolStripMenuItem.Name = "宿舍楼信息管理ToolStripMenuItem";
-            this.宿舍楼信息管理ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.宿舍楼信息管理ToolStripMenuItem.Text = "宿舍楼信息管理";
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(131, 17);
+            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
             // 
             // FormMain
             // 
@@ -445,6 +463,8 @@
         private System.Windows.Forms.ToolStripMenuItem AdminMgrToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 园区信息管理ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 宿舍楼信息管理ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
     }
 }
 

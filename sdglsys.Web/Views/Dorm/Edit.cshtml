@@ -1,4 +1,4 @@
-﻿@model sdglsys.Entity.TDorm
+﻿@model sdglsys.Entity.T_Dorm
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,50 +12,34 @@
 
 <body>
     <div class="wrap-container">
-        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;" lay-filter="form">
             <div class="layui-form-item">
                 <label class="layui-form-label">园区名称：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Nickname" maxlength="20" id='name' type="text" required lay-verify="required" placeholder="园区名称" autocomplete="off" class="layui-input">
+                    <input maxlength="20" name='name' type="text" required lay-verify="required" placeholder="园区名称" autocomplete="off" class="layui-input">
                 </div>
 
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">类型：</label>
                 <div class="layui-input-block">
-                    <select class="layui-select" id="type">
-                        @if ((bool)Model.Type)
-                        {
-                            <option value="0">女</option>
-                            <option value="1" selected="selected">男</option>
-                        }
-                        else
-                        {
-                            <option value="0" selected="selected">女</option>
-                            <option value="1">男</option>
-                        }
+                    <select class="layui-select" name="type">
+                        <option value="0">女</option>
+                        <option value="1">男</option>
                     </select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
-                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                    <textarea maxlength="255" name="note" placeholder="备注信息" autocomplete="off" class="layui-textarea"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
                 <div class="layui-input-block">
-                    @if ((bool)Model.Is_active)
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch" checked="checked">
-                    }
-                    else
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch">
-                    }
+                    <input type="checkbox" name="active" lay-skin="switch">
                 </div>
-
             </div>
 
             <div class="layui-form-item">
@@ -70,20 +54,27 @@
     <script>
             layui.use(['form', 'jquery'], function () {
                 var form = layui.form;
-                            var $ = layui.jquery;
+                var $ = layui.jquery;
                 form.render();
+                form.val("form", {
+                    "name":"@Model.Dorm_nickname",
+                    "type": @Convert.ToByte(Model.Dorm_type),
+                    "active": @Model.Dorm_is_active.ToString().ToLower(),
+                    "note": "@Model.Dorm_note",
+                });
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
-                    if ($('#name').val().trim().length < 1) {
+                    if (data.field["name"].trim().length < 1) {
                         layer.msg("园区名称不能为空");
                         return false;
                     }
                     var params = {
-                        'id': @Model.Id,
-                        "name": $('#name').val(),
-                        "type": $("#type").val(),
-                        "note": $("#note").val(),
-                        "is_active": data.field['switch'] == "on" ? true : false,
+                        "token": localStorage.token,
+                        "id": @Model.Dorm_id,
+                        "name": data.field["name"],
+                        "type": data.field["type"],
+                        "note": data.field['note'],
+                        "is_active": data.field['active'] == "on" ? true : false,
                     }
                     $.ajax({
                         async: "false",
@@ -94,8 +85,8 @@
                         url: "",
                         success: function (data) {
                             data = JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
+                            layer.msg(data['Message'], {
+                                'icon': data['Code']+1,
                             });
                         },
                         error: function (e) {

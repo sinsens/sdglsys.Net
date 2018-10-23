@@ -44,44 +44,45 @@
 
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
-			layui.use(['form', 'jquery'], function() {
-				var form = layui.form;
-				$ = layui.jquery,
-				form.render();
-				//监听提交
-				form.on('submit(formDemo)', function(data) {
-					if($('#name').val().trim().length < 1) {
-						layer.msg("园区名称不能为空");
-						return false;
-					}
-                    var params = {
-							"name": $('#name').val(),
-							"type": $("#type").val(),
-							"note": $("#note").val(),
-						}
-                    $.ajax({
-                        async: "false",
-                        type: "post",
-                        //dataType: "json",
-                        //contentType: "application/json",
-                        data: (params),
-                        url: "",
-                        success: function (data) {
-                            data = JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
-                            });
-                        },
-                        error: function (e) {
-                            layer.open({
-                                'icon': 0,
-                                'title': "发生错误",
-                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
-                            });
-                        }
-                    });
-				});
-			});
+        layui.use(['form', 'jquery'], function () {
+            var form = layui.form;
+            $ = layui.jquery,
+                form.render();
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                if ($('#name').val().trim().length < 1) {
+                    layer.msg("园区名称不能为空");
+                    return false;
+                }
+                var params = {
+                    "token": localStorage.token,
+                    "name": $('#name').val(),
+                    "type": $("#type").val(),
+                    "note": $("#note").val(),
+                }
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: (params),
+                    url: "",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

@@ -12,40 +12,46 @@ namespace sdglsys.Web.Controllers
     {
         // GET: Dorm
         [NotLowUser]
+        [HttpGet]
         public ActionResult Index()
         {
-            string keyword="";
+            string keyword = null;
             int page = 1;
             int limit = 10;
             int count = 0;
-            var b = new Buildings();
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-            }
-            catch
-            {
+                
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
 
+
+                var vbuildings = new Buildings().GetByPages(page, limit, ref count, keyword, (int)Session["pid"]); // 获取列表
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+
+                return View(vbuildings);
             }
-            
-            if ((int) Session["role"] < 3)
+            catch (Exception)
             {
-                ViewBag.buildings =b.getByPages((int) Session["pid"], page, limit, ref count, keyword); // 获取列表
-            }
-            else
-            {
-                ViewBag.buildings = b.getByPages(page, limit, ref count, keyword); // 获取列表
+                throw;
             }
 
-            
-            ViewBag.keyword = keyword;
-            
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
-
-            return View();
         }
 
         // GET: Dorm/Details/5
@@ -60,8 +66,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var Dorm = new Dorms();
-            ViewBag.dorms = Dorm.getAllActive();
-            return View();
+            return View(Dorm.GetAllActive());
         }
 
         // POST: Dorm/Create
@@ -77,34 +82,30 @@ namespace sdglsys.Web.Controllers
             try
             {
                 // 初始化对象
-                Entity.TBuilding building = new Entity.TBuilding()
+                Entity.T_Building building = new Entity.T_Building()
                 {
-                    Nickname = collection["name"],
-                    Note = collection["note"],
-                    Vid = collection["vid"],
-                    Pid = Convert.ToInt32(collection["pid"]),
+                    Building_nickname = collection["name"],
+                    Building_note = collection["note"],
+                    Building_vid = collection["vid"],
+                    Building_dorm_id = Convert.ToInt32(collection["pid"]),
                 };
                 var buildings = new Buildings();
                 if (buildings.Add(building))
                 {
-                    msg.msg = "添加成功！";
+                    msg.Message = "添加成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，添加失败！";
-                    msg.code = 500;
+                    throw new Exception("发生未知错误，添加失败！");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
-            finally
-            {
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
+            Response.Write(msg.ToJson());
+            Response.End();
         }
 
         // GET: Dorm/Edit/5
@@ -112,7 +113,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Edit(int id)
         {
             var Dorm = new Dorms();
-            ViewBag.dorms = Dorm.getAll();
+            ViewBag.dorms = Dorm.GetAll();
             var Buidling = new Buildings();
             return View(Buidling.FindById(id));
         }
@@ -129,32 +130,32 @@ namespace sdglsys.Web.Controllers
                 var b = buildings.FindById(id);
                 if (b == null)
                 {
-                    msg.code = 404;
-                    msg.msg = "该宿舍楼不存在！";
+                    
+                    throw new Exception("该宿舍楼不存在！");
                 }
-                else {
-                    b.Nickname = collection["name"];
-                    b.Note = collection["note"];
-                    b.Is_active = Convert.ToBoolean(collection["is_active"]);
-                    b.Vid = collection["vid"];
-                    b.Pid = Convert.ToInt32(collection["pid"]);
+                else
+                {
+                    b.Building_nickname = collection["name"];
+                    b.Building_note = collection["note"];
+                    b.Building_is_active = Convert.ToBoolean(collection["is_active"]);
+                    b.Building_vid = collection["vid"];
+                    b.Building_dorm_id = Convert.ToInt32(collection["pid"]);
 
                     if (buildings.Update(b))
                     {
-                        msg.msg = "保存成功！";
+                        msg.Message = "保存成功";
                     }
                     else
                     {
-                        msg.msg = "发生未知错误，保存失败！";
-                        msg.code = 500;
+                        throw new Exception("发生未知错误，保存失败");
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             finally
             {
@@ -168,24 +169,32 @@ namespace sdglsys.Web.Controllers
         public void Delete(int id)
         {
             var msg = new Msg();
-            var Buildings = new Buildings();
-            var user = Buildings.FindById(id);
-            if (user == null)
+            try
             {
-                msg.msg = "该宿舍楼不存在！";
-                msg.code = 404;
-            }
-            else
-            {
-                if (Buildings.Delete(id))
+                var Buildings = new Buildings();
+                var user = Buildings.FindById(id);
+                if (user == null)
                 {
-                    msg.msg = "删除成功！";
+                    throw new Exception("该宿舍楼不存在！");
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，删除失败！";
+                    if (Buildings.Delete(id))
+                    {
+                        msg.Message = "删除成功！";
+                    }
+                    else
+                    {
+                        throw new Exception("发生未知错误，删除失败！");
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                msg.Code = -1;
+                msg.Message = ex.Message;
+            }
+
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -201,7 +210,7 @@ namespace sdglsys.Web.Controllers
         public void List()
         {
             var db = new Buildings().Db;
-            Response.Write(db.Queryable<TBuilding>().Where(d => d.Is_active == true).ToJson());
+            Response.Write(db.Queryable<T_Building>().Where(d => d.Building_model_state && d.Building_is_active == true).ToJson());
         }
     }
 }

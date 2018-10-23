@@ -29,11 +29,11 @@
                     <table class="layui-table" lay-data="{url:'/Admin/GetLogList', page:true, height:400}" id="notice" lay-filter="notice">
                         <thead>
                             <tr>
-                                <!--th lay-data="{field:'Id', width:80, sort: true}">ID</th-->
-                                <th lay-data="{field:'Login_name', width:80, sort: true, event:'c'}">用户名</th>
-                                <th lay-data="{field:'Ip', width:120, sort: true}">IP</th>
-                                <th lay-data="{field:'Log_date', width:170, sort:true}">操作时间</th>
-                                <th lay-data="{field:'Info'}">日志信息</th>
+                                <!--th lay-data="{field:'Log_id', width:80, sort: true}">ID</th-->
+                                <th lay-data="{field:'Log_login_name', width:80, sort: true, event:'c'}">用户名</th>
+                                <th lay-data="{field:'Log_ip', width:120, sort: true}">IP</th>
+                                <th lay-data="{field:'Log_post_date', width:170, sort:true}">操作时间</th>
+                                <th lay-data="{field:'Log_info'}">日志信息</th>
                             </tr>
                         </thead>
                     </table>
@@ -50,7 +50,7 @@
             var form = layui.form;
             form.on("submit(search)", function (data) {
                 table.reload('notice', {
-                    url: encodeURI('/Admin/GetLogList/?keyword=' + $("#keyword").val()) //数据接口
+                    url: encodeURI('/Admin/GetLogList/?token=' + localStorage.token+'?keyword=' + $("#keyword").val()) //数据接口
                 });
             });
 

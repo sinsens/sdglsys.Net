@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.T_Notice>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -48,16 +49,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var notice in ViewBag.notices)
+                        @foreach (sdglsys.Entity.T_Notice notice in Model)
                         {
                             <tr>
-                                <td class="hidden-xs">@notice.Id</td>
-                                <td><a href="/notice/view/@notice.Id" target="_blank" title="点击查看该公告">@notice.Title</a></td>
-                                <td>@notice.Login_name</td>
-                                <td class="hidden-xs">@notice.Post_date</td>
-                                <td class="hidden-xs">@notice.Mod_date</td>
+                                <td class="hidden-xs">@notice.Notice_id</td>
+                                <td><a href="/notice/view/@notice.Notice_id" target="_blank" title="点击查看该公告">@notice.Notice_title</a></td>
+                                <td>@notice.Notice_login_name</td>
+                                <td class="hidden-xs">@notice.Notice_post_date</td>
+                                <td class="hidden-xs">@notice.Notice_mod_date</td>
                                 <td class="hidden-xs">
-                                    @if (notice.Is_active)
+                                    @if (notice.Notice_is_active)
                                     {
                                         <div class="layui-btn layui-btn-xs layui-btn-normal">正常</div>}
                                     else
@@ -66,8 +67,8 @@
                                 </td>
                                 <td>
                                     <div class="layui-inline">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@notice.Title" data-id="@notice.Id" data-url="/notice/edit/@notice.Id"><i class="layui-icon">&#xe642;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@notice.Id" data-url="/notice/delete/@notice.Id"><i class="layui-icon">&#xe640;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@notice.Notice_title" data-id="@notice.Notice_id" data-url="/notice/edit/@notice.Notice_id"><i class="layui-icon">&#xe642;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@notice.Notice_id" data-url="/notice/delete/@notice.Notice_id"><i class="layui-icon">&#xe640;</i></button>
                                     </div>
                                 </td>
                             </tr>

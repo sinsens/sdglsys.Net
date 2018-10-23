@@ -11,15 +11,26 @@ namespace sdglsys.Web
         protected void Application_Start()
         {
             /// 系统启动时的事件
-            /// 测试是否能正常连接数据库及进行写入日志操作
             try
             {
-                new DbHelper.DbContext().Db.Insertable(new Entity.TLog
+                /// 测试是否能正常连接数据库及进行写入日志操作
+                var db = new DbHelper.DbContext().Db;
+                db.Insertable(new Entity.T_Log
                 {
-                    Info = "Startup",
-                    Login_name = "system",
-                    Ip = "127.0.0.1"
+                    Log_info = "Startup",
+                    Log_login_name = "system",
+                    Log_ip = "127.0.0.1"
                 }).ExecuteCommand();
+                /// 清除过期Token
+                new DbHelper.Token().DistroyExpiredToken();
+                db.Insertable(new Entity.T_Log
+                {
+                    Log_info = "Clear Token",
+                    Log_login_name = "system",
+                    Log_ip = "127.0.0.1"
+                }).ExecuteCommand();
+                /// 是否进入调试模式
+                Application["debug"] = new WebUtils().GetAppSetting("Debug", typeof(bool));
             }
             catch (Exception ex)
             {
@@ -36,14 +47,12 @@ namespace sdglsys.Web
         protected void Application_End(object sender, EventArgs e)
         {
             ///  在应用程序关闭时运行的代码
-            ///  删除所有过期的登录信息
-            new DbHelper.LoginInfo().LoginInfoDb.Delete(u => u.Expired_Date <= DateTime.Now);
             ///  记录日志
-            XUtils.Log(new Entity.TLog
+            new WebUtils().Log(new Entity.T_Log
             {
-                Info = "Shutdown",
-                Login_name = "system",
-                Ip = "127.0.0.1"
+                Log_info = "Shutdown",
+                Log_login_name = "system",
+                Log_ip = "127.0.0.1"
             });
         }
 
@@ -51,11 +60,11 @@ namespace sdglsys.Web
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
             /// 系统启动后每次接受请求的事件
-            Response.Headers.Add("Content-Type", "text/html; charset=utf-8");
+            Response.Headers.Add("Content-Type", "charset=utf-8"); // 强制使用UTF-8编码
             //Response.ContentEncoding = System.Text.Encoding.GetEncoding("gbk");
 
             /// #trial
-            if (!XUtils.IsTrial)
+            if (!WebUtils.IsTrial())
             {
                 Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
                 Response.End();
@@ -70,30 +79,22 @@ namespace sdglsys.Web
         /// <param name="e"></param>
         protected void Application_AcquireRequestState(object sender, EventArgs e)
         {
-            /// 系统获取会话信息（如Session）完成后的事件
-            if (Session["login_name"] == null && Request.Cookies.Get("Session_ID") != null) // Session没有login_name（未通过登录界面登录）且不是新Session才进行判断
+
+        }
+
+        protected void Application_PreRequestHandlerExecute(object sender, EventArgs e)
+        {
+            ///调试模式
+            if ((bool)Application["debug"] && Session["login_name"] == null)
             {
-                var login_info = new DbHelper.LoginInfo().GetBySessionId(Request.Cookies.Get("Session_ID").Value);
-                if (login_info != null && login_info.Expired_Date > DateTime.Now) // 登录信息不是null且未过期
+                var user = new sdglsys.DbHelper.Users().GetAdminUser();
+                if (user != null)
                 {
-                    var user = new DbHelper.Users().FindById(login_info.Uid);
-                    if (user != null)
-                    {
-                        Session["id"] = user.Id;
-                        Session["login_name"] = user.Login_name;
-                        Session["nickname"] = user.Nickname;
-                        Session["role"] = user.Role;
-                        Session["pid"] = user.Pid;
-                    }
-                }
-            }
-            else if (Session["login_name"] != null && Request.Cookies.Get("Session_ID") != null)
-            { // 预防正在操作时身份验证突然过期
-                var login_info = new DbHelper.LoginInfo().GetBySessionId(Request.Cookies.Get("Session_ID").Value);
-                if (login_info != null && login_info.Expired_Date.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes < 10) // Session还剩20分钟过期
-                {
-                    login_info.Expired_Date.AddHours(1); // 过期时间增加1个小时
-                    new DbHelper.LoginInfo().Update(login_info);
+                    Session["id"] = user.User_id;
+                    Session["login_name"] = user.User_login_name;
+                    Session["nickname"] = "as_debug_admin";
+                    Session["role"] = 3;
+                    Session["pid"] = 0;
                 }
             }
         }
@@ -110,32 +111,40 @@ namespace sdglsys.Web
             Exception ex = Server.GetLastError();
             if (ex is HttpException)
             {
-                XUtils.Log(new Entity.TLog
+                var WebUtil = new WebUtils();
+                WebUtil.Log(new Entity.T_Log
                 {
-                    Info = ex.Message,
-                    Login_name = "system",
-                    Ip = "127.0.0.1"
+                    Log_info = ex.Message,
+                    Log_login_name = "system",
+                    Log_ip = "127.0.0.1"
                 });
-                if ((bool) XUtils.GetAppSetting("Debug", typeof(bool)) == false)
+                if ((bool)Application["debug"] == false)
                 {
+                    /*
+                     非调试模式输出序列化错误信息
+                     */
                     //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
-                    var msg = new Msg();
-                    msg.code = ((HttpException) ex).GetHttpCode();
-                    switch (msg.code)
+                    var msg = new Msg
                     {
-                        case 404:
-                            msg.msg = "找不到该页面，可能是输入的参数有误";
-                            break;
-                        case 500:
-                            msg.msg = "发生了系统内部错误<br/>" + ex.Message;
-                            break;
-                        default:
-                            msg.msg = ex.Message;
-                            break;
-                    }
+                        Message = "错误提示：" + ex.Message + "\n错误代码：" + ((HttpException)ex).GetHttpCode()
+                    };
                     Response.Write(msg.ToJson());
                     Response.End();
                 }
+                else
+                {
+                    /*
+                     调试模式直接抛出异常
+                     */
+                    throw ex;
+                }
+            }
+            else
+            {
+                /*
+                非HTTP异常就直接抛出
+                */
+                throw ex;
             }
         }
 
@@ -172,7 +181,7 @@ namespace sdglsys.Web
                 try
                 {
                     new DbHelper.LoginInfo().DeleteBySessionId(Session.SessionID);
-                    new DbHelper.Logs().Add(new Entity.TLog
+                    new DbHelper.Logs().Add(new Entity.T_Log
                     {
                         Info = "Auth Expired",
                         Ip = Request.UserHostAddress,

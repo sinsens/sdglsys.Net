@@ -1,4 +1,4 @@
-﻿@model sdglsys.Entity.TUser
+﻿@model sdglsys.Entity.T_User
 <!DOCTYPE html>
 <html>
 
@@ -23,31 +23,31 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">ID：</label>
                         <div class="layui-input-block">
-                            <input type="text" name="id" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.Id">
+                            <input type="text" name="id" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.User_id">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">用户名：</label>
                         <div class="layui-input-block">
-                            <input disabled type="text" name="username" autocomplete="off" class="layui-input layui-disabled" value="@Model.Login_name">
+                            <input disabled type="text" name="username" autocomplete="off" class="layui-input layui-disabled" value="@Model.User_login_name">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">姓名：</label>
                         <div class="layui-input-block">
-                            <input type="text" id="nickname" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input" value="@Model.Nickname">
+                            <input type="text" id="nickname" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input" value="@Model.User_nickname">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">联系电话：</label>
                         <div class="layui-input-block">
-                            <input maxlength="11" type="tel" id="phone" required lay-verify="required" placeholder="请输入联系电话" autocomplete="off" class="layui-input" value="@Model.Phone">
+                            <input maxlength="11" type="tel" id="phone" required lay-verify="required" placeholder="请输入联系电话" autocomplete="off" class="layui-input" value="@Model.User_phone">
                         </div>
                     </div>
                     <div class="layui-form-item layui-form-text">
                         <label class="layui-form-label">备注：</label>
                         <div class="layui-input-block">
-                            <textarea id="note" placeholder="请输入内容" class="layui-textarea">@Model.Note</textarea>
+                            <textarea id="note" placeholder="请输入内容" class="layui-textarea">@Model.User_note</textarea>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -62,7 +62,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">用户名：</label>
                         <div class="layui-input-block">
-                            <input type="text" name="username" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.Login_name">
+                            <input type="text" name="username" disabled autocomplete="off" class="layui-input layui-disabled" value="@Model.User_login_name">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -104,6 +104,7 @@
             //监听信息提交
             form.on('submit(adminInfo)', function (data) {
                 var params = {
+                    "token": localStorage.token,
                     "nickname": $("#nickname").val(),
                     "phone": $("#phone").val(),
                     "note": $("#note").val()
@@ -117,8 +118,8 @@
                     url: "/admin/updateInfo",
                     success: function (data) {
                         data = JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {
@@ -145,6 +146,7 @@
                     return false;
                 }
                 var params = {
+                    "token": localStorage.token,
                     "pwd_old": md5($("#pwd_old").val()),
                     "pwd_new": md5($("#pwd_new").val())
                 }
@@ -156,8 +158,8 @@
                     url: "/admin/updatePassword",
                     success: function (data) {
                         data = JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {

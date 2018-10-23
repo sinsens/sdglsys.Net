@@ -4,26 +4,13 @@ namespace sdglsys.DbHelper
 {
     public class Notices : DbContext
     {
-        public List<Entity.TNotice> getAll()
-        {
-            return Db.Queryable<Entity.TNotice>().ToList();
-        }
-
-        /// <summary>
-        /// 获取已启用的公告
-        /// </summary>
-        /// <returns></returns>
-        public List<Entity.TNotice> getAllActive()
-        {
-            return Db.Queryable<Entity.TNotice>().Where(a=>a.Is_active==true).ToList();
-        }
 
         /// <summary>
         /// 通过ID查询
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TNotice FindById(int id)
+        public Entity.T_Notice FindById(int id)
         {
             return NoticeDb.GetById(id);
         }
@@ -35,7 +22,13 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public bool Delete(int id)
         {
-            return NoticeDb.DeleteById(id);
+            var notice = FindById(id);
+            if (notice != null)
+            {
+                notice.Notice_model_state = false;
+                return NoticeDb.Update(notice);
+            }
+            return false;
         }
 
         /// <summary>
@@ -43,7 +36,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Notice"></param>
         /// <returns></returns>
-        public bool Update(Entity.TNotice Notice)
+        public bool Update(Entity.T_Notice Notice)
         {
             return NoticeDb.Update(Notice);
         }
@@ -53,7 +46,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Notice"></param>
         /// <returns></returns>
-        public bool Add(Entity.TNotice Notice)
+        public bool Add(Entity.T_Notice Notice)
         {
             return NoticeDb.Insert(Notice);
         }
@@ -66,11 +59,11 @@ namespace sdglsys.DbHelper
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.TNotice> getByPages(int page, int limit, ref int totalCount, string where=null)
+        public List<Entity.T_Notice> GetByPages(int page, int limit, ref int totalCount, string where = null)
         {
-            if(where==null)
-                return Db.Queryable<Entity.TNotice>().OrderBy(a=>a.Post_date,SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Post_date, SqlSugar.OrderByType.Desc).Where(a=>a.Title.Contains(where)||a.Login_name.Contains(where)).ToPageList(page, limit, ref totalCount);
+            if (where == null)
+                return Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            return Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state && a.Notice_title.Contains(where) || a.Notice_login_name.Contains(where)).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
@@ -81,10 +74,14 @@ namespace sdglsys.DbHelper
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.TNotice> getListByPages(int page, int limit, ref int totalCount)
+        public List<Entity.T_Notice> GetListByPages(int page, int limit, ref int totalCount)
         {
-            return Db.Queryable<Entity.TNotice>().OrderBy(a => a.Post_date, SqlSugar.OrderByType.Desc).Select(n=>new Entity.TNotice() {
-                 Id = n.Id, Login_name = n.Login_name, Post_date = n.Post_date, Title = n.Title
+            return Db.Queryable<Entity.T_Notice>().Where(a=>a.Notice_model_state).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).Select(n => new Entity.T_Notice()
+            {
+                Notice_id = n.Notice_id,
+                Notice_login_name = n.Notice_login_name,
+                Notice_post_date = n.Notice_post_date,
+                Notice_title = n.Notice_title
             }).ToPageList(page, limit, ref totalCount);
         }
     }

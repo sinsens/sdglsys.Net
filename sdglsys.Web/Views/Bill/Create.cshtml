@@ -24,9 +24,9 @@
                         @if (ViewBag.buildings.Count < 1)
                         {
                             <option value="">暂无宿舍楼数据</option>}
-                        @foreach (var room in ViewBag.buildings)
+                        @foreach (sdglsys.Entity.VBuilding building in ViewBag.buildings)
                         {
-                            <option value="@room.Id" dorm-id="@room.Pid">@room.Vid | @room.PNickname | @room.Nickname</option>
+                            <option value="@building.Building_Id" dorm-id="@building.Building_Dorm_id">@building.Building_Vid | @building.Building_Dorm_Nickname | @building.Building_Nickname</option>
                         }
                     </select>
                 </div>
@@ -80,6 +80,7 @@
                     // 更新宿舍列表
                     $("#pid").empty(); //清空原有数据
                     var params = {
+                        'token': localStorage.token,
                         "pid": data.value
                     };
                     if (data.value == null || data.value < 1) { return; }
@@ -94,7 +95,7 @@
                             var data = JSON.parse(data);
                             if (data != null) {
                                 for (var i = 0; i < data.length; i++)
-                                    $("<option value=" + data[i]["Id"] + " dorm-id=" + data[i]["Dorm_id"] + " building-id=" + data[i]["Pid"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#pid");
+                                    $("<option value=" + data[i]["Id"] + " dorm-id=" + data[i]["Room_Dorm_id"] + " building-id=" + data[i]["Pid"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#pid");
                                 form.render('select'); // 重新渲染下拉列表
                             }
                         },
@@ -119,6 +120,7 @@
                     }
                     var pid = $("#pid").val();
                     var params = {
+                        'token': localStorage.token,
                         "dorm_id": $("#pid").find("option[value='" + pid + "']").attr("dorm-id"),
                         "building_id": $("#pid").find("option[value='" + pid + "']").attr("building-id"),
                         "pid": pid,
@@ -136,11 +138,11 @@
                         url: "/Bill/create",
                         success: function (data) {
                             data = JSON.parse(data);
-                            var icon = data['code'] == 200 ? 1 : 0;
+                            var icon = data['Code'];
                             layer.open({
                                 'icon': icon,
                                 'title': "温馨提示",
-                                'content': data['msg']
+                                'content': data['Message']
                             });
                         },
                         error: function (e) {

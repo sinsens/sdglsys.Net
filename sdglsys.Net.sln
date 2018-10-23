@@ -9,13 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdglsys.Entity", "sdglsys.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdglsys.DbHelper", "sdglsys.BLL\sdglsys.DbHelper.csproj", "{58A6E410-59E1-42A7-9F2C-EBF75E9DEFD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdglsys.DesktopUtils", "sdglsys.DesktopUtils\sdglsys.DesktopUtils.csproj", "{D2D59109-B1A9-4C06-8672-8680F7F75D77}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopTools", "DesktopTools\DesktopTools.csproj", "{8BF0C1E8-6358-4C3B-83CF-382135A9918A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdglsys.Utils", "sdglsys.Utils\sdglsys.Utils.csproj", "{771C7FE7-7C69-4C81-9EF0-0EAEE7171EB9}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -33,10 +34,6 @@ Global
 		{58A6E410-59E1-42A7-9F2C-EBF75E9DEFD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58A6E410-59E1-42A7-9F2C-EBF75E9DEFD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58A6E410-59E1-42A7-9F2C-EBF75E9DEFD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2D59109-B1A9-4C06-8672-8680F7F75D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2D59109-B1A9-4C06-8672-8680F7F75D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2D59109-B1A9-4C06-8672-8680F7F75D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2D59109-B1A9-4C06-8672-8680F7F75D77}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8BF0C1E8-6358-4C3B-83CF-382135A9918A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8BF0C1E8-6358-4C3B-83CF-382135A9918A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BF0C1E8-6358-4C3B-83CF-382135A9918A}.Release|Any CPU.ActiveCfg = Release|Any CPU

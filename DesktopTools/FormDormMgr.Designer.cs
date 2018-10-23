@@ -32,8 +32,8 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,25 +62,31 @@
             // 
             // Column1
             // 
-            this.Column1.DataPropertyName = "id";
+            this.Column1.DataPropertyName = "Dorm_id";
             this.Column1.HeaderText = "园区ID";
             this.Column1.Name = "Column1";
             // 
             // Column2
             // 
-            this.Column2.DataPropertyName = "nickname";
+            this.Column2.DataPropertyName = "Dorm_nickname";
             this.Column2.HeaderText = "园区名称";
             this.Column2.Name = "Column2";
             // 
             // Column3
             // 
-            this.Column3.DataPropertyName = "type";
+            this.Column3.DataPropertyName = "Dorm_type";
             this.Column3.HeaderText = "园区类型";
+            this.Column3.Items.AddRange(new object[] {
+            "男",
+            "女"});
             this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // Column4
             // 
-            this.Column4.HeaderText = "Column4";
+            this.Column4.DataPropertyName = "Dorm_is_active";
+            this.Column4.HeaderText = "园区状态";
             this.Column4.Name = "Column4";
             // 
             // FormDormMgr
@@ -92,6 +98,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "FormDormMgr";
             this.Text = "园区信息管理";
+            this.Load += new System.EventHandler(this.FormDormMgr_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
@@ -103,7 +110,7 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
     }
 }

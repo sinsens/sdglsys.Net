@@ -75,16 +75,16 @@ namespace sdglsys.DbHelper
             });
         }
 
-        public SimpleClient<Entity.TUser> UserDb { get { return new SimpleClient<Entity.TUser>(Db); } }
-        public SimpleClient<Entity.TDorm> DormDb { get { return new SimpleClient<Entity.TDorm>(Db); } }
-        public SimpleClient<Entity.TLog> LogDb { get { return new SimpleClient<Entity.TLog>(Db); } }
-        public SimpleClient<Entity.TBuilding> BuildingDb { get { return new SimpleClient<Entity.TBuilding>(Db); } }
-        public SimpleClient<Entity.TRoom> RoomDb { get { return new SimpleClient<Entity.TRoom>(Db); } }
-        public SimpleClient<Entity.TNotice> NoticeDb { get { return new SimpleClient<Entity.TNotice>(Db); } }
-        public SimpleClient<Entity.TBill> BillDb { get { return new SimpleClient<Entity.TBill>(Db); } }
-        public SimpleClient<Entity.TUsed> UsedDb { get { return new SimpleClient<Entity.TUsed>(Db); } }
-        public SimpleClient<Entity.TUsed_total> Used_totalDb { get { return new SimpleClient<Entity.TUsed_total>(Db); } }
-        public SimpleClient<Entity.TLogin_Info> LoginInfoDb { get { return new SimpleClient<Entity.TLogin_Info>(Db); } }
+        public SimpleClient<Entity.T_User> UserDb { get { return new SimpleClient<Entity.T_User>(Db); } }
+        public SimpleClient<Entity.T_Dorm> DormDb { get { return new SimpleClient<Entity.T_Dorm>(Db); } }
+        public SimpleClient<Entity.T_Log> LogDb { get { return new SimpleClient<Entity.T_Log>(Db); } }
+        public SimpleClient<Entity.T_Building> BuildingDb { get { return new SimpleClient<Entity.T_Building>(Db); } }
+        public SimpleClient<Entity.T_Room> RoomDb { get { return new SimpleClient<Entity.T_Room>(Db); } }
+        public SimpleClient<Entity.T_Notice> NoticeDb { get { return new SimpleClient<Entity.T_Notice>(Db); } }
+        public SimpleClient<Entity.T_Bill> BillDb { get { return new SimpleClient<Entity.T_Bill>(Db); } }
+        public SimpleClient<Entity.T_Used> UsedDb { get { return new SimpleClient<Entity.T_Used>(Db); } }
+        public SimpleClient<Entity.T_Used_total> Used_totalDb { get { return new SimpleClient<Entity.T_Used_total>(Db); } }
+        public SimpleClient<Entity.T_Token> TokenDb { get { return new SimpleClient<Entity.T_Token>(Db); } }
 
         
         /// <summary>

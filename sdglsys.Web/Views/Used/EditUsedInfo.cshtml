@@ -22,32 +22,32 @@
                     }
                     else
                     {
-                        <input id="pid" value="@Model.Dorm_Nickname,@Model.Building_Nickname,@Model.PNickname" disabled class="layui-input" />
+                        <input id="pid" value="@Model.UT_Dorm_Nickname,@Model.UT_Building_Nickname,@Model.UT_Room_Nickname" disabled class="layui-input" />
                     }
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">冷水表读数：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Cold_water_value" maxlength="11" id='cold_water_value' type="text" placeholder="冷水表读数" autocomplete="off" class="layui-input">
+                    <input value="@Model.UT_Cold_water_value" maxlength="11" id='cold_water_value' type="text" placeholder="冷水表读数" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">热水表读数：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Hot_water_value" maxlength="11" id='hot_water_value' type="text" placeholder="热水表读数" autocomplete="off" class="layui-input">
+                    <input value="@Model.UT_Hot_water_value" maxlength="11" id='hot_water_value' type="text" placeholder="热水表读数" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">电表读数：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Electric_value" maxlength="11" id='electric_value' type="text" placeholder="电表读数" autocomplete="off" class="layui-input">
+                    <input value="@Model.UT_Electric_value" maxlength="11" id='electric_value' type="text" placeholder="电表读数" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
-                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.UT_Note</textarea>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -77,11 +77,9 @@
                         layer.msg("读表数值不能为空");
                         return;
                     }
-                    var pid = $("#pid").val();
                     var params = {
-                        "dorm_id": @(Model.Dorm_id),
-                        "building_id": @(Model.Building_id),
-                        "pid": @(Model.Pid),
+                        "token": localStorage.token,
+                        "pid": @Model.UT_Room_id,
                         "cold_water_value": $("#cold_water_value").val(),
                         "hot_water_value": $("#hot_water_value").val(),
                         "electric_value": $("#electric_value").val(),
@@ -93,10 +91,10 @@
                         //dataType: "json",
                         //contentType: "application/json",
                         data: params,
-                        url: "/used/CreateUsedInfo/@Model.Pid",
+                        url: "/used/CreateUsedInfo/@Model.UT_Room_id",
                         success: function (data) {data=JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
+                            layer.msg(data['Message'], {
+                                'icon': data['Code']+1,
                             });
                         },
                         error: function (e) {

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VBill>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -77,32 +78,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var bill in ViewBag.bills)
+                        @foreach (var bill in Model)
                         {
                             <tr>
-                                <td class="hidden-xs">@bill.Id</td>
-                                <td>@bill.PNickname</td>
-                                <td>@bill.Building_Nickname</td>
+                                <td class="hidden-xs">@bill.Bill_Id</td>
+                                <td>@bill.Bill_Room_Nickname</td>
+                                <td>@bill.Bill_Building_Nickname</td>
                                 @if ((int)Session["role"] > 2)
                                 {
-                                    <td class="hidden-xs">@bill.Dorm_Nickname</td>}
+                                    <td class="hidden-xs">@bill.Bill_Dorm_Nickname</td>}
                                 @{
-                                    var Cold_water_cost = Math.Round(bill.Cold_water_cost, 2);
-                                    var Hot_water_cost = Math.Round(bill.Hot_water_cost, 2);
-                                    var Electric_cost = Math.Round(bill.Electric_cost, 2);
-                                    var Cold_water_value = Math.Round(bill.Cold_water_value, 2);
-                                    var Hot_water_value = Math.Round(bill.Hot_water_value, 2);
-                                    var Electric_value = Math.Round(bill.Electric_value, 2);
-                                    var total = Math.Round(bill.Hot_water_cost + bill.Cold_water_cost + bill.Electric_cost, 2);
+                                    var Cold_water_cost = Math.Round(bill.Bill_Cold_water_cost, 2);
+                                    var Hot_water_cost = Math.Round(bill.Bill_Hot_water_cost, 2);
+                                    var Electric_cost = Math.Round(bill.Bill_Electric_cost, 2);
+                                    var Cold_water_value = Math.Round(bill.Bill_Cold_water_cost, 2);
+                                    var Hot_water_value = Math.Round(bill.Bill_Hot_water_cost, 2);
+                                    var Electric_value = Math.Round(bill.Bill_Electric_cost, 2);
+                                    var total = Math.Round(bill.Bill_Hot_water_cost + bill.Bill_Cold_water_cost + bill.Bill_Electric_cost, 2);
                                 }
                                 <td class="hidden-xs">@Cold_water_cost ￥</td>
                                 <td class="hidden-xs">@Hot_water_cost ￥</td>
                                 <td class="hidden-xs">@Electric_cost ￥</td>
                                 <td>@total ￥</td>
-                                <td class="hidden-xs">@bill.Mod_date</td>
+                                <td class="hidden-xs">@bill.Bill_Mod_date</td>
                                 <td>
                                     @{ var label_stat = "<div class='layui-btn layui-btn-xs layui-btn-danger'>已登记</label>";}
-                                    @switch ((int)bill.Is_active)
+                                    @switch ((int)bill.Bill_Is_active)
                                     {
                                         case 0:
                                             label_stat = "<div class='layui-btn layui-btn-xs layui-btn-disabled'>已注销</label>";
@@ -115,21 +116,21 @@
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
-                                        @if (bill.Is_active == 1) { 
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary pay-btn" data-id="@bill.Id"
-                                                data-url="/Bill/Pay/@bill.Id" data-text="结算该账单">
+                                        @if (bill.Bill_Is_active == 1) { 
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary pay-btn" data-id="@bill.Bill_Id"
+                                                data-url="/Bill/Pay/@bill.Bill_Id" data-text="结算该账单">
                                             <i class="layui-icon">&#xe65e;</i>
                                         </button>}
                                         <button class="layui-btn layui-btn-sm layui-btn-primary view-btn"
-                                                title="冷水用量:@Cold_water_value|热水用量:@Hot_water_value|用电量:@Electric_value|备注:@bill.Note">
+                                                title="冷水用量:@Cold_water_value|热水用量:@Hot_water_value|用电量:@Electric_value|备注:@bill.Bill_Note">
                                             <i class="layui-icon">&#xe60e;</i>
                                         </button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-id="@bill.Id"
-                                                data-url="/Bill/Edit/@bill.Id" data-text="修改账单信息">
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-id="@bill.Bill_Id"
+                                                data-url="/Bill/Edit/@bill.Bill_Id" data-text="修改账单信息">
                                             <i class="layui-icon">&#xe642;</i>
                                         </button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-usedinfo" data-id="@bill.Id"
-                                                data-url="/Bill/Delete/@bill.Id">
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-usedinfo" data-id="@bill.Bill_Id"
+                                                data-url="/Bill/Delete/@bill.Bill_Id">
                                             <i class="layui-icon">&#xe640;</i>
                                         </button>
                                     </div>

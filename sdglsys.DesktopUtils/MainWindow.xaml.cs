@@ -44,7 +44,7 @@ namespace sdglsys.DesktopUtils
 
             try
             {
-                var u = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(q => q.Login_name == tbxLogin_name.Text).First();
+                var u = DBInfo.DB.Db.Queryable<Entity.T_User>().Where(q => q.Login_name == tbxLogin_name.Text).First();
                 if (u == null)
                 {
                     await this.ShowMessageAsync("温馨提示", "未找到用户名为'" + tbxLogin_name.Text + "'的系统用户。");
@@ -58,7 +58,7 @@ namespace sdglsys.DesktopUtils
                     user.Login_name = u.Login_name;
                     user.Is_active = u.Is_active;
                     user.Role = u.Role;
-                    var dorm = DBInfo.DB.Db.Queryable<Entity.TDorm>().Where(x => x.Id == user.Id).First();
+                    var dorm = DBInfo.DB.Db.Queryable<Entity.T_Dorm>().Where(x => x.Id == user.Id).First();
                     if (dorm != null)
                     { user.DormName = dorm.Nickname; }
                     user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
@@ -133,7 +133,7 @@ namespace sdglsys.DesktopUtils
             }
             try
             {
-                var user = DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == tbxLogin_name.Text).First();
+                var user = DBInfo.DB.Db.Queryable<Entity.T_User>().Where(u => u.Login_name == tbxLogin_name.Text).First();
                 user.Pwd = BCrypt.Net.BCrypt.HashPassword(GetMD5(newpwd.Trim()), 4);/// 先做md5，再做bcrypt加密
                 DBInfo.DB.Db.Updateable(user).ExecuteCommand();
                 await this.ShowMessageAsync("温馨提示", "重置密码成功");
@@ -162,7 +162,7 @@ namespace sdglsys.DesktopUtils
             try
             {
                 // 检查用户名是否已存在
-                if (DBInfo.DB.Db.Queryable<Entity.TUser>().Where(u => u.Login_name == loginname).Count() > 0)
+                if (DBInfo.DB.Db.Queryable<Entity.T_User>().Where(u => u.Login_name == loginname).Count() > 0)
                 {
                     await this.ShowMessageAsync("温馨提示", "该用户名已存在");
                     return;
@@ -170,7 +170,7 @@ namespace sdglsys.DesktopUtils
                 /// 先做md5，再做bcrypt加密
                 pwd = BCrypt.Net.BCrypt.HashPassword(GetMD5(pwd), 4);
                 var nickname = newNickname.Text.Trim().Length > 1 ? newNickname.Text.Trim() : loginname;
-                var user = new Entity.TUser
+                var user = new Entity.T_User
                 {
                     Login_name = loginname,
                     Pwd = pwd,

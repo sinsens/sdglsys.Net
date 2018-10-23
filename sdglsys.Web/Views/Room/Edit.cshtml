@@ -1,4 +1,4 @@
-﻿@model sdglsys.Entity.TRoom
+﻿@model sdglsys.Entity.T_Room
 <!DOCTYPE html>
 <html>
 
@@ -7,58 +7,53 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>添加宿舍楼</title>
+    <title>修改宿舍信息</title>
     @Styles.Render("~/Content/css")
 </head>
 
 <body>
     <div class="wrap-container">
-        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;" lay-filter="form">
             <div class="layui-form-item">
-                <label class="layui-form-label">名称：</label>
+                <label class="layui-form-label">宿舍楼：</label>
                 <div class="layui-input-block">
-                    <input value="@Model.Nickname" maxlength="20" id='name' type="text" required lay-verify="required" placeholder="宿舍楼名称" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">编号：</label>
-                <div class="layui-input-block">
-                    <input value="@Model.Vid" maxlength="15" id='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">人数：</label>
-                <div class="layui-input-block">
-                    <input value="@Model.Number" maxlength="2" id='number' type="number" required lay-verify="required" placeholder="该宿舍现有人数" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属园区：</label>
-                <div class="layui-input-block">
-                    <select class="layui-select" id="pid" lay-search>
+                    <select class="layui-select" name="pid" lay-search>
                         <option value="">请选择一个宿舍楼</option>
-                        @foreach (var building in ViewBag.buildings)
+                        @foreach (sdglsys.Entity.VBuilding building in ViewBag.buildings)
                         {
-                            <option value="@building.Id" dorm-id="@building.Pid">@building.Vid | @building.PNickname | @building.Nickname</option>
+                            <option value="@building.Building_Id" dorm-id="@building.Building_Dorm_id">@building.Building_Vid | @building.Building_Dorm_Nickname | @building.Building_Nickname</option>
                         }
                     </select>
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">名称：</label>
+                <div class="layui-input-block">
+                    <input maxlength="20" name='name' type="text" required lay-verify="required" placeholder="宿舍楼名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">编号：</label>
+                <div class="layui-input-block">
+                    <input maxlength="15" name='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">人数：</label>
+                <div class="layui-input-block">
+                    <input maxlength="2" name='number' type="number" required lay-verify="required" placeholder="该宿舍现有人数" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
-                    <textarea maxlength="255" id='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Note</textarea>
+                    <textarea maxlength="255" name='note' placeholder="备注信息" autocomplete="off" class="layui-textarea">@Model.Room_note</textarea>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
                 <div class="layui-input-block">
-                    @if ((bool) Model.Is_active)
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch" checked="checked"> }
-                    else
-                    {
-                        <input id="is_active" type="checkbox" name="switch" lay-skin="switch">}
+                    <input type="checkbox" name="active" lay-skin="switch">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -74,37 +69,44 @@
         layui.use(['form', 'jquery'], function () {
             var form = layui.form;
             $ = layui.jquery;
-            $("#pid").find("option[value='" + (@Model.Pid) + "']").prop("selected", true);
+            form.val("form", {
+                "name": "@Model.Room_nickname",
+                "vid": "@Model.Room_vid",
+                "number": @Model.Number,
+                "note": "@Model.Room_note",
+                "active": @Model.Room_is_active.ToString().ToLower(),
+                "pid": @Model.Room_building_id,
+            });
+            //$("#pid").find("option[value='" + (@Model.Room_building_id) + "']").prop("selected", true);
             form.render();
             //监听提交
             form.on('submit(formDemo)', function (data) {
-                if ($('#name').val().trim().length < 1) {
-                    layer.msg("宿舍楼名称不能为空");
+                if (data.field["name"].trim().length < 1) {
+                    layer.msg("宿舍名称不能为空");
                     return false;
                 }
-                if ($('#vid').val().trim().length < 1) {
+                if (data.field["vid"].trim().length < 1) {
                     layer.msg("编号不能为空");
                     return false;
                 }
-                var number = parseInt($("#number").val())
+                var number = parseInt(data.field["number"]);
                 if (number < 0 || number > 99) {
                     layer.msg("宿舍人数应在0~99之间");
                     return false;
                 }
-                if ($('#pid').val().trim().length < 1) {
-                    layer.msg("请选择所属园区");
+                if (data.field["pid"] < 1) {
+                    layer.msg("请选择所属宿舍楼");
                     return false;
                 }
 
-                var pid = $("#pid").val();
                 var params = {
-                    "dorm_id": $("#pid").find("option[value='" + pid + "']").attr("dorm-id"),
-                    "name": $('#name').val(),
-                    "vid": $("#vid").val(),
-                    "pid": $("#pid").val(),
-                    "note": $("#note").val(),
+                    "token": localStorage.token,
+                    "name": data.field["name"],
+                    "vid": data.field["vid"],
+                    "pid": data.field["pid"],
+                    "note": data.field["note"],
                     "number": number,
-                    "is_active": data.field['switch'] == "on" ? true : false,
+                    "is_active": data.field['active'] == "on" ? true : false,
                 }
                 $.ajax({
                     async: "false",
@@ -114,8 +116,8 @@
                     data: params,
                     url: "",
                     success: function (data) {data=JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {

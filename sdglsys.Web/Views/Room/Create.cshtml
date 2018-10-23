@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VBuilding>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -12,7 +13,19 @@
 
 <body>
     <div class="wrap-container">
-        <div class="layui-form" style="width: 90%;padding-top: 20px;">
+        <div class="layui-form" style="width: 90%;padding-top: 20px;" lay-filter="form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">宿舍楼：</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" id="pid" lay-search lay-filter="pid">
+                        <option value="">请选择一个宿舍楼</option>
+                        @foreach (sdglsys.Entity.VBuilding building in Model)
+                        {
+                            <option value="@building.Building_Id" dorm-id="@building.Building_Dorm_id" vid="@building.Building_Vid">@building.Building_Vid | @building.Building_Dorm_Nickname | @building.Building_Nickname</option>
+                        }
+                    </select>
+                </div>
+            </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">名称：</label>
                 <div class="layui-input-block">
@@ -22,7 +35,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">编号：</label>
                 <div class="layui-input-block">
-                    <input maxlength="15" id='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
+                    <input maxlength="15" name="vid" id='vid' type="text" required lay-verify="required" placeholder="便于记忆的编号" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -31,18 +44,7 @@
                     <input maxlength="2" id='number' type="number" required lay-verify="required" placeholder="该宿舍现有人数" autocomplete="off" class="layui-input">
                 </div>
             </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属宿舍楼：</label>
-                <div class="layui-input-block">
-                    <select class="layui-select" id="pid" lay-search>
-                        <option value="">请选择一个宿舍楼</option>
-                        @foreach (var building in ViewBag.buildings)
-                        {
-                            <option value="@building.Id" dorm-id="@building.Pid">@building.Vid | @building.PNickname | @building.Nickname</option>
-                        }
-                    </select>
-                </div>
-            </div>
+
             <div class="layui-form-item">
                 <label class="layui-form-label">备注：</label>
                 <div class="layui-input-block">
@@ -86,6 +88,7 @@
 
                 var pid = $("#pid").val();
                 var params = {
+                    "token": localStorage.token,
                     "dorm_id": $("#pid").find("option[value='" + pid + "']").attr("dorm-id"),
                     "name": $('#name').val(),
                     "vid": $("#vid").val(),
@@ -102,8 +105,8 @@
                     url: "",
                     success: function (data) {
                         data = JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {

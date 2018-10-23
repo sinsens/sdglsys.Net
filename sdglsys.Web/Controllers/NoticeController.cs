@@ -21,19 +21,35 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+                
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
+
+                var notices = new Notices().GetByPages(page, limit, ref count, keyword); // 获取列表
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+                return View(notices);
             }
-            catch
+            catch(Exception)
             {
+                throw;
             }
-            var notices = new Notices();
-            ViewBag.keyword = keyword;
-            ViewBag.notices = notices.getByPages(page, limit, ref count, keyword); // 获取列表
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
-            return View();
+            
         }
 
         // GET: Notice/Details/5
@@ -63,20 +79,25 @@ namespace sdglsys.Web.Controllers
             try
             {
                 // 初始化对象
-                Entity.TNotice notice = new Entity.TNotice()
+                Entity.T_Notice notice = new Entity.T_Notice()
                 {
-                    Title = collection["title"],
-                    Content = collection["content"],
-                    Login_name = (string) Session["login_name"],
-                    Post_date = DateTime.Now,
+                    Notice_title = collection["title"],
+                    Notice_content = collection["content"],
+                    Notice_login_name = (string)Session["login_name"],
+                    //Notice_post_date = DateTime.Now,
                 };
                 var Notice = new Notices();
-                msg.msg = (Notice.Add(notice)) ? "发布公告成功！" : "发生未知错误，发布公告失败！";
+                if (Notice.Add(notice)) {
+                    msg.Message = "发布公告成功！";
+                }
+                else {
+                    throw new Exception("发生未知错误，发布公告失败！");
+                }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -96,36 +117,32 @@ namespace sdglsys.Web.Controllers
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
-            var Notice = new Notices();
-            var notice = Notice.FindById(id);
-            if (notice == null)
-            {
-                msg.code = 404;
-                msg.msg = "该公告不存在！";
-                Response.Write(msg.ToJson());
-                Response.End();
-            }
             try
             {
-                notice.Content = collection["content"];
-                notice.Title = collection["title"];
-                notice.Mod_date = DateTime.Now;
-                notice.Is_active = Convert.ToBoolean(collection["is_active"]);
+                var Notice = new Notices();
+                var notice = Notice.FindById(id);
+                if (notice == null)
+                {
+                    throw new Exception("该公告不存在！");
+                }
+                notice.Notice_content = collection["content"];
+                notice.Notice_title = collection["title"];
+                notice.Notice_mod_date = DateTime.Now;
+                notice.Notice_is_active = Convert.ToBoolean(collection["is_active"]);
 
                 if (Notice.Update(notice))
                 {
-                    msg.msg = "保存成功！";
+                    msg.Message = "保存成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，保存失败！";
-                    msg.code = 500;
+                    throw new Exception("发生未知错误，保存失败！");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -137,24 +154,29 @@ namespace sdglsys.Web.Controllers
         public void Delete(int id)
         {
             var msg = new Msg();
-            var User = new Notices();
-            var user = User.FindById(id);
-            if (user == null)
+            try
             {
-                msg.msg = "该公告不存在！";
-                msg.code = 404;
-            }
-            else
-            {
-                if (User.Delete(id))
+                var User = new Notices();
+                var user = User.FindById(id);
+                if (user == null)
                 {
-                    msg.msg = "删除成功！";
+                    throw new Exception("该公告不存在！");
+                }
+                else if (User.Delete(id))
+                {
+                    msg.Message = "删除成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，删除失败！";
+                    throw new Exception("发生未知错误，删除失败！");
                 }
             }
+            catch (Exception ex)
+            {
+                msg.Code = -1;
+                msg.Message = ex.Message;
+            }
+            
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -185,22 +207,24 @@ namespace sdglsys.Web.Controllers
 
         public ActionResult List()
         {
-            var db = new Notices();
+            
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
+                var Notice = new Notices();
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+                ViewBag.notices = Notice.GetListByPages(page, limit, ref count);
             }
             catch
             {
             }
-            ViewBag.notices = db.getListByPages(page, limit, ref count);            
+            
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
-            
+
             return View();
         }
 
@@ -222,18 +246,19 @@ namespace sdglsys.Web.Controllers
         {
             //var data = new DbHelper.
             var msg = new ResponseData();
-            var db = new Notices();
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
+                var Notice = new Notices();
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+                msg.data = Notice.GetListByPages(page, limit, ref count);
             }
             catch
-            {}
-            msg.data = db.getListByPages(page, limit, ref count);
+            { }
+            
             Response.Write(msg.ToJson());
             Response.End();
         }

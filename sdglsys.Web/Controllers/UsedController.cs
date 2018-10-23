@@ -14,29 +14,47 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public ActionResult Index()
         {
-            string keyword = "";
-            var b = new Useds();
+            string keyword = null;
             int page = 1;
             int limit = 10;
             int stat = 0;
             int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-                stat = Convert.ToInt32(Request["stat"]);
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
+                if (!int.TryParse(Request["stat"], out stat))
+                {
+                    stat = 0;
+                }
+
+                var vuseds = new Useds().GetByPages(page, limit, ref count, keyword, (int)Session["pid"]); // 获取列表
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+
+                return View(vuseds);
             }
-            catch
+            catch (Exception)
             {
+                throw;
             }
-            ViewBag.useds = ((int) Session["role"] < 3) ? b.getByPagesByDormId(page, limit, (int) Session["pid"], ref count, keyword) : b.getByPages(page, limit, ref count, keyword); // 获取列表
 
-            ViewBag.keyword = keyword;
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
 
-            return View();
         }
 
         // GET: Used/Details/5
@@ -50,12 +68,19 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public ActionResult Create()
         {
-            var B = new DbHelper.Buildings();
-            if ((int) Session["role"] < 3)
-                ViewBag.building = B.getAllActiveById((int) Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
-            else
-                ViewBag.building = B.getAllActive(); // 非系统管理员只能看到所属于园区的宿舍
-            return View();
+            var vbuildings = new List<Entity.VBuilding>();
+            try
+            {
+                var Buildings = new DbHelper.Buildings();
+                vbuildings = ((int)Session["role"] < 3) ? Buildings.GetAllActiveById((int)Session["pid"]) : Buildings.GetAllActive();
+                // 非系统管理员只能看到所属于园区的宿舍
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return View(vbuildings);
         }
 
         // POST: Used/Create
@@ -68,18 +93,17 @@ namespace sdglsys.Web.Controllers
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
-            msg.code = 400;
             var Db = new DbContext().Db;
             try
             {
-                var rate = Db.Queryable<TRate>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
+                var rate = new Rates().GetLast();
                 // 验证费率信息
                 if (rate == null)
                 {
                     throw new Exception("请先到'系统设置-费率及基础配额设置'设置费率信息");
                 }
                 // 验证基础配额信息
-                var quota = Db.Queryable<TQuota>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
+                var quota = new Quotas().GetLast();
                 if (quota == null)
                 {
                     throw new Exception("请先到'系统设置-费率及基础配额设置'设置基础配额信息");
@@ -99,8 +123,6 @@ namespace sdglsys.Web.Controllers
                 {
                     throw new Exception("数值输入有误，读表数值应在0~999999之间");
                 }
-                //var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                //var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
                 var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
                 var Note = collection["note"];
                 if (Pid < 0 || Pid > 99999999)
@@ -108,12 +130,12 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("宿舍ID输入有误，应在1~99999999之间");
                 }
                 ///1.2获取宿舍信息
-                var room = Db.Queryable<Entity.TRoom>().Where(r => r.Id == Pid).First();
+                var room = new Rooms().FindById(Pid);
                 if (room == null)
                 {
                     throw new Exception("该宿舍不存在");
                 }
-                else if (room.Number < 1)
+                if (room.Number < 1)
                 {
                     throw new Exception("该宿舍无人居住，无需登记");
                 }
@@ -128,84 +150,84 @@ namespace sdglsys.Web.Controllers
                 var this_hot_water_value = hot_water_value;
                 var this_electric_value = electric_value;
                 ///3.计算本次用量
-                var usedinfo = Db.Queryable<TUsed_total>().Where(u => Pid == u.Pid).First();
+                var usedinfo = new Useds_total().FindByPid(Pid);
                 if (usedinfo != null)
                 {
                     ///3.1判断本次数值是否大于等于上次数值
-                    if (this_cold_water_value < usedinfo.Cold_water_value || this_hot_water_value < usedinfo.Hot_water_value || this_electric_value < usedinfo.Electric_value)
+                    if (this_cold_water_value < usedinfo.Ut_cold_water_value || this_hot_water_value < usedinfo.Ut_hot_water_value || this_electric_value < usedinfo.Ut_electric_value)
                     {
                         throw new Exception("数值输入有误，本期水表电表数值应大于等于上期读表数值");
                     }
                     // 本次数值=本次读数-上次读数
-                    this_cold_water_value -= usedinfo.Cold_water_value;
-                    this_hot_water_value -= usedinfo.Hot_water_value;
-                    this_electric_value -= usedinfo.Electric_value;
+                    this_cold_water_value -= usedinfo.Ut_cold_water_value;
+                    this_hot_water_value -= usedinfo.Ut_hot_water_value;
+                    this_electric_value -= usedinfo.Ut_electric_value;
                 }
                 else
                 {
-                    usedinfo = new TUsed_total();
+                    usedinfo = new T_Used_total();
                 }
-                usedinfo.Dorm_id = room.Dorm_id;
-                usedinfo.Building_id = room.Pid;
-                usedinfo.Pid = Pid;
-                usedinfo.Hot_water_value = hot_water_value;
-                usedinfo.Cold_water_value = cold_water_value;
-                usedinfo.Electric_value = electric_value;
+                usedinfo.Ut_dorm_id = room.Room_dorm_id;
+                usedinfo.Ut_building_id = room.Room_building_id;
+                usedinfo.Ut_room_id = Pid;
+                usedinfo.Ut_hot_water_value = hot_water_value;
+                usedinfo.Ut_cold_water_value = cold_water_value;
+                usedinfo.Ut_electric_value = electric_value;
 
                 ///3.1生成用量单
-                var used = new TUsed()
+                var used = new T_Used()
                 {
-                    Electric_value = this_electric_value,
-                    Hot_water_value = this_hot_water_value,
-                    Cold_water_value = this_cold_water_value,
-                    Building_id = room.Pid,
-                    Dorm_id = room.Dorm_id,
-                    Note = Note,
-                    Pid = Pid,
-                    Post_uid = (int) Session["id"],
+                    Used_electric_value = this_electric_value,
+                    Used_hot_water_value = this_hot_water_value,
+                    Used_cold_water_value = this_cold_water_value,
+                    Used_building_id = room.Room_building_id,
+                    Used_dorm_id = room.Room_dorm_id,
+                    Used_note = Note,
+                    Used_room_id = Pid,
+                    Used_post_user_id = (int)Session["id"],
                 };
                 ///3.2扣除基础配额数据，最终使用量 =（本次读表数值-上次读表数值）-（基础配额*人数）
-                if (quota != null && quota.Is_active)
+                if (quota != null && quota.Quota_is_active)
                 {
-                    this_cold_water_value -= quota.Cold_water_value * room.Number;
-                    this_hot_water_value -= quota.Hot_water_value * room.Number;
-                    this_electric_value -= quota.Electric_value * room.Number;
+                    this_cold_water_value -= quota.Quota_cold_water_value * room.Number;
+                    this_hot_water_value -= quota.Quota_hot_water_value * room.Number;
+                    this_electric_value -= quota.Quota_electric_value * room.Number;
                 }
                 Db.Ado.BeginTran(); // 开始事务
                 ///3.3保存用量单
                 var uid = Db.Insertable(used).ExecuteReturnEntity();
 
-                if (uid.Id < 1)// 插入并更新自增ID
+                if (uid.Used_id < 1)// 插入并更新自增ID
                 {
                     throw new Exception("保存登记信息时发生错误！");
                 }
 
                 ///5.计算本次费用并生成账单，费用 = 最终使用量*费率，（无阶梯计费）
-                var bill = new TBill();
-                bill.Pid = uid.Id;
-                bill.Room_id = room.Id;
-                bill.Building_id = room.Pid;
-                bill.Dorm_id = room.Dorm_id;
+                var bill = new T_Bill();
+                bill.Bill_used_id = uid.Used_id;
+                bill.Bill_room_id = room.Room_id;
+                bill.Bill_building_id = room.Room_building_id;
+                bill.Bill_dorm_id = room.Room_dorm_id;
                 ///6.超过基础配额的才计费
                 if (this_cold_water_value > 0)
                 { // 冷水费
-                    bill.Cold_water_cost = (decimal) this_cold_water_value * (decimal) rate.Cold_water_value;
+                    bill.Bill_cold_water_cost = (decimal)this_cold_water_value * (decimal)rate.Rate_cold_water_value;
                 }
                 if (this_hot_water_value > 0)
                 { // 热水费
-                    bill.Hot_water_cost = (decimal) this_hot_water_value * (decimal) rate.Hot_water_value;
+                    bill.Bill_hot_water_cost = (decimal)this_hot_water_value * (decimal)rate.Rate_hot_water_value;
                 }
                 if (this_electric_value > 0)
                 { // 电费
-                    bill.Electric_cost = (decimal) this_electric_value * (decimal) rate.Electric_value;
+                    bill.Bill_electric_cost = (decimal)this_electric_value * (decimal)rate.Rate_electric_value;
                 }
 
-                bill.Rates_id = rate.Id;
-                bill.Quota_id = quota.Id;
+                bill.Bill_rates_id = rate.Rate_id;
+                bill.Bill_quota_id = quota.Quota_id;
                 ///7.保存所有数据
 
                 ///7.1保存读表信息
-                if (usedinfo.Id < 1)
+                if (usedinfo.Ut_id < 1)
                 {
                     if (Db.Insertable(usedinfo).ExecuteCommand() < 1)
                     {
@@ -224,15 +246,14 @@ namespace sdglsys.Web.Controllers
                 }
 
                 Db.Ado.CommitTran();// 提交事务
-                msg.code = 200;
-                msg.msg = "添加成功！";
+                msg.Message = "添加成功！";
             }
             catch (Exception ex)
             {
                 //发生错误，回滚事务
                 Db.Ado.RollbackTran();
-                msg.code = 500;
-                msg.msg += ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -250,63 +271,15 @@ namespace sdglsys.Web.Controllers
         public void Delete(int id)
         {
             var msg = new Msg();
-            msg.code = 500;
-            var Db = new DbContext().Db;
-            var Used_total = new Useds_total();
             try
             {
-                ///0.开始事务
-                Db.Ado.BeginTran();
-                ///1.获取记录数据
-                var used = Db.Context.Queryable<Entity.TUsed>().Where(u => u.Id == id).First();
-                if (used == null)
-                {
-                    throw new Exception("该记录已被删除");
-                }
-                ///2.判断账单状态
-                var bill = Db.Ado.Context.Queryable<Entity.TBill>().Where(b => b.Pid == used.Id).First();
-                if (bill.Is_active != 1)
-                {
-                    throw new Exception("关联账单的状态已被更改，无法删除");
-                }
-                ///3.更新读表信息
-                var last = Used_total.Last(used.Pid);
-                if (last != null)
-                { // 读表数值=读表数值-本次读数
-                    last.Cold_water_value -= used.Cold_water_value;
-                    last.Hot_water_value -= used.Hot_water_value;
-                    last.Electric_value -= used.Electric_value;
-                }
-                else
-                {
-                    last = new TUsed_total();
-                    last.Dorm_id = used.Dorm_id;
-                    last.Building_id = used.Building_id;
-                    last.Pid = used.Pid;
-                }
-                last.Post_date = DateTime.Now;
-                ///4保存读表信息
-                if (last.Id < 1)
-                {
-                    if (Db.Insertable(last).ExecuteCommand() < 1)
-                    {
-                        throw new Exception("更新读表信息时发生错误！");
-                    }
-
-                }
-                else if (Db.Updateable(last).ExecuteCommand() < 1)
-                {
-                    throw new Exception("更新读表信息时发生错误！");
-                }
-                Db.Ado.Context.Deleteable(used).ExecuteCommand();
-                Db.Ado.CommitTran();// 提交事务
-                msg.code = 200;
-                msg.msg = "删除成功！";
+                new Useds().BllDelete(id);
+                msg.Message = "删除成功！";
             }
             catch (Exception ex)
             {
-                Db.Ado.RollbackTran();//发生错误，回滚操作
-                msg.msg += ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -317,10 +290,18 @@ namespace sdglsys.Web.Controllers
         {
             /// 获取宿舍的读表数值
             var msg = new Msg();
-            var Used = new Useds_total();
-            msg.content = Used.Last(Convert.ToInt32(collection["pid"]));
-            Response.Write(msg.ToJson());
-            Response.End();
+            try
+            {
+                var Used = new Useds_total();
+                msg.Content = Used.Last(Convert.ToInt32(collection["pid"]));
+                Response.Write(msg.ToJson());
+                Response.End();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
 
         /// <summary>
@@ -341,17 +322,19 @@ namespace sdglsys.Web.Controllers
                 page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
                 limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
                 stat = Convert.ToInt32(Request["stat"]);
-            }
-            catch
-            {
-            }
-            var b = new Useds_total();
-            ViewBag.useds = ((int) Session["role"] < 3) ? b.getByPagesByDormId(page, limit, (int) Session["pid"], ref count, keyword) : ViewBag.useds = b.getByPages(page, limit, ref count, keyword);// 获取列表
 
-            ViewBag.keyword = keyword;
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
-            return View();
+                var Useds_total = new Useds_total();
+                ViewBag.useds = Useds_total.GetByPages(page, limit, ref count, keyword, (int)Session["pid"]);// 获取列表
+
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+                return View();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -363,25 +346,26 @@ namespace sdglsys.Web.Controllers
         public ActionResult CreateUsedInfo()
         {
             var Room = new Rooms();
-            if ((int) Session["role"] < 3)
-                ViewBag.rooms = Room.GetVRoomWithoutUsedInfo((int) Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
+            if ((int)Session["role"] < 3)
+                ViewBag.rooms = Room.GetVRoomWithouT_UsedInfo((int)Session["pid"]); // 非系统管理员只能看到所属于园区的宿舍
             else
-                ViewBag.rooms = Room.GetVRoomWithoutUsedInfo();
+                ViewBag.rooms = Room.GetVRoomWithouT_UsedInfo();
             return View();
         }
 
         [NotLowUser]
         [HttpPost]
-        public void CreateUsedInfo(int pid, FormCollection collection)
+        public void CreateUsedInfo(FormCollection collection)
         {
             var msg = new Msg();
             var Db = new Useds_total().Db;
-            msg.code = 400;
             try
             {
+                var pid = Convert.ToInt32(collection["pid"]);
                 var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
                 var hot_water_value = Convert.ToSingle(collection["hot_water_value"]);
                 var electric_value = Convert.ToSingle(collection["electric_value"]);
+                var Note = collection["note"];
 
                 ///1.1判断输入数值
                 if (cold_water_value < 0 || hot_water_value < 0 || electric_value < 0)
@@ -390,27 +374,30 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-                    var Dorm_id = Convert.ToInt32(collection["dorm_id"]); // 园区ID
-                    var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
-                    var Pid = Convert.ToInt32(collection["pid"]); ; // 宿舍ID
-                    var Note = collection["note"];
-                    var usedinfo = Db.Queryable<TUsed_total>().Where(u => pid == u.Pid).First();
+
+                    var usedinfo = Db.Queryable<T_Used_total>().Single(u => u.Ut_model_state && pid == u.Ut_room_id);
                     if (usedinfo == null)//如果读表数值为null，新建一个读表数值对象
                     {
-                        usedinfo = new TUsed_total();
+                        usedinfo = new T_Used_total();
+                        var room = Db.Queryable<Entity.T_Room>().Single(x => x.Room_id == pid && x.Room_model_state);
+                        if (room == null)
+                        {
+                            throw new Exception("该宿舍不存在,id:" + pid);
+                        }
+                        usedinfo.Ut_dorm_id = room.Room_dorm_id;
+                        usedinfo.Ut_building_id = room.Room_building_id;
+                        usedinfo.Ut_room_id = pid;
                     }
-                    usedinfo.Note = Note;
-                    usedinfo.Dorm_id = Dorm_id;
-                    usedinfo.Building_id = Building_id;
-                    usedinfo.Pid = Pid;
-                    usedinfo.Hot_water_value = hot_water_value;
-                    usedinfo.Cold_water_value = cold_water_value;
-                    usedinfo.Electric_value = electric_value;
+                    usedinfo.Ut_note = Note;
 
-                    usedinfo.Post_date = DateTime.Now;
+                    usedinfo.Ut_hot_water_value = hot_water_value;
+                    usedinfo.Ut_cold_water_value = cold_water_value;
+                    usedinfo.Ut_electric_value = electric_value;
+
+                    usedinfo.Ut_post_date = DateTime.Now;
                     ///1.2保存读表信息
                     Db.Ado.BeginTran(); //开始事务
-                    if (usedinfo.Id < 1) // 如果是新增的读表记录，就执行插入操作
+                    if (usedinfo.Ut_id < 1) // 如果是新增的读表记录，就执行插入操作
                     {
                         Db.Insertable(usedinfo).ExecuteCommand();
                         //throw new Exception("插入读表记录时发生错误");
@@ -419,16 +406,15 @@ namespace sdglsys.Web.Controllers
                     {
                         throw new Exception("更新读表记录时发生错误"); // 否则执行更新操作
                     }
-                    msg.code = 200;
                     Db.Ado.CommitTran();// 提交事务
-                    msg.msg = "保存成功";
+                    msg.Message = "保存成功";
                 }
             }
             catch (Exception ex)
             {
                 Db.Ado.RollbackTran();//发生错误，回滚操作
-                msg.code = 500;
-                msg.msg = "添加读表信息时发生错误：" + ex.Message;
+                msg.Code = -1;
+                msg.Message = "添加读表信息时发生错误：" + ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -448,25 +434,29 @@ namespace sdglsys.Web.Controllers
         public void DeleteUsedInfo(int id)
         {
             var msg = new Msg();
-            var Used = new Useds_total();
-            var used = Used.FindById(id);
-            if (used == null)
+            try
             {
-                msg.msg = "该宿舍读表信息不存在！";
-                msg.code = 404;
-            }
-            else
-            {
-                if (!Used.Delete(id))
+                var Used = new Useds_total();
+                var used = Used.FindById(id);
+                if (used == null)
                 {
-                    msg.msg = "删除宿舍读表信息时发生错误！";
-                    msg.code = 500;
+                    throw new Exception("该宿舍读表信息不存在！");
+                }
+                else if (!Used.Delete(id))
+                {
+                    throw new Exception("删除宿舍读表信息时发生错误！");
                 }
                 else
                 {
-                    msg.msg = "删除成功！";
+                    msg.Message = "删除成功！";
                 }
             }
+            catch (Exception ex)
+            {
+                msg.Code = -1;
+                msg.Message = ex.Message;
+            }
+
             Response.Write(msg.ToJson());
             Response.End();
         }

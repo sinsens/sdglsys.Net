@@ -14,42 +14,46 @@ namespace sdglsys.Web.Controllers
         [NotLowUser]
         public ActionResult Index()
         {
-            /// #trial
-            if (!XUtils.IsTrial)
-            {
-                Response.Write("非常抱歉地提示您，您可能未经授权就使用了我的程序，或者该程序已到期，已经无法使用，现在是：" + DateTime.Now + "<br/>如有任何疑问，请联系QQ：1278386874");
-                Response.End();
-            }
-
-            string keyword = ""; // 关键词
+            string keyword = null; // 关键词
             int page = 1; // 当前页数
             int limit = 10; // 每页显示数量
             int stat = -1;  // 账单状态
             int count = 0;  // 结果数量
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
-                stat = Convert.ToInt16(Request["stat"]);
-            }
-            catch
-            { }
-            var bills = new Bills();
-            if ((int) Session["role"] < 3)
-            {
-                ViewBag.bills = bills.getByPagesByDormId((int) Session["pid"], page, limit, ref count, keyword, (short) stat); // 获取列表
-            }
-            else
-            {
-                ViewBag.bills = bills.getByPages(page, limit, ref count, keyword, (short) stat); // 获取列表
-            }
-            ViewBag.stat = stat;
-            ViewBag.keyword = keyword;
-            ViewBag.count = count;  // 当前页数量
-            ViewBag.page = page;  // 获取当前页
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
+                if (!int.TryParse(Request["stat"], out stat))
+                {
+                    stat = -1;
+                }
+                var vbills = new Bills().GetByPages(page, limit, ref count, keyword, (short)stat, (int)Session["pid"]); // 获取列表
+                ViewBag.stat = stat;
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 当前页数量
+                ViewBag.page = page;  // 获取当前页
 
-            return View();
+                return View(vbills);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            
         }
 
         /// <summary>
@@ -61,7 +65,7 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var Building = new Buildings();
-            ViewBag.buildings = (int) Session["role"] < 3 ? Building.getAllActiveById((int) Session["pid"]) : Building.getAllActive();
+            ViewBag.buildings = (int) Session["role"] < 3 ? Building.GetAllActiveById((int) Session["pid"]) : Building.GetAllActive();
             return View();
         }
 
@@ -76,13 +80,12 @@ namespace sdglsys.Web.Controllers
         public void Create(FormCollection collection)
         {
             var msg = new Msg();
-            msg.code = 400;
-            var Db = new DbContext().Db;
-            var rate = Db.Queryable<TRate>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
-            var quota = Db.Queryable<TQuota>().OrderBy(r => r.Id, SqlSugar.OrderByType.Desc).First();
-
+            SqlSugar.SqlSugarClient Db = null;
             try
-            {// 验证费率信息
+            {
+                var rate = new Rates().GetLast();
+                // 验证费率信息
+                var quota = new Quotas().GetLast();
                 if (rate == null)
                 {
                     throw new Exception("请先设置费率信息");
@@ -109,30 +112,31 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("手动添加账单时请输入至少3个字符作为说明");
                 }
                 /// 生成一个虚拟用量登记
-                var used = new TUsed()
+                var used = new T_Used()
                 {
-                    Pid = Pid,
-                    Note = "手动添加账单后自动生成的登记信息，并不会更新读表数据",
-                    Building_id = Building_id,
-                    Dorm_id = Dorm_id,
-                    Post_uid = (int) Session["id"],
+                    Used_room_id = Pid,
+                    Used_note = "手动添加账单后自动生成的登记信息，并不会更新读表数据",
+                    Used_building_id = Building_id,
+                    Used_dorm_id = Dorm_id,
+                    Used_post_user_id = (int) Session["id"],
                 };
                 /// 开始事务
+                Db = new DbContext().Db;
                 Db.Ado.BeginTran();
                 var u = Db.Insertable(used).ExecuteReturnIdentity();
                 /// 生成账单
-                var bill = new TBill()
+                var bill = new T_Bill()
                 {
-                    Note = Note,
-                    Pid = u,
-                    Room_id = Pid,
-                    Building_id = Building_id,
-                    Dorm_id = Dorm_id,
-                    Cold_water_cost = (decimal) cold_water_value,
-                    Electric_cost = (decimal) hot_water_value,
-                    Hot_water_cost = (decimal) electric_value,
-                    Rates_id = rate.Id,
-                    Quota_id = quota.Id,
+                    Bill_note = Note,
+                    Bill_used_id = u,
+                    Bill_room_id = Pid,
+                    Bill_building_id = Building_id,
+                    Bill_dorm_id = Dorm_id,
+                    Bill_cold_water_cost = (decimal) cold_water_value,
+                    Bill_electric_cost = (decimal) hot_water_value,
+                    Bill_hot_water_cost = (decimal) electric_value,
+                    Bill_rates_id = rate.Rate_id,
+                    Bill_quota_id = quota.Quota_id,
                 };
                 /// 保存账单
                 if (Db.Insertable(bill).ExecuteCommand() < 1)
@@ -141,15 +145,16 @@ namespace sdglsys.Web.Controllers
                 }
 
                 Db.Ado.CommitTran();// 提交事务
-                msg.code = 200;
-                msg.msg += "添加成功！";
+                msg.Message = "添加成功！";
             }
             catch (Exception ex)
             {
                 //发生错误，回滚事务
-                Db.Ado.RollbackTran();
-                msg.code = 500;
-                msg.msg += ex.Message;
+                if (Db != null) {
+                    Db.Ado.RollbackTran();
+                }
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -165,26 +170,28 @@ namespace sdglsys.Web.Controllers
         public void Delete(int id)
         {
             var msg = new Msg();
-            var Db = new DbContext().Db;
+            var Bill = new Bills();
             try
             {
                 ///0.开始事务
-                Db.Ado.BeginTran();
                 ///1.获取记录数据
-                var bill = Db.Ado.Context.Queryable<Entity.TBill>().Where(b=>b.Id==id).First();
+                var bill = Bill.FindById(id);
                 if (bill == null)
                 {
                     throw new Exception("该账单已被删除");
                 }
-                Db.Ado.Context.Deleteable(bill).ExecuteCommand();
-                Db.Ado.CommitTran();// 提交事务
-                msg.msg = "删除成功！";
+                else if (Bill.Delete(id))
+                {
+                    msg.Message = "删除成功！";
+                }
+                else {
+                    msg.Message = "发生未知错误";
+                }
             }
             catch (Exception ex)
             {
-                Db.Ado.RollbackTran();//发生错误，回滚操作
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -208,14 +215,12 @@ namespace sdglsys.Web.Controllers
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
-            msg.code = 400;
             var Db = new DbContext().Db;
             try
             {
-                var bill = Db.Queryable<TBill>().Where(b => b.Id == id).First();
+                var bill = new Bills().FindById(id);
                 if (bill == null)
                 {
-                    msg.code = 404;
                     throw new Exception("该账单信息不存在！");
                 }
                 ///1.获取数据
@@ -231,7 +236,7 @@ namespace sdglsys.Web.Controllers
                 var Building_id = Convert.ToInt32(collection["building_id"]); // 宿舍楼ID
                 var Pid = Convert.ToInt32(collection["pid"]); // 宿舍ID
                 var Note = collection["note"];
-                var stat = Convert.ToInt16(collection["stat"]); // 账单状态
+                var stat = Convert.ToSByte(collection["stat"]); // 账单状态
                 if (Dorm_id < 0 || Building_id < 0 || Pid < 0)
                 {
                     throw new Exception("宿舍ID或宿舍楼ID或园区ID输入有误");
@@ -241,11 +246,11 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("修改账单时请输入至少3个字符作为说明");
                 }
                 ///修改账单数值
-                bill.Cold_water_cost = cold_water_cost;
-                bill.Electric_cost = hot_water_cost;
-                bill.Hot_water_cost = electric_cost;
-                bill.Note = Note;
-                bill.Is_active = stat;
+                bill.Bill_cold_water_cost = cold_water_cost;
+                bill.Bill_hot_water_cost = hot_water_cost;
+                bill.Bill_electric_cost = electric_cost;
+                bill.Bill_note = Note;
+                bill.Bill_is_active = stat;
                 Db.Ado.BeginTran();
                 ///7.2保存账单
                 if (Db.Updateable(bill).ExecuteCommand() < 1)
@@ -253,15 +258,14 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("保存账单信息时发生错误！");
                 }
                 Db.Ado.CommitTran();// 提交事务
-                msg.code = 200;
-                msg.msg = "保存成功！";
+                msg.Message = "保存成功！";
             }
             catch (Exception ex)
             {
                 //发生错误，回滚事务
                 Db.Ado.RollbackTran();
-                msg.code = 500;
-                msg.msg = "修改账单时发生错误：" + ex.Message;
+                msg.Code = -1;
+                msg.Message = "修改账单时发生错误：" + ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -292,13 +296,12 @@ namespace sdglsys.Web.Controllers
                 var bill = Db.GetById(id);
                 if (bill == null)
                 {
-                    msg.code = 404;
                     throw new Exception("该账单不存在");
                 }
-                bill.Is_active = 2;
+                bill.Bill_is_active = 2;
                 if (Db.Update(bill))
                 {
-                    msg.msg = "结算成功！";
+                    msg.Message = "结算成功！";
                 }
                 else
                 {
@@ -307,8 +310,8 @@ namespace sdglsys.Web.Controllers
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = "结算账单时发生错误：" + ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();

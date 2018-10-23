@@ -6,19 +6,14 @@ namespace sdglsys.DbHelper
 {
     public class Useds_total : DbContext
     {
-        public List<Entity.TUsed_total> getAll()
-        {
-            return Db.Queryable<Entity.TUsed_total>().ToList();
-        }
-
         /// <summary>
         /// 通过宿舍ID查询最后登记记录
         /// </summary>
         /// <param name="id">宿舍ID</param>
         /// <returns></returns>
-        public Entity.TUsed_total Last(int id)
+        public Entity.T_Used_total Last(int id)
         {
-            return Db.Queryable<Entity.TUsed_total>().Where(a => a.Pid == id).OrderBy(a => a.Id, OrderByType.Desc).First();
+            return Db.Queryable<Entity.T_Used_total>().Where(a => a.Ut_model_state && a.Ut_room_id == id).OrderBy(a => a.Ut_id, OrderByType.Desc).First();
         }
 
         /// <summary>
@@ -26,7 +21,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUsed_total FindById(int id)
+        public Entity.T_Used_total FindById(int id)
         {
             return Used_totalDb.GetById(id);
         }
@@ -36,9 +31,9 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUsed_total findByPid(int id)
+        public Entity.T_Used_total findByPid(int id)
         {
-            return Db.Queryable<TUsed_total>().Where(u => u.Pid == id).First();
+            return Db.Queryable<T_Used_total>().Where(u => u.Ut_room_id == id).First();
         }
 
         /// <summary>
@@ -48,7 +43,13 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public bool Delete(int id)
         {
-            return Used_totalDb.DeleteById(id);
+            var ut = FindById(id);
+            if (ut != null)
+            {
+                ut.Ut_model_state = false;
+                return Update(ut);
+            }
+            return false;
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Room"></param>
         /// <returns></returns>
-        public bool Update(Entity.TUsed_total used)
+        public bool Update(Entity.T_Used_total used)
         {
             return Used_totalDb.Update(used);
         }
@@ -66,7 +67,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
-        public bool Add(Entity.TUsed_total used)
+        public bool Add(Entity.T_Used_total used)
         {
             return Used_totalDb.Insert(used);
         }
@@ -76,24 +77,23 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public VUsed_total FindVUsedById(int id) {
-            return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((u, r, b, d)=>u.Id==id).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = u.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                  }).First();
+        public VUsed_total FindVUsedById(int id)
+        {
+            return Db.Queryable<T_Used_total, T_Room, T_Building, T_Dorm>((u, r, b, d) => new object[] { JoinType.Left, u.Ut_room_id == r.Room_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
+                Where((u, r, b, d) => u.Ut_model_state && u.Ut_id == id).
+                 Select((u, r, b, d) => new VUsed_total
+                 {
+                     UT_Room_id = r.Room_id,
+                     Id = u.Ut_id,
+                     UT_Dorm_Nickname = d.Dorm_nickname,
+                     UT_Building_Nickname = b.Building_nickname,
+                     UT_Room_Nickname = r.Room_nickname,
+                     UT_Note = u.Ut_note,
+                     UT_Post_date = u.Ut_post_date,
+                     UT_Cold_water_value = u.Ut_cold_water_value,
+                     UT_Electric_value = u.Ut_electric_value,
+                     UT_Hot_water_value = u.Ut_hot_water_value
+                 }).First();
         }
 
         /// <summary>
@@ -101,25 +101,10 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id">宿舍ID</param>
         /// <returns></returns>
-        public VUsed_total FindByPid(int id)
+        public T_Used_total FindByPid(int id)
         {
-            return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((u, r, b, d) => u.Pid == id).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = r.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                  }).First();
+            return Db.Queryable<T_Used_total, T_Room, T_Building, T_Dorm>((u, r, b, d) => new object[] { JoinType.Left, u.Ut_room_id == r.Room_dorm_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
+                Where((u, r, b, d) => u.Ut_model_state && u.Ut_room_id == id).First();
         }
 
         /// <summary>
@@ -130,97 +115,30 @@ namespace sdglsys.DbHelper
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<VUsed_total> getByPages(int page, int limit, ref int totalCount, string where = null)
+        public List<VUsed_total> GetByPages(int page, int limit, ref int totalCount, string where = null, int dorm_id = 0)
         {
-            if (where == null)
-                return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    OrderBy((u, r, b, d) => u.Post_date, OrderByType.Desc).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = r.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((u, r, b, d) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)||b.Nickname.Contains(where)||d.Nickname.Contains(where)).
-                OrderBy((u, r, b, d) => u.Post_date, OrderByType.Desc).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = r.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                  }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
-        }
+            var sql = Db.Queryable<T_Used_total, T_Room, T_Building, T_Dorm>((u, r, b, d) => new object[] { JoinType.Left, u.Ut_room_id == r.Room_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).OrderBy((u, r, b, d) => u.Ut_post_date, OrderByType.Desc).Where(u => u.Ut_model_state);
 
-        /// <summary>
-        /// 查找登记
-        /// </summary>
-        /// <param name="page">当前页数</param>
-        /// <param name="limit">每页数量</param>
-        /// <param name="id">园区ID</param>
-        /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
-        /// <returns></returns>
-        public List<VUsed_total> getByPagesByDormId(int page, int limit, int id, ref int totalCount, string where = null)
-        {
-            if (where == null)
-                return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((u, r, b, d) => u.Dorm_id == id).
-                    OrderBy((u, r, b, d)=>u.Post_date, OrderByType.Desc).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = r.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TUsed_total, TRoom, TBuilding, TDorm>((u, r, b, d) => new object[] { JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((u, r, b, d) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
-                Where((u, r, b, d) => u.Dorm_id == id).
-                OrderBy((u, r, b, d) => u.Post_date, OrderByType.Desc).
-                  Select((u, r, b, d) => new VUsed_total
-                  {
-                      Id = u.Id,
-                      Pid = u.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = r.Note,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                      Post_date = u.Post_date,
-                  }).ToPageList(page, limit, ref totalCount);
-            //return Db.Queryable<Entity.Building>().Where((b) => b.Nickname.Contains(where) || b.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
+            if (dorm_id != 0)
+            {
+                sql = sql.Where(u => u.Ut_dorm_id == dorm_id);
+            }
+            if (!string.IsNullOrWhiteSpace(where))
+            {
+                sql = sql.Where((u, r, b, d) => r.Room_nickname.Contains(where) || r.Room_note.Contains(where) || r.Room_vid.Contains(where));
+            }
+            return sql.Select((u, r, b, d) => new VUsed_total
+            {
+                Id = u.Ut_id,
+                UT_Dorm_Nickname = d.Dorm_nickname,
+                UT_Building_Nickname = b.Building_nickname,
+                UT_Room_Nickname = r.Room_nickname,
+                UT_Note = u.Ut_note,
+                UT_Post_date = u.Ut_post_date,
+                UT_Cold_water_value = u.Ut_cold_water_value,
+                UT_Electric_value = u.Ut_electric_value,
+                UT_Hot_water_value = u.Ut_hot_water_value
+            }).ToPageList(page, limit, ref totalCount);
         }
     }
 }

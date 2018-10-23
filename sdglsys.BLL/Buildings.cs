@@ -6,19 +6,36 @@ namespace sdglsys.DbHelper
 {
     public class Buildings : DbContext
     {
-        public List<Entity.VBuilding> getAll()
+        public List<Entity.VBuilding> GetAll()
         {
-            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToList();
+            return Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state).Select((b, d) => new VBuilding
+            {
+                Building_Dorm_id = d.Dorm_id,
+                Building_Dorm_Nickname = d.Dorm_nickname,
+                Building_Id = b.Building_id,
+                Building_Is_active = b.Building_is_active,
+                Building_Nickname = b.Building_nickname,
+                Building_Note = b.Building_note,
+                Building_Vid = b.Building_vid
+            }).ToList();
         }
 
         /// <summary>
         /// 获取已启用的宿舍楼
         /// </summary>
         /// <returns></returns>
-        public List<Entity.VBuilding> getAllActive()
+        public List<Entity.VBuilding> GetAllActive()
         {
-            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).
-                  Where((b,d)=>b.Is_active==true).Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToList();
+            return Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((b, d) => b.Building_is_active && b.Building_model_state).Select((b, d) => new VBuilding
+            {
+                Building_Dorm_id = d.Dorm_id,
+                Building_Dorm_Nickname = d.Dorm_nickname,
+                Building_Id = b.Building_id,
+                Building_Is_active = b.Building_is_active,
+                Building_Nickname = b.Building_nickname,
+                Building_Note = b.Building_note,
+                Building_Vid = b.Building_vid
+            }).ToList();
         }
 
         /// <summary>
@@ -26,10 +43,18 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="pid">园区ID</param>
         /// <returns></returns>
-        public List<Entity.VBuilding> getAllActiveById(int pid)
+        public List<Entity.VBuilding> GetAllActiveById(int pid)
         {
-            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).
-                  Where((b, d) => b.Is_active == true && b.Pid == pid).Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToList();
+            return Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((b, d) => b.Building_is_active && b.Building_model_state && b.Building_dorm_id == pid).Select((b, d) => new VBuilding
+            {
+                Building_Dorm_id = d.Dorm_id,
+                Building_Dorm_Nickname = d.Dorm_nickname,
+                Building_Id = b.Building_id,
+                Building_Is_active = b.Building_is_active,
+                Building_Nickname = b.Building_nickname,
+                Building_Note = b.Building_note,
+                Building_Vid = b.Building_vid
+            }).ToList();
         }
 
         /// <summary>
@@ -37,7 +62,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TBuilding FindById(int id)
+        public Entity.T_Building FindById(int id)
         {
             return BuildingDb.GetById(id);
         }
@@ -57,7 +82,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Building"></param>
         /// <returns></returns>
-        public bool Update(Entity.TBuilding Building)
+        public bool Update(Entity.T_Building Building)
         {
             return BuildingDb.Update(Building);
         }
@@ -67,27 +92,11 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Building"></param>
         /// <returns></returns>
-        public bool Add(Entity.TBuilding Building)
+        public bool Add(Entity.T_Building Building)
         {
             return BuildingDb.Insert(Building);
         }
 
-        /// <summary>
-        /// 查找宿舍楼
-        /// </summary>
-        /// <param name="page">当前页数</param>
-        /// <param name="limit">每页数量</param>
-        /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
-        /// <returns></returns>
-        public List<VBuilding> getByPages(int page, int limit, ref int totalCount, string where=null)
-        {
-            if (where == null)
-                return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id}).
-                  Select((b, d) => new VBuilding{ Id=b.Id,Pid=b.Pid,Vid=b.Vid, Nickname = b.Nickname,Note = b.Note,PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where((b,d)=> b.Vid.Contains(where)||b.Nickname.Contains(where)||b.Note.Contains(where)).OrderBy((b, d) => b.Id, OrderByType.Desc).
-                  Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
-        }
 
         /// <summary>
         /// 查找宿舍楼
@@ -95,15 +104,29 @@ namespace sdglsys.DbHelper
         /// <param name="page">当前页数</param>
         /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
+        /// <param name="where">关键词</param>
+        /// <param name="pid">园区ID</param>
         /// <returns></returns>
-        public List<VBuilding> getByPages(int pid, int page, int limit, ref int totalCount, string where = null)
+        public List<VBuilding> GetByPages(int page, int limit, ref int totalCount, string where = null, int pid=0)
         {
-            if (where == null)
-                return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where(b=>b.Pid == pid).
-                  Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<sdglsys.Entity.TBuilding, Entity.TDorm>((b, d) => new object[] { JoinType.Left, b.Pid == d.Id }).Where(b=>b.Pid==pid).Where((b, d) => b.Vid.Contains(where) || b.Nickname.Contains(where) || b.Note.Contains(where)).OrderBy((b, d) => b.Id, OrderByType.Desc).
-                  Select((b, d) => new VBuilding { Id = b.Id, Pid = b.Pid, Vid = b.Vid, Nickname = b.Nickname, Note = b.Note, PNickname = d.Nickname, Is_active = b.Is_active }).ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state && b.Building_dorm_id == pid);
+            if (pid != 0) {
+                sql = sql.Where(x => x.Building_dorm_id == pid);
+            }
+            if (where != null)
+            {
+                sql = sql.Where((b, d) => b.Building_vid.Contains(where) || b.Building_nickname.Contains(where) || b.Building_note.Contains(where));
+            }
+            return sql.OrderBy((b, d) => b.Building_id, OrderByType.Desc).Select((b, d) => new VBuilding
+            {
+                Building_Dorm_id = d.Dorm_id,
+                Building_Dorm_Nickname = d.Dorm_nickname,
+                Building_Id = b.Building_id,
+                Building_Is_active = b.Building_is_active,
+                Building_Nickname = b.Building_nickname,
+                Building_Note = b.Building_note,
+                Building_Vid = b.Building_vid
+            }).ToPageList(page, limit, ref totalCount);
         }
     }
 }

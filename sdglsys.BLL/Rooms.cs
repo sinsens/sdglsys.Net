@@ -7,82 +7,14 @@ namespace sdglsys.DbHelper
 {
     public class Rooms : DbContext
     {
-        public List<Entity.TRoom> getAll()
-        {
-            return Db.Queryable<Entity.TRoom>().ToList();
-        }
-
-        /// <summary>
-        /// 获取已启用的宿舍
-        /// </summary>
-        /// <returns></returns>
-        public List<Entity.TRoom> getAllActive()
-        {
-            return Db.Queryable<Entity.TRoom>().Where(a => a.Is_active == true).ToList();
-        }
-
-        /// <summary>
-        /// 获取已启用的宿舍
-        /// </summary>
-        /// <param name="id">园区</param>
-        /// <returns></returns>
-        public List<Entity.TRoom> getAllActive(int id)
-        {
-            return Db.Queryable<Entity.TRoom>().Where(a => a.Is_active == true && a.Dorm_id == id).ToList();
-        }
-
-        /// <summary>
-        /// 获取已启用的宿舍
-        /// </summary>
-        /// <returns></returns>
-        public List<Entity.VRoom> getAllVRoomActive()
-        {
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Vid).
-                  Select((r, b, d) => new VRoom
-                  {
-                      Id = r.Id,
-                      Pid = r.Pid,
-                      Vid = r.Vid,
-                      Dorm_id = r.Dorm_id,
-                      Nickname = r.Nickname,
-                      Note = r.Note,
-                      PNickname = b.Nickname,
-                      Is_active = r.Is_active,
-                      Dorm_Nickname = d.Nickname
-                  }).ToList();
-        }
-
-        /// <summary>
-        /// 获取已启用的宿舍
-        /// </summary>
-        /// <param name="id">园区</param>
-        /// <returns></returns>
-        public List<Entity.VRoom> getAllVRoomActive(int id)
-        {
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Vid).
-                Where(r => r.Dorm_id == id).
-                  Select((r, b, d) => new VRoom
-                  {
-                      Id = r.Id,
-                      Pid = r.Pid,
-                      Vid = r.Vid,
-                      Dorm_id = r.Dorm_id,
-                      Nickname = r.Nickname,
-                      Note = r.Note,
-                      PNickname = b.Nickname,
-                      Is_active = r.Is_active,
-                      Dorm_Nickname = d.Nickname
-                  }).ToList();
-        }
-
         /// <summary>
         /// 通过ID查询
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TRoom FindById(int id)
+        public Entity.T_Room FindById(int id)
         {
-            return RoomDb.GetById(id);
+            return Db.Queryable<T_Room>().Where(x => x.Room_model_state && x.Room_id == id).Single(); ;
         }
 
         /// <summary>
@@ -92,7 +24,13 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public bool Delete(int id)
         {
-            return RoomDb.DeleteById(id);
+            var room = FindById(id);
+            if (room != null)
+            {
+                room.Room_model_state = false;
+                return RoomDb.Update(room);
+            }
+            return false;
         }
 
         /// <summary>
@@ -100,7 +38,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Room"></param>
         /// <returns></returns>
-        public bool Update(Entity.TRoom room)
+        public bool Update(Entity.T_Room room)
         {
             return RoomDb.Update(room);
         }
@@ -110,163 +48,24 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
-        public bool Add(Entity.TRoom room)
+        public bool Add(Entity.T_Room room)
         {
             return RoomDb.Insert(room);
         }
 
-        /// <summary>
-        /// 查找宿舍
-        /// </summary>
-        /// <param name="page">当前页数</param>
-        /// <param name="limit">每页数量</param>
-        /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
-        /// <returns></returns>
-        public List<VRoom> getByPages(int page, int limit, ref int totalCount, string where = null)
-        {
-            if (where == null)
-                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).OrderBy(r => r.Id, OrderByType.Desc).
-                  Select((r, b, d) => new VRoom
-                  {
-                      Id = r.Id,
-                      Pid = r.Pid,
-                      Vid = r.Vid,
-                      Nickname = r.Nickname,
-                      Note = r.Note,
-                      PNickname = b.Nickname,
-                      Is_active = r.Is_active,
-                      Dorm_Nickname = d.Nickname,
-                      Number = r.Number
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
-                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
-                 Select((r, b, d) => new VRoom
-                 {
-                     Id = r.Id,
-                     Pid = r.Pid,
-                     Vid = r.Vid,
-                     Nickname = r.Nickname,
-                     Note = r.Note,
-                     PNickname = b.Nickname,
-                     Is_active = r.Is_active,
-                     Dorm_Nickname = d.Nickname,
-                     Number = r.Number
-                 }).ToPageList(page, limit, ref totalCount);
-
-        }
-
-        /// <summary>
-        /// 查找宿舍
-        /// </summary>
-        /// <param name="pid">园区ID</param>
-        /// <param name="page">当前页数</param>
-        /// <param name="limit">每页数量</param>
-        /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
-        /// <returns></returns>
-        public List<VRoom> getByPages(int pid, int page, int limit, ref int totalCount, string where = null)
-        {
-            if (where == null)
-                return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).Where(r => r.Dorm_id == pid).OrderBy(r => r.Id, OrderByType.Desc).
-                  Select((r, b, d) => new VRoom
-                  {
-                      Id = r.Id,
-                      Pid = r.Pid,
-                      Vid = r.Vid,
-                      Nickname = r.Nickname,
-                      Note = r.Note,
-                      PNickname = b.Nickname,
-                      Is_active = r.Is_active,
-                      Dorm_Nickname = d.Nickname
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] { JoinType.Left,
-                 r.Pid == b.Id, JoinType.Left,b.Pid == d.Id }).Where(r => r.Dorm_id == pid).Where((r) => r.Nickname.Contains(where) || r.Note.Contains(where) || r.Vid.Contains(where)).OrderBy(r => r.Id, OrderByType.Desc).
-                 Select((r, b, d) => new VRoom
-                 {
-                     Id = r.Id,
-                     Pid = r.Pid,
-                     Vid = r.Vid,
-                     Nickname = r.Nickname,
-                     Note = r.Note,
-                     PNickname = b.Nickname,
-                     Is_active = r.Is_active,
-                     Dorm_Nickname = d.Nickname
-                 }).ToPageList(page, limit, ref totalCount);
-
-        }
-
-
-        /// <summary>
-        /// 按园区查找当月未登记宿舍
-        /// </summary>
-        /// <param name="id">园区ID</param>
-        /// <returns></returns>
-        public List<VRoom> getAllNoRecordByDorm(int id)
-        {
-            /// 先获取本月已登记的宿舍ID
-            var rooms = Db.Queryable<TUsed>().
-                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
-                JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Dorm_id == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
-              Select((r, b, d) => new VRoom
-              {
-                  Id = r.Id,
-                  Pid = r.Pid,
-                  Dorm_id = r.Dorm_id,
-                  Vid = r.Vid,
-                  Nickname = r.Nickname,
-                  Note = r.Note,
-                  PNickname = b.Nickname,
-                  Is_active = r.Is_active,
-                  Dorm_Nickname = d.Nickname
-              }).ToList();
-        }
-
-        /// <summary>
-        /// 按宿舍楼查找当月未登记宿舍
-        /// </summary>
-        /// <param name="id">宿舍楼ID</param>
-        /// <returns></returns>
-        public List<VRoom> getAllNoRecordByBuilding(int id)
-        {
-            /// 先获取本月已登记的宿舍ID
-            var rooms = Db.Queryable<TUsed>().
-                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
-                JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Pid == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
-              Select((r, b, d) => new VRoom
-              {
-                  Id = r.Id,
-                  Pid = r.Pid,
-                  Dorm_id = r.Dorm_id,
-                  Vid = r.Vid,
-                  Nickname = r.Nickname,
-                  Note = r.Note,
-                  PNickname = b.Nickname,
-                  Is_active = r.Is_active,
-                  Dorm_Nickname = d.Nickname
-              }).ToList();
-        }
 
         /// <summary>
         /// 按宿舍楼查找当月未登记宿舍并返回Json
         /// </summary>
         /// <param name="id">宿舍楼ID</param>
         /// <returns></returns>
-        public string getJsonAllNoRecordByBuilding(int id)
+        public string GetJsonAllNoRecordByBuilding(int id)
         {
             /// 先获取本月已登记的宿舍ID
-            var rooms = Db.Queryable<TUsed>().
-                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-            return Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Pid == id && r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
+            var rooms = Db.Queryable<T_Used>().
+                Where(u => u.Used_model_state && SqlFunc.Between(SqlFunc.Substring(u.Used_post_date, 0, 7),
+                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Used_room_id).ToList();
+            return Db.Queryable<T_Room>().Where((r) => r.Room_model_state && r.Number > 0 && r.Room_building_id == id && r.Room_is_active == true && !rooms.Contains(r.Room_id)).OrderBy(r => r.Room_vid).
                 ToJson();
         }
 
@@ -275,42 +74,43 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="dorm_id">园区ID：默认全部</param>
         /// <returns></returns>
-        public short CountNoRecord(int dorm_id = 0) {
-            var rooms = Db.Queryable<TUsed>().
-                Where(u => SqlFunc.Between(SqlFunc.Substring(u.Post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Pid).ToList();
-            if(dorm_id==0)
-                return (short) Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Is_active == true && !rooms.Contains(r.Id))
-                .OrderBy(r => r.Vid).Count();
-            return (short)Db.Queryable<TRoom>().Where((r) => r.Number > 0 && r.Dorm_id == dorm_id && r.Is_active == true && !rooms.Contains(r.Id))
-                .OrderBy(r => r.Vid).Count();
+        public short CountNoRecord(int dorm_id = 0)
+        {
+            var rooms = Db.Queryable<T_Used>().
+                Where(u => u.Used_model_state && SqlFunc.Between(SqlFunc.Substring(u.Used_post_date, 0, 7),
+                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Used_room_id).ToList();
+            if (dorm_id == 0)
+                return (short)Db.Queryable<T_Room>().Where(r => r.Room_model_state && r.Number > 0 && r.Room_is_active == true && !rooms.Contains(r.Room_id))
+                .OrderBy(r => r.Room_vid).Count();
+            return (short)Db.Queryable<T_Room>().Where((r) => r.Number > 0 && r.Room_dorm_id == dorm_id && r.Room_is_active == true && !rooms.Contains(r.Room_id))
+                .OrderBy(r => r.Room_vid).Count();
         }
 
         /// <summary>
         /// 查找没有读表信息的宿舍
         /// </summary>
         /// <returns></returns>
-        public List<VRoom> GetVRoomWithoutUsedInfo()
+        public List<VRoom> GetVRoomWithouT_UsedInfo()
         {
 
             /// 先获取已存在于宿舍读表数值的宿舍ID
-            var rooms = Db.Queryable<TUsed_total>().Select(u => u.Pid).ToList();
+            var rooms = Db.Queryable<T_Used_total>().Where(u => u.Ut_model_state).Select(u => u.Ut_room_id).ToList();
 
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
-                JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
-              Select((r, b, d) => new VRoom
-              {
-                  Id = r.Id,
-                  Pid = r.Pid,
-                  Dorm_id = r.Dorm_id,
-                  Vid = r.Vid,
-                  Nickname = r.Nickname,
-                  Note = r.Note,
-                  PNickname = b.Nickname,
-                  Is_active = r.Is_active,
-                  Dorm_Nickname = d.Nickname
-              }).ToList();
+            return Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] {
+                JoinType.Left, r.Room_building_id == b.Building_id,
+                JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_model_state && r.Room_is_active == true && !rooms.Contains(r.Room_id)).OrderBy(r => r.Room_vid).Select((r, b, d) => new Entity.VRoom
+                {
+                    Number = r.Number,
+                    Room_Building_id = r.Room_building_id,
+                    Room_Building_Nickname = b.Building_nickname,
+                    Room_Dorm_id = r.Room_dorm_id,
+                    Room_Dorm_Nickname = d.Dorm_nickname,
+                    Room_Id = r.Room_id,
+                    Room_Is_active = r.Room_is_active,
+                    Room_Nickname = r.Room_nickname,
+                    Room_Note = r.Room_note,
+                    Room_Vid = r.Room_vid
+                }).ToList();
         }
 
         /// <summary>
@@ -318,26 +118,26 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id">园区ID</param>
         /// <returns></returns>
-        public List<VRoom> GetVRoomWithoutUsedInfo(int id)
+        public List<VRoom> GetVRoomWithouT_UsedInfo(int id)
         {
             /// 先获取已存在于宿舍读表数值的宿舍ID
-            var rooms = Db.Queryable<TUsed_total>().Select(u => u.Dorm_id).ToList();
+            var rooms = Db.Queryable<T_Used_total>().Where(u => u.Ut_model_state && u.Ut_dorm_id == id).Select(u => u.Ut_room_id).ToList();
 
-            return Db.Queryable<TRoom, TBuilding, TDorm>((r, b, d) => new object[] {
-                JoinType.Left, r.Pid == b.Id,
-                JoinType.Left, b.Pid == d.Id }).Where((r, b, d) => r.Is_active == true && !rooms.Contains(r.Id)).OrderBy(r => r.Vid).
-              Select((r, b, d) => new VRoom
-              {
-                  Id = r.Id,
-                  Pid = r.Pid,
-                  Dorm_id = r.Dorm_id,
-                  Vid = r.Vid,
-                  Nickname = r.Nickname,
-                  Note = r.Note,
-                  PNickname = b.Nickname,
-                  Is_active = r.Is_active,
-                  Dorm_Nickname = d.Nickname
-              }).ToList();
+            return Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] {
+                JoinType.Left, r.Room_building_id == b.Building_id,
+                JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_is_active && r.Room_model_state && !rooms.Contains(r.Room_id)).OrderBy(r => r.Room_vid).Select((r, b, d) => new Entity.VRoom
+                {
+                    Number = r.Number,
+                    Room_Building_id = r.Room_building_id,
+                    Room_Building_Nickname = b.Building_nickname,
+                    Room_Dorm_id = r.Room_dorm_id,
+                    Room_Dorm_Nickname = d.Dorm_nickname,
+                    Room_Id = r.Room_id,
+                    Room_Is_active = r.Room_is_active,
+                    Room_Nickname = r.Room_nickname,
+                    Room_Note = r.Room_note,
+                    Room_Vid = r.Room_vid
+                }).ToList();
         }
 
         /// <summary>
@@ -348,8 +148,8 @@ namespace sdglsys.DbHelper
         public short Count(int dorm_id = 0)
         {
             if (dorm_id == 0)
-                return (short) RoomDb.Count(r => r.Is_active == true);
-            return (short) RoomDb.Count(r => r.Is_active == true && r.Dorm_id == dorm_id);
+                return (short)RoomDb.Count(r => r.Room_is_active && r.Room_model_state);
+            return (short)RoomDb.Count(r => r.Room_is_active && r.Room_model_state && r.Room_dorm_id == dorm_id);
         }
 
         /// <summary>
@@ -360,8 +160,42 @@ namespace sdglsys.DbHelper
         public short CountWithPeople(int dorm_id = 0)
         {
             if (dorm_id == 0)
-                return (short) RoomDb.Count(r => r.Is_active == true && r.Number > 0);
-            return (short) RoomDb.Count(r => r.Is_active == true && r.Dorm_id == dorm_id && r.Number > 0);
+                return (short)RoomDb.Count(r => r.Room_is_active && r.Room_model_state);
+            return (short)RoomDb.Count(r => r.Room_is_active && r.Room_model_state && r.Room_dorm_id == dorm_id && r.Number > 0);
+        }
+
+        /// <summary>
+        /// 获取宿舍信息
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="limit">每页数量</param>
+        /// <param name="count">ref in: 数量</param>
+        /// <param name="where">关键词</param>
+        /// <param name="dorm_id">园区id：默认0</param>
+        /// <returns></returns>
+        public List<Entity.VRoom> GetVRoomByPages(int page, int limit, ref int count, string where = null, int dorm_id = 0) {
+            var sql = Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] { JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_model_state && b.Building_model_state && d.Dorm_model_state);
+
+            if (dorm_id != 0)
+            {
+                sql = sql.Where(r => r.Room_dorm_id == dorm_id);
+            }
+            if (!string.IsNullOrWhiteSpace(where)) {
+                sql = sql.Where(r => r.Room_nickname.Contains(where) || r.Room_vid.Contains(where) || r.Room_note.Contains(where));
+            }
+            return sql.OrderBy(r => r.Room_id, OrderByType.Desc).Select((r, b, d) => new Entity.VRoom
+            {
+                Number = r.Number,
+                Room_Building_id = r.Room_building_id,
+                Room_Building_Nickname = b.Building_nickname,
+                Room_Dorm_id = r.Room_dorm_id,
+                Room_Dorm_Nickname = d.Dorm_nickname,
+                Room_Id = r.Room_id,
+                Room_Is_active = r.Room_is_active,
+                Room_Nickname = r.Room_nickname,
+                Room_Note = r.Room_note,
+                Room_Vid = r.Room_vid
+            }).ToPageList(page, limit, ref count);
         }
     }
 }

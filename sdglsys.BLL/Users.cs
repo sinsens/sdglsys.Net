@@ -1,12 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using sdglsys.Entity;
+using SqlSugar;
+using System.Collections.Generic;
 
 namespace sdglsys.DbHelper
 {
     public class Users : DbContext
     {
-        public List<Entity.TUser> getAll()
+
+        /// <summary>
+        /// 获取一个系统管理员权限的角色
+        /// </summary>
+        /// <returns></returns>
+        public Entity.T_User GetAdminUser()
         {
-            return Db.Queryable<Entity.TUser>().ToList();
+            return Db.Queryable<Entity.T_User>().Single(u => u.User_model_state && u.User_is_active && u.User_role == 3);
+        }
+
+        /// <summary>
+        /// 登录验证
+        /// </summary>
+        /// <param name="login_name">用户名</param>
+        /// <param name="pwd">密码</param>
+        /// <returns></returns>
+        public Entity.T_User Login(string login_name, string pwd)
+        {
+            var user = FindByLoginName(login_name);
+            if (user == null)
+            {
+                return null;
+            }
+            if (!user.User_is_active)
+            {
+                return null;
+            }
+            return (new Utils.Utils().CheckPasswd(pwd, user.User_pwd)) ? user : null;
         }
 
         /// <summary>
@@ -14,9 +41,9 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUser FindById(int id)
+        public Entity.T_User FindById(int id)
         {
-            return Db.Queryable<Entity.TUser>().Where((u) => u.Id == id).First();
+            return Db.Queryable<Entity.T_User>().Where((u) => u.User_id == id && u.User_model_state).First();
         }
 
         /// <summary>
@@ -24,9 +51,9 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TUser findByLoginName(string login_name)
+        public Entity.T_User FindByLoginName(string login_name)
         {
-            return Db.Queryable<Entity.TUser>().Where(a => a.Login_name == login_name).First();
+            return Db.Queryable<Entity.T_User>().Where(a => a.User_model_state && a.User_login_name == login_name).First();
         }
 
         /// <summary>
@@ -36,26 +63,35 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public Entity.VUser findVUserByLoginName(string login_name)
         {
-            var user = Db.Queryable<Entity.TUser>().Where( u => u.Login_name == login_name).Select(u=>new Entity.VUser {
-                 Pid = u.Pid, Id = u.Id, Nickname = u.Nickname,Login_name = u.Login_name, Is_active = u.Is_active, Note=u.Note,
-                  Phone = u.Phone, Reg_date = u.Reg_date, Role = u.Role,
-            }).First();
+            var user = Db.Queryable<Entity.T_User>().Where(u => u.User_model_state && u.User_login_name == login_name).Select<VUser>().Single();
             if (user == null)
                 return user;
-            foreach (var item in Db.Queryable<Entity.TDorm>().ToList())
+            foreach (var item in new Dorms().GetAllActive())
             {
-                if (item.Id==user.Id)
+                if (item.Dorm_id == user.User_Id)
                 {
-                    user.DormName = item.Nickname;
+                    user.User_Dorm_Nickname = item.Dorm_nickname;
+                    break;
                 };
             }
-            user.RoleName = user.Role < 3 ? (user.Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
+            user.User_RoleName = user.User_Role < 3 ? (user.User_Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
             return user;
         }
 
+        /// <summary>
+        /// 删除系统用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public bool Delete(int id)
         {
-            return UserDb.DeleteById(id);
+            var user = FindById(id);
+            if (user != null)
+            {
+                user.User_model_state = false;
+                return Update(user);
+            }
+            return false;
         }
 
         /// <summary>
@@ -63,7 +99,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool Update(Entity.TUser user)
+        public bool Update(Entity.T_User user)
         {
             return UserDb.Update(user);
         }
@@ -73,46 +109,47 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool Add(Entity.TUser user)
+        public bool Add(Entity.T_User user)
         {
             return UserDb.Insert(user);
         }
 
 
         /// <summary>
-        /// 查找角色
+        /// 获取角色列表
         /// </summary>
         /// <param name="page"></param>
         /// <param name="limit"></param>
         /// <param name="totalCount"></param>
         /// <param name="where"></param>
+        /// <param name="pid">园区ID</param>
         /// <returns></returns>
-        public List<Entity.TUser> getByPages(int page, int limit, ref int totalCount, string where=null)
+        public List<Entity.VUser> GetByPages(int page, int limit, ref int totalCount, string where = null, int pid = 0)
         {
-            if (where == null) {
-                return Db.Queryable<Entity.TUser>().ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<Entity.T_User, Entity.T_Dorm>((u, d) => new object[]{
+                JoinType.Left,u.User_dorm_id==d.Dorm_id
+            }).Where((u, d) => u.User_model_state);
+            if (pid != 0)
+            {
+                sql = sql.Where(x => x.User_dorm_id == pid);
             }
-            return Db.Queryable<Entity.TUser>().Where(u=>u.Nickname.Contains(where)||
-            u.Login_name.Contains(where)||u.Phone.Contains(where)||u.Note.Contains(where)).ToPageList(page, limit, ref totalCount);
+            if (!string.IsNullOrWhiteSpace(where))
+            {
+                sql = sql.Where(u => u.User_model_state && (u.User_nickname.Contains(where) ||
+            u.User_login_name.Contains(where) || u.User_phone.Contains(where) || u.User_note.Contains(where)));
+            }
+            return sql.Select((u, d) => new Entity.VUser
+            {
+                User_Dorm_Nickname = d.Dorm_nickname,
+                User_Id = u.User_id,
+                User_Is_active = u.User_is_active,
+                User_Nickname = u.User_nickname,
+                User_Note = u.User_note,
+                User_Role = u.User_role,
+                User_Login_name = u.User_login_name,
+                User_Reg_date = u.User_reg_date,
+            }).ToPageList(page, limit, ref totalCount);
         }
 
-        /// <summary>
-        /// 查找角色
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="limit"></param>
-        /// <param name="pid">园区ID</param>
-        /// <param name="totalCount"></param>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        public List<Entity.TUser> getByPages(int page, int limit, ref int totalCount,int pid, string where=null)
-        {
-            if (where == null)
-            {
-                return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid).ToPageList(page, limit, ref totalCount);
-            }
-            return Db.Queryable<Entity.TUser>().Where(u => u.Pid == pid && (u.Nickname.Contains(where) ||
-            u.Login_name.Contains(where) || u.Phone.Contains(where) || u.Note.Contains(where))).ToPageList(page, limit, ref totalCount);
-        }
     }
 }

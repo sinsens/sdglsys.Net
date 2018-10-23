@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VUser>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -54,55 +55,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var user in ViewBag.users)
+                        @foreach (sdglsys.Entity.VUser user in Model)
                         {
                             <tr>
-                                <td class="hidden-xs">@user.Id</td>
-                                <td class="hidden-xs">@user.Login_name</td>
-                                <td>@user.Nickname</td>
+                                <td class="hidden-xs">@user.User_Id</td>
+                                <td class="hidden-xs">@user.User_Login_name</td>
+                                <td>@user.User_Nickname</td>
+                                <td>@user.User_RoleName</td>
+                                <td>@user.User_Dorm_Nickname</td>
                                 <td>
-                                    @{
-                                        var role_name = "";
-                                    }
-                                    @switch ((int) user.Role)
-                                    {
-                                        case 1:
-                                            role_name = "辅助登记员";
-                                            break;
-                                        case 2:
-                                            role_name = "宿舍管理员";
-                                            break;
-                                        case 3:
-                                            role_name = "系统管理员";
-                                            break;
-                                    }
-                                    @role_name
-                                </td>
-                                @if ((int) Session["role"] > 2)
-                                {
-                                    <td>
-                                        @foreach (var dorm in ViewBag.dorms)
-                                        {
-                                            if (user.Pid == dorm.Id)
-                                            {@dorm.Nickname}
-                                    }
-                                    </td>
-                                }
-                                <td>
-                                    @if (user.Is_active)
+                                    @if (user.User_Is_active)
                                     {
                                         <button class="layui-btn layui-btn-xs layui-btn-normal">正常</button> }
                                     else
                                     {
                                         <button class="layui-btn layui-btn-xs layui-btn-disabled">已注销</button>
                                     }
-
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="重置 @user.Login_name 的密码" data-id="@user.Id" data-url="/users/reset"><i class="layui-icon">&#xe673;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑 @user.Login_name 信息" data-id="@user.Id" data-url="/users/edit"><i class="layui-icon">&#xe642;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@user.Id" data-url="/users/delete/@user.Id"><i class="layui-icon">&#xe640;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="重置 @user.User_Login_name 的密码" data-id="@user.User_Id" data-url="/users/reset"><i class="layui-icon">&#xe673;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑 @user.User_Login_name 信息" data-id="@user.User_Id" data-url="/users/edit"><i class="layui-icon">&#xe642;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@user.User_Dorm_id" data-url="/users/delete/@user.User_Id"><i class="layui-icon">&#xe640;</i></button>
                                     </div>
                                 </td>
                             </tr>

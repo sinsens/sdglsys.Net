@@ -11,7 +11,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.TBill FindById(int id)
+        public Entity.T_Bill FindById(int id)
         {
             return BillDb.GetById(id);
         }
@@ -23,28 +23,24 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public Entity.VBill FindVBillById(int id)
         {
-            return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where(e => e.Id == id).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).First();
+            return Db.Queryable<T_Bill, T_Used, T_Room, T_Building, T_Dorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Bill_room_id == u.Used_id, JoinType.Left, u.Used_room_id == r.Room_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
+                Where(e => e.Bill_id == id && e.Bill_model_state).Select((e, u, r, b, d) => new VBill
+                {
+                    Bill_Id = e.Bill_id,
+                    Bill_Room_Nickname = r.Room_nickname,
+                    Bill_Building_Nickname = b.Building_nickname,
+                    Bill_Dorm_Nickname = d.Dorm_nickname,
+                    Bill_Electric_cost = e.Bill_electric_cost,
+                    Bill_Hot_water_cost = e.Bill_hot_water_cost,
+                    Bill_Cold_water_cost = e.Bill_cold_water_cost,
+                    Bill_Electric_value = u.Used_electric_value,
+                    Bill_Cold_water_value = u.Used_cold_water_value,
+                    Bill_Hot_water_value = u.Used_hot_water_value,
+                    Bill_Is_active = e.Bill_is_active,
+                    Bill_Note = e.Bill_note,
+                    Bill_Post_date = e.Bill_post_date,
+                    Bill_Mod_date = e.Bill_mod_date
+                }).Single();
         }
 
         /// <summary>
@@ -54,7 +50,13 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public bool Delete(int id)
         {
-            return BillDb.DeleteById(id);
+            var bill = FindById(id);
+            if (bill != null)
+            {
+                bill.Bill_model_state = false;
+                return BillDb.Update(bill);
+            }
+            return false;
         }
 
         /// <summary>
@@ -62,8 +64,9 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="Room"></param>
         /// <returns></returns>
-        public bool Update(Entity.TBill bill)
+        public bool Update(Entity.T_Bill bill)
         {
+            bill.Bill_mod_date = System.DateTime.Now;
             return BillDb.Update(bill);
         }
 
@@ -72,7 +75,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
-        public bool Add(Entity.TBill bill)
+        public bool Add(Entity.T_Bill bill)
         {
             return BillDb.Insert(bill);
         }
@@ -84,240 +87,44 @@ namespace sdglsys.DbHelper
         /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
+        /// <param name="stat">账单状态：-1全部，0已注销，1已登记，2已结算</param>
+        /// <param name="pid">园区ID：0</param>
         /// <returns></returns>
-        public List<VBill> getByPages(int page, int limit, ref int totalCount, string where = null, short stat = -1)
+        public List<VBill> GetByPages(int page, int limit, ref int totalCount, string where = null, short stat = -1,int pid=0)
         {
-            if (where == null && stat == -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-            if (where != null && stat == -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((e, u, r, b, d) => r.Vid.Contains(where) || r.Nickname.Contains(where) || b.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-            if (where != null && stat != -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((e, u, r, b, d) => e.Is_active == stat).
-                    Where((e, u, r, b, d) => r.Vid.Contains(where) || r.Nickname.Contains(where) || b.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value,
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((e, u, r, b, d) => e.Is_active == stat).
-                OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<T_Bill, T_Used, T_Room, T_Building, T_Dorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Bill_used_id == u.Used_id, JoinType.Left, u.Used_room_id == r.Room_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
+                    OrderBy((e, u, r, b, d) => e.Bill_id, OrderByType.Desc).Where(e => e.Bill_model_state);
+            
+            if (where != null)
+            {
+                sql = sql.Where((e, u, r, b, d) => r.Room_vid.Contains(where) || r.Room_nickname.Contains(where) || b.Building_vid.Contains(where) || b.Building_nickname.Contains(where) || d.Dorm_nickname.Contains(where));
+            }
+
+            if (stat != -1)
+            {
+                sql = sql.Where((e, u, r, b, d) => e.Bill_is_active == stat);
+            }
+            if (pid!=0) {
+                sql = sql.Where(x => pid == x.Bill_dorm_id);
+            }
+                return sql.Select((e, u, r, b, d) => new VBill
+            {
+                Bill_Id = e.Bill_id,
+                Bill_Room_Nickname = r.Room_nickname,
+                Bill_Building_Nickname = b.Building_nickname,
+                Bill_Dorm_Nickname = d.Dorm_nickname,
+                Bill_Electric_cost = e.Bill_electric_cost,
+                Bill_Hot_water_cost = e.Bill_hot_water_cost,
+                Bill_Cold_water_cost = e.Bill_cold_water_cost,
+                Bill_Electric_value = u.Used_electric_value,
+                Bill_Cold_water_value = u.Used_cold_water_value,
+                Bill_Hot_water_value = u.Used_hot_water_value,
+                Bill_Is_active = e.Bill_is_active,
+                Bill_Note = e.Bill_note,
+                Bill_Post_date = e.Bill_post_date,
+                Bill_Mod_date = e.Bill_mod_date
+            }).ToPageList(page, limit, ref totalCount);
         }
 
-        /// <summary>
-        /// 查找登记
-        /// </summary>
-        /// <param name="id">园区ID</param>
-        /// <param name="page">当前页数</param>
-        /// <param name="limit">每页数量</param>
-        /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
-        /// <returns></returns>
-        public List<VBill> getByPagesByDormId(int id, int page, int limit, ref int totalCount, string where = null, short stat = -1)
-        {
-            if (where == null && stat == -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((e, u, r, b, d) => e.Dorm_id == id).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-            if (where != null && stat == -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((e, u, r, b, d) => e.Dorm_id == id).
-                    Where((e, u, r, b, d) => r.Vid.Contains(where) || r.Nickname.Contains(where) || b.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-            if (where != null && stat != -1)
-                return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                    Where((e, u, r, b, d) => e.Dorm_id == id).
-                    Where((e, u, r, b, d) => e.Is_active == stat).
-                    Where((e, u, r, b, d) => r.Vid.Contains(where) || r.Nickname.Contains(where) || b.Vid.Contains(where) || b.Nickname.Contains(where) || d.Nickname.Contains(where)).
-                    OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<TBill, TUsed, TRoom, TBuilding, TDorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Pid == u.Id, JoinType.Left, u.Pid == r.Id, JoinType.Left, r.Pid == b.Id, JoinType.Left, b.Pid == d.Id }).
-                Where((e, u, r, b, d) => e.Dorm_id == id).
-                Where((e, u, r, b, d) => e.Is_active == stat).
-                OrderBy((e, u, r, b, d) => e.Id, OrderByType.Desc).
-                  Select((e, u, r, b, d) => new VBill
-                  {
-                      Id = e.Id,
-                      Pid = e.Pid,
-                      Building_id = b.Id,
-                      Dorm_id = d.Id,
-                      Note = e.Note,
-                      Is_active = e.Is_active,
-                      PNickname = r.Nickname,
-                      Building_Nickname = b.Nickname,
-                      Dorm_Nickname = d.Nickname,
-                      Cold_water_cost = e.Cold_water_cost,
-                      Electric_cost = e.Electric_cost,
-                      Hot_water_cost = e.Hot_water_cost,
-                      Post_date = e.Post_date,
-                      Mod_date = e.Mod_date,
-                      Cold_water_value = u.Cold_water_value,
-                      Electric_value = u.Electric_value,
-                      Hot_water_value = u.Hot_water_value
-                  }).ToPageList(page, limit, ref totalCount);
-        }
-
-        /// <summary>
-        /// 计算本月账单总额
-        /// </summary>
-        /// <param name="dorm_id">园区ID：默认所有</param>
-        /// <returns></returns>
-        public decimal SumTotal(int dorm_id = 0)
-        {
-            if (dorm_id == 0)
-                return Db.Queryable<TBill>().Where(b => b.Is_active != 0).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
-            return Db.Queryable<TBill>().Where(b => b.Is_active == 1 && b.Dorm_id == dorm_id).GroupBy(b => b.Id).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
-        }
-
-        /// <summary>
-        /// 计算本月未结算账单总额
-        /// </summary>
-        /// <param name="dorm_id">园区ID：默认所有</param>
-        /// <returns></returns>
-        public decimal SumNoPay(int dorm_id = 0)
-        {
-            if (dorm_id == 0)
-                return Db.Queryable<TBill>().Where(b => b.Is_active == 1).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
-            return Db.Queryable<TBill>().Where(b => b.Is_active == 1 && b.Dorm_id == dorm_id).GroupBy(b=>b.Id).Sum(b => b.Cold_water_cost + b.Electric_cost + b.Hot_water_cost);
-        }
     }
 }

@@ -27,6 +27,16 @@
 		</script>
 	<![endif]-->
     @Styles.Render("~/Content/css")
+    <script type="text/javascript">
+        function Logout() {
+            /// 询问
+            if (confirm("是否退出登录？")) {
+                localStorage.clear();
+                document.cookie = "token=;";
+                location.href = '/admin/logout';
+            }
+        }
+    </script>
     <style>
         .layui-nav-tree {
             width: 220px; /*Sinsen at 2018年6月4日，适应长文菜单*/
@@ -166,7 +176,7 @@
                         <a href="javascript:;" style="color:rgb(150,150,150)" data-url="/user/info" data-id='5' data-text="个人信息">@Session["nickname"]</a>
                     </li>
                     <li class="layui-nav-item">
-                        <a href="/admin/logout" style="color:rgb(150,150,150)">退出</a>
+                        <a href="#" onclick="return Logout()" style="color:rgb(150,150,150)">退出</a>
                     </li>
                 </ul>
             </div>

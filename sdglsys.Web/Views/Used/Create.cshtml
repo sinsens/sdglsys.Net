@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VBuilding>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -16,11 +17,12 @@
                 <label class="layui-form-label">宿舍楼：</label>
                 <div class="layui-input-block">
                     <select class="layui-select" id='bid' lay-filter='changeBuilding' lay-search>
-                        @if (ViewBag.building.Count < 1)
-                        {<option value="">暂无宿舍楼数据</option>}
-                        @foreach (var room in ViewBag.building)
+                        @if (Model.Count < 1)
                         {
-                            <option value="@room.Id" dorm-id="@room.Pid">@room.Vid | @room.PNickname | @room.Nickname</option>
+                            <option value="">暂无宿舍楼数据</option>}
+                        @foreach (sdglsys.Entity.VBuilding vbuilding in Model)
+                        {
+                            <option value="@vbuilding.Building_Id" dorm-id="@vbuilding.Building_Dorm_id">@vbuilding.Building_Vid | @vbuilding.Building_Dorm_Nickname | @vbuilding.Building_Nickname</option>
                         }
                     </select>
                 </div>
@@ -28,7 +30,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">宿舍名称：</label>
                 <div class="layui-input-block">
-                    <select class="layui-select" id='pid' lay-filter='changeRoom' lay-search></select>
+                    <select class="layui-select" id="pid" name='pid' lay-filter='changeRoom' lay-search></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -75,9 +77,10 @@
                     // 更新宿舍列表
                     $("#pid").empty(); //清空原有数据
                     var params = {
+                        "token": localStorage.token,
                         "pid": data.value
                     };
-                    if (data.value == null || data.value<1) { return; }
+                    if (data.value == null || data.value < 1) { return; }
                     $.ajax({
                         async: "false",
                         type: "post",
@@ -89,7 +92,7 @@
                             var data = JSON.parse(datas);
                             if (data !== null) {
                                 for (var i = 0; i < data.length; i++)
-                                    $("<option value=" + data[i]["Id"] + " dorm-id=" + data[i]["Dorm_id"] + " building-id=" + data[i]["Pid"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#pid");
+                                    $("<option value=" + data[i]["Room_id"] + ">" + data[i]["Room_nickname"] + "</option>").appendTo("#pid");
                                 form.render('select'); // 重新渲染下拉列表
                             }
                         },
@@ -104,6 +107,7 @@
                 });
                 form.on('select(changeRoom)', function (data) {
                     var params = {
+                        "token": localStorage.token,
                         "type": 'last_data',
                         "pid": data.value
                     };
@@ -118,10 +122,10 @@
                         url: "/used/last",
                         success: function (data) {
                             data = JSON.parse(data);
-                            if (data["content"] != null) {
-                                $("#cold_water_value").attr('placeholder', "上期数值：" + data["content"]["Cold_water_value"]);
-                                $("#hot_water_value").attr('placeholder', "上期数值：" + data["content"]["Hot_water_value"]);
-                                $("#electric_value").attr('placeholder', "上期数值：" + data["content"]["Electric_value"]);
+                            if (data["Content"] != null) {
+                                $("#cold_water_value").attr('placeholder', "上期数值：" + data["Content"]["Ut_cold_water_value"]);
+                                $("#hot_water_value").attr('placeholder', "上期数值：" + data["Content"]["Ut_hot_water_value"]);
+                                $("#electric_value").attr('placeholder', "上期数值：" + data["Content"]["Ut_electric_value"]);
                             } else {
                                 $("#cold_water_value").attr('placeholder', "暂无数据");
                                 $("#hot_water_value").attr('placeholder', "暂无数据");
@@ -138,7 +142,7 @@
                     });
                 }); //监听提交
                 form.on('submit(formDemo)', function (data) {
-                    if ($('#pid').val().trim().length < 1) {
+                    if (data.field['pid'] == null || data.field['pid'] < 1) {
                         layer.msg("请先选择一个宿舍");
                         return false;
                     }
@@ -146,10 +150,9 @@
                         layer.msg("读表数值不能为空");
                         return;
                     }
-                    var pid = $("#pid").val();
+                    var pid = data.field['pid'];
                     var params = {
-                        "dorm_id": $("#pid").find("option[value='" + pid + "']").attr("dorm-id"),
-                        "building_id": $("#pid").find("option[value='" + pid + "']").attr("building-id"),
+                        "token": localStorage.token,
                         "pid": pid,
                         "cold_water_value": $("#cold_water_value").val(),
                         "hot_water_value": $("#hot_water_value").val(),
@@ -165,8 +168,8 @@
                         url: "/used/create",
                         success: function (data) {
                             data = JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
+                            layer.msg(data['Message'], {
+                                'icon': data['Code'] + 1,
                             });
                         },
                         error: function (e) {

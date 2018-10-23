@@ -20,19 +20,35 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
+                var dorms = new Dorms().GetByPages(page, limit, ref count, keyword); // 获取列表
+
+                ViewBag.keyword = keyword;
+                ViewBag.count = count;  // 获取当前页数量
+                ViewBag.page = page;  // 获取当前页
+                return View(dorms);
             }
-            catch
+            catch(Exception)
             {
+                throw;
             }
 
-            ViewBag.keyword = keyword;
-            ViewBag.dorms = new Dorms().getByPages(page, limit, ref count, keyword); // 获取列表
-            ViewBag.count = count;  // 获取当前页数量
-            ViewBag.page = page;  // 获取当前页
-            return View();
+            
         }
 
         // GET: Dorm/Details/5
@@ -62,27 +78,26 @@ namespace sdglsys.Web.Controllers
             try
             {
                 // 初始化对象
-                Entity.TDorm dorm = new Entity.TDorm()
+                Entity.T_Dorm dorm = new Entity.T_Dorm()
                 {
-                    Nickname = collection["name"],
-                    Note = collection["note"],
-                    Type = Convert.ToBoolean(Convert.ToInt32(collection["type"])),
+                    Dorm_nickname = collection["name"],
+                    Dorm_note = collection["note"],
+                    Dorm_type = Convert.ToBoolean(Convert.ToInt32(collection["type"])),
                 };
                 var Dorm = new Dorms();
                 if (Dorm.Add(dorm))
                 {
-                    msg.msg = "添加成功！";
+                    msg.Message = "添加成功！";
                 }
                 else
                 {
-                    msg.msg = "发生未知错误，添加失败！";
-                    msg.code = 500;
+                    throw new Exception("发生未知错误，添加失败！");
                 }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = ex.Message;
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -102,26 +117,32 @@ namespace sdglsys.Web.Controllers
         public void Edit(int id, FormCollection collection)
         {
             var msg = new Msg();
+
             var Dorm = new Dorms();
             var dorm = Dorm.FindById(id);
-
             try
             {
                 if (dorm == null)
                 {
-                    msg.code = 404;
                     throw new Exception("该园区不存在");
                 }
-                dorm.Nickname = collection["name"];
-                dorm.Note = collection["note"];
-                dorm.Is_active = Convert.ToBoolean(collection["is_active"]);
-                dorm.Type = Convert.ToBoolean(Convert.ToInt32(collection["type"]));
-                msg.msg = (Dorm.Update(dorm)) ? "保存成功！" : "发生未知错误，保存失败！";
+                dorm.Dorm_nickname = collection["name"];
+                dorm.Dorm_note = collection["note"];
+                dorm.Dorm_is_active = Convert.ToBoolean(collection["is_active"]);
+                dorm.Dorm_type = Convert.ToBoolean(Convert.ToInt32(collection["type"]));
+                if (Dorm.Update(dorm))
+                {
+                    msg.Message = "保存成功！";
+                }
+                else
+                {
+                    throw new Exception("发生未知错误！");
+                }
             }
             catch (Exception ex)
             {
-                msg.code = 500;
-                msg.msg = "发生错误：" + ex.Message;
+                msg.Code = -1;
+                msg.Message = "保存失败：" + ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -134,14 +155,29 @@ namespace sdglsys.Web.Controllers
             var msg = new Msg();
             var User = new Dorms();
             var user = User.FindById(id);
-            if (user == null)
+            try
             {
-                msg.msg = "该园区不存在！";
-                msg.code = 404;
+                if (user == null)
+                {
+                    throw new Exception("该园区不存在！");
+                }
+                else
+                {
+                    if (User.Delete(id))
+                    {
+                        msg.Message = "删除成功！";
+                    }
+
+                    else
+                    {
+                        throw new Exception("发生未知错误，删除失败！");
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                msg.msg = (User.Delete(id)) ? "删除成功！" : "发生未知错误，删除失败！";
+                msg.Code = -1;
+                msg.Message = ex.Message;
             }
             Response.Write(msg.ToJson());
             Response.End();
@@ -157,9 +193,21 @@ namespace sdglsys.Web.Controllers
 
         public void List()
         {
-            using (var db = new Dorms().Db)
+            try
             {
-                Response.Write(db.Queryable<TDorm>().Where(d => d.Is_active == true).ToJson());
+
+                using (var db = new Dorms().Db)
+                {
+                    Response.Write(db.Queryable<T_Dorm>().Where(d => d.Dorm_model_state && d.Dorm_is_active).ToJson());
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write(new Msg
+                {
+                     Message = ex.Message,
+                     Code = -1
+                }.ToJson());
             }
         }
     }

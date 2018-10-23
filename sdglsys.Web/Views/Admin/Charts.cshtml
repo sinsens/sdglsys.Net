@@ -36,7 +36,7 @@
                             <option value="0">所有园区最近一年的数据</option>
                             <option value="1">按园区</option>
                             <option value="2">按宿舍楼</option>
-                            <option value="3">按宿舍</option>
+                            <!--option value="3">按宿舍</option-->
                             <option value="5">所有园区</option>
                         </select>
                     </div>
@@ -76,10 +76,12 @@
             var laydate = layui.laydate;
             $ = layui.jquery;
             // 设置时间选项为当前时间
+            var t = new Date();
+            var ago = t.setTime(t.setMonth(t.getMonth() - 3));
             laydate.render({
                 type: "datetime",
                 elem: '#start_date',
-                value: new Date()
+                value: new Date(ago)
             });
             laydate.render({
                 elem: '#end_date',
@@ -87,9 +89,11 @@
                 value: new Date()
             });
             form.render();	// layui會在页面完成后自动渲染
+            data_type = 0;
             form.on('select(dataType)', function (data) {
                 var url = "/dorm/list";
                 var value = parseInt(data.value);
+                data_type = value;
                 $("#suorce_id").empty(); // 清空下拉列表
                 switch (value) {
                     case 1:
@@ -110,12 +114,21 @@
                 $.ajax({
                     async: "false",
                     type: "post",
-                    //data: params,
+                    data: { "token": localStorage.token,},
                     url: url,
                     success: function (data) {
                         data = JSON.parse(data);
-                        for (var i = 0; i < data.length; i++)
-                            $("<option value=" + data[i]["Id"] + ">" + data[i]["Nickname"] + "</option>").appendTo("#suorce_id");
+                        if (data_type === 1) {
+                            for (var i = 0; i < data.length; i++) {
+                                $("<option value=" + data[i]["Dorm_id"] + ">" + data[i]["Dorm_nickname"] + "</option>").appendTo("#suorce_id");
+                            }
+                        } else if (data_type === 2) {
+                            for (var i = 0; i < data.length; i++) {
+                                $("<option value=" + data[i]["Building_id"] + ">" + data[i]["Building_nickname"] + "</option>").appendTo("#suorce_id");
+                            }
+                        } else if (data_type === 3) {
+
+                        }    
                         form.render('select'); // 重新渲染下拉列表
                     },
                     error: function (e) {
@@ -142,10 +155,11 @@
                     }
                 }
                 var params = {
-                    'end_date': _end,
-                    'start_date': _start,
-                    'type': _type,
-                    'id': $("#suorce_id").val() == null ? 0 : $("#suorce_id").val(),
+                    "token": localStorage.token,
+                    "end_date": _end,
+                    "start_date": _start,
+                    "type": _type,
+                    "id": $("#suorce_id").val() == null ? 0 : $("#suorce_id").val(),
                 }
                 $.ajax({
                     async: "false",
@@ -154,8 +168,8 @@
                     url: "/Admin/Charts",
                     success: function (data) {
                         //data = JSON.parse(data);
-                        if (data['msg'] != null)
-                            layer.msg(data['msg'])
+                        if (data['Message'] != null)
+                            layer.msg(data['Message'])
                         else
                             ChartLoadData2(data)
                     },

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.T_Dorm>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -29,9 +30,9 @@
                 <div class="layui-input-block">
                     <select class="layui-select" id="pid" lay-search>
                         <option value="">请选择一个园区</option>
-                        @foreach (var dorm in ViewBag.dorms)
+                        @foreach (var dorm in Model)
                         {
-                            <option value="@dorm.Id">@dorm.Nickname</option>
+                            <option value="@dorm.Dorm_id">@dorm.Dorm_nickname</option>
                         }
                     </select>
                 </div>
@@ -52,52 +53,54 @@
 
     <script src="~/Content/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script>
-			layui.use(['form', 'jquery'], function() {
-				var form = layui.form;
-				$ = layui.jquery,
-					form.render();
-				//监听提交
-				form.on('submit(formDemo)', function(data) {
-					if($('#name').val().trim().length < 1) {
-						layer.msg("宿舍楼名称不能为空");
-						return false;
-					}
-					if($('#vid').val().trim().length < 1) {
-						layer.msg("编号不能为空");
-						return false;
-					}
-					if($('#pid').val().trim().length < 1) {
-						layer.msg("请选择所属园区");
-						return false;
-					}
-					var params = {
-							"name": $('#name').val(),
-							"vid": $("#vid").val(),
-							"pid": $("#pid").val(),
-							"note": $("#note").val()
+        layui.use(['form', 'jquery'], function () {
+            var form = layui.form;
+            $ = layui.jquery,
+                form.render();
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                if ($('#name').val().trim().length < 1) {
+                    layer.msg("宿舍楼名称不能为空");
+                    return false;
+                }
+                if ($('#vid').val().trim().length < 1) {
+                    layer.msg("编号不能为空");
+                    return false;
+                }
+                if ($('#pid').val().trim().length < 1) {
+                    layer.msg("请选择所属园区");
+                    return false;
+                }
+                var params = {
+                    "token": localStorage.token,
+                    "name": $('#name').val(),
+                    "vid": $("#vid").val(),
+                    "pid": $("#pid").val(),
+                    "note": $("#note").val()
+                }
+                $.ajax({
+                    async: "false",
+                    type: "post",
+                    //dataType: "json",
+                    //contentType: "application/json",
+                    data: params,
+                    url: "",
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
+                        });
+                    },
+                    error: function (e) {
+                        layer.open({
+                            'icon': 0,
+                            'title': "发生错误",
+                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                        });
                     }
-                    $.ajax({
-                        async: "false",
-                        type: "post",
-                        //dataType: "json",
-                        //contentType: "application/json",
-                        data: params,
-                        url: "",
-                        success: function (data) {data=JSON.parse(data);
-                            layer.msg(data['msg'], {
-                                'icon': data['code'] == 200 ? 1 : 0,
-                            });
-                        },
-                        error: function (e) {
-                            layer.open({
-                                'icon': 0,
-                                'title': "发生错误",
-                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
-                            });
-                        }
-                    });
-				});
-			});
+                });
+            });
+        });
     </script>
 </body>
 

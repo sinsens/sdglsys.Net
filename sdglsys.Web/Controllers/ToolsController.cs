@@ -15,16 +15,17 @@ namespace sdglsys.Web.Controllers
         {
             var hash = Request["hash"];
             var txt = Request["txt"];
+            var Utils = new Utils.Utils();
             if (hash != null&&hash.Length>20) {
-                Response.Write(XUtils.CheckPasswd(txt, hash)?true:false);
+                Response.Write(Utils.CheckPasswd(txt, hash)?true:false);
                 Response.End();
             }
             if (txt != null&&txt.Length>0) {
                 var msg = new Msg();
-                msg.content = new
+                msg.Content = new
                 {
                     text = txt,
-                    bcrypt_hash = XUtils.hashpwd(txt),
+                    bcrypt_hash = Utils.HashPassword(txt),
                 };
                 Response.Write(msg.ToJson());
                 Response.End();
@@ -44,7 +45,7 @@ namespace sdglsys.Web.Controllers
             }
             
             Response.Write(new Msg {
-                content = new {
+                Content = new {
                     Is_NewSession = Session.IsNewSession,
                     Session_Id = Session.SessionID,
                     Cookie_Session_Id = cookie ,

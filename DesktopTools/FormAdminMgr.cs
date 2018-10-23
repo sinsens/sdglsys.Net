@@ -20,23 +20,23 @@ namespace DesktopTools
         /// <summary>
         /// 系统角色信息列表
         /// </summary>
-        List<sdglsys.Entity.TUser> users = new List<sdglsys.Entity.TUser>();
+        List<sdglsys.Entity.T_User> users = new List<sdglsys.Entity.T_User>();
         /// <summary>
         /// 已选中系统角色
         /// </summary>
-        sdglsys.Entity.TUser selectedUser = new sdglsys.Entity.TUser();
+        sdglsys.Entity.T_User selectedUser = new sdglsys.Entity.T_User();
         /// <summary>
         /// 加载系统角色并添加到ComboBox
         /// </summary>
         void LoadUser()
         {
-            users = DbContext.Client.Queryable<sdglsys.Entity.TUser>().ToList();
+            users = DbContext.Client.Queryable<sdglsys.Entity.T_User>().ToList();
             if (users != null && users.Count() > 0)
             {
                 comboBox1.Items.Clear();
                 foreach (var u in users)
                 {
-                    comboBox1.Items.Add(u.Login_name);
+                    comboBox1.Items.Add(u.User_login_name);
                 }
                 comboBox1.SelectedIndex = 0;
             }
@@ -70,7 +70,7 @@ namespace DesktopTools
                 return;
             }
             /// 检查用户名
-            var res = DbContext.Client.Queryable<sdglsys.Entity.TUser>().Where(x => x.Login_name == tbxAddUserName.Text.Trim());
+            var res = DbContext.Client.Queryable<sdglsys.Entity.T_User>().Where(x =>x.User_model_state&& x.User_login_name == tbxAddUserName.Text.Trim());
             if (res.Count() > 0)
             {
                 MessageBox.Show("该用户名已存在");
@@ -78,12 +78,12 @@ namespace DesktopTools
                 return;
             }
             /// 生成系统角色信息
-            var user = new sdglsys.Entity.TUser
+            var user = new sdglsys.Entity.T_User
             {
-                Login_name = tbxAddUserName.Text.Trim(),
-                Nickname = tbxAddRealName.Text.Trim(),
-                Role = 3,
-                Pwd = sdglsys.Utils.Utils.HashPassword(tbxAddPwd.Text.Trim())
+                User_login_name = tbxAddUserName.Text.Trim(),
+                User_nickname = tbxAddRealName.Text.Trim(),
+                User_role = 3,
+                User_pwd = new sdglsys.Utils.Utils().HashPassword(tbxAddPwd.Text.Trim())
             };
 
             /// 保存到数据库
@@ -130,12 +130,12 @@ namespace DesktopTools
 
             foreach (var user in users)
             {
-                if (comboBox1.Text.Equals(user.Login_name))
+                if (comboBox1.Text.Equals(user.User_login_name))
                 {
                     try
                     {
                         /// 设置当前选择系统角色
-                        user.Pwd = sdglsys.Utils.Utils.HashPassword(tbxNewPwd.Text.Trim());
+                        user.User_pwd = new sdglsys.Utils.Utils().HashPassword(tbxNewPwd.Text.Trim());
                         if (DbContext.Client.Updateable(user).ExecuteCommand() > 0)
                         {
                             MessageBox.Show("重置密码成功");
@@ -159,9 +159,9 @@ namespace DesktopTools
             /// 显示系统角色姓名
             foreach (var user in users)
             {
-                if (comboBox1.Text.Equals(user.Login_name))
+                if (comboBox1.Text.Equals(user.User_login_name))
                 {
-                    tbxModRealName.Text = user.Nickname;
+                    tbxModRealName.Text = user.User_nickname;
                     break;
                 }
             }

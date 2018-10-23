@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,7 +17,7 @@ namespace sdglsys.Utils
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string HashMD5(string input)
+        public string HashMD5(string input)
         {
             StringBuilder hash = new StringBuilder();
             MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
@@ -35,9 +36,19 @@ namespace sdglsys.Utils
         /// </summary>
         /// <param name="pwd">密码或字符串</param>
         /// <returns>加密后的密码或字符串hash</returns>
-        public static string HashPassword(string pwd)
+        public string HashPassword(string pwd)
         {
             return BCrypt.Net.BCrypt.HashPassword(HashMD5(pwd), 4);
+        }
+
+
+        /// <summary>
+        /// 使用Bcrypt加密
+        /// </summary>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
+        public string HashBcrypt(string pwd) {
+            return BCrypt.Net.BCrypt.HashPassword(pwd, 4);
         }
 
         /// <summary>
@@ -45,9 +56,33 @@ namespace sdglsys.Utils
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static string ToJson(object obj)
+        public string ToJson(object obj)
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
+
+        /// <summary>
+        /// 密码验证
+        /// </summary>
+        /// <param name="pwd">密码明文</param>
+        /// <param name="hashpwd">密码hash</param>
+        /// <returns></returns>
+        public bool CheckPasswd(string pwd, string hashpwd)
+        {
+            return BCrypt.Net.BCrypt.Verify(pwd, hashpwd);
+        }
+
+        /// <summary>
+        /// 获取App配置信息
+        /// </summary>
+        /// <param name="key">App配置节点名称(Key)</param>
+        /// <param name="type">类型：typeof(string,bool,int)</param>
+        /// <returns></returns>
+        public object GetAppSetting(string key, Type type)
+        {
+            var setting = new AppSettingsReader();
+            return setting.GetValue(key, type);
+        }
+
     }
 }

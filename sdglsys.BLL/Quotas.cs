@@ -11,9 +11,9 @@ namespace sdglsys.DbHelper
         /// 获取最新的配置信息
         /// </summary>
         /// <returns></returns>
-        public Entity.TQuota getLast()
+        public Entity.T_Quota GetLast()
         {
-            return Db.Queryable<Entity.TQuota>().OrderBy(a => a.Id, SqlSugar.OrderByType.Desc).First();
+            return Db.Queryable<Entity.T_Quota>().Where(a=>a.Quota_model_state).OrderBy(a =>a.Quota_id, SqlSugar.OrderByType.Desc).First();
         }
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="quota"></param>
         /// <returns></returns>
-        public bool Update(Entity.TQuota quota)
+        public bool Update(Entity.T_Quota quota)
         {
-            if (quota.Id < 1)
+            if (quota.Quota_id < 1)
                 return Add(quota);
             return Db.Updateable(quota).ExecuteCommand() > 0 ? true : false;
         }
 
-        public bool Add(Entity.TQuota quota)
+        public bool Add(Entity.T_Quota quota)
         {
             return Db.Insertable(quota).ExecuteCommand() > 0 ? true : false;
         }

@@ -65,24 +65,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var used in ViewBag.useds)
+                        @foreach (sdglsys.Entity.VUsed_total used in ViewBag.useds)
                         {
                             <tr>
                                 <td class="hidden-xs">@used.Id</td>
-                                <td>@used.PNickname</td>
-                                <td class="hidden-xs">@used.Building_Nickname</td>
+                                <td>@used.UT_Room_Nickname</td>
+                                <td class="hidden-xs">@used.UT_Building_Nickname</td>
                                 @if ((int) Session["role"] > 2)
                                 {
-                                    <td class="hidden-xs">@used.Dorm_Nickname</td>}
+                                    <td class="hidden-xs">@used.UT_Dorm_Nickname</td>}
                                 @{
-                                    var cold_water_value = Math.Round(used.Cold_water_value, 2);
-                                    var hot_water_value = Math.Round(used.Hot_water_value, 2);
-                                    var electric_value = Math.Round(used.Electric_value, 2);
+                                    var cold_water_value = Math.Round(used.UT_Cold_water_value, 2);
+                                    var hot_water_value = Math.Round(used.UT_Hot_water_value, 2);
+                                    var electric_value = Math.Round(used.UT_Electric_value, 2);
                                 }
                                 <td>@cold_water_value 吨</td>
                                 <td>@hot_water_value 吨</td>
                                 <td>@electric_value 千瓦时</td>
-                                <td class="hidden-xs">@used.Post_date</td>
+                                <td class="hidden-xs">@used.UT_Post_date</td>
                                 <td>
                                     <div class="layui-btn-group">
                                         <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-id="@used.Id"

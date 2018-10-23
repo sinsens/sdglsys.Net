@@ -41,9 +41,9 @@
                 <div class="layui-input-block">
                     <select class="layui-select" id='pid' lay-search>
                         <option value="0">请选择所属园区</option>
-                        @foreach (var dorm in ViewBag.dorms)
+                        @foreach (sdglsys.Entity.T_Dorm dorm in ViewBag.dorms)
                         {
-                            <option value="@dorm.Id">@dorm.Nickname</option>
+                            <option value="@dorm.Dorm_id">@dorm.Dorm_nickname</option>
                         }
                     </select>
                 </div>
@@ -76,11 +76,12 @@
             form.render();
             //监听提交
             form.on('submit(formDemo)', function (data) {
-                if ($('#login_name').val().trim().length < 4) {
-                    layer.msg("用户名必须大于等于4个字符长度！");
+                if ($('#login_name').val().trim().length < 3) {
+                    layer.msg("用户名不能少于3个字符长度！");
                     return false;
                 }
                 var params = {
+                    "token": localStorage.token,
                     "login_name": $('#login_name').val(),
                     "nickname": $('#nickname').val(),
                     "role": $("#role").val(),
@@ -96,8 +97,8 @@
                     data: params,
                     url: "",
                     success: function (data) {data=JSON.parse(data);
-                        layer.msg(data['msg'], {
-                            'icon': data['code'] == 200 ? 1 : 0,
+                        layer.msg(data['Message'], {
+                            'icon': data['Code']+1,
                         });
                     },
                     error: function (e) {

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VRoom>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -48,17 +49,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var b in ViewBag.rooms)
+                        @foreach (sdglsys.Entity.VRoom room in Model)
                         {
                             <tr>
-                                <td class="hidden-xs" width="50">@b.Id</td>
-                                <td>@b.Nickname</td>
-                                <td class="hidden-xs">@b.Vid</td>
-                                <td>@b.Dorm_Nickname</td>
-                                <td>@b.PNickname</td>
-                                <td>@b.Number</td>
+                                <td class="hidden-xs" width="50">@room.Room_Id</td>
+                                <td>@room.Room_Nickname</td>
+                                <td class="hidden-xs">@room.Room_Vid</td>
+                                <td>@room.Room_Dorm_Nickname</td>
+                                <td>@room.Room_Building_Nickname</td>
+                                <td>@room.Number</td>
                                 <td>
-                                    @if (b.Is_active)
+                                    @if (room.Room_Is_active)
                                     {
                                         <div class="layui-btn layui-btn-xs layui-btn-normal">正常</div>}
                                     else
@@ -67,8 +68,8 @@
                                 </td>
                                 <td>
                                     <div class="layui-inline">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@b.Nickname" data-id="@b.Id" data-url="/room/edit"><i class="layui-icon">&#xe642;</i></button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@b.Id" data-url="/room/delete/@b.Id"><i class="layui-icon">&#xe640;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary edit-btn" data-text="编辑：@room.Room_Nickname" data-id="@room.Room_Id" data-url="/room/edit"><i class="layui-icon">&#xe642;</i></button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-btn" data-id="@room.Room_Id" data-url="/room/delete/@room.Room_Id"><i class="layui-icon">&#xe640;</i></button>
                                     </div>
                                 </td>
                             </tr>

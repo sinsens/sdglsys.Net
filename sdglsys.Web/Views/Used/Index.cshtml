@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<sdglsys.Entity.VUsed>
+<!DOCTYPE html>
 <html class="iframe-h">
 
 <head>
@@ -70,42 +71,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var used in ViewBag.useds)
+                        @foreach (sdglsys.Entity.VUsed used in Model)
                         {
                             <tr>
-                                <td class="hidden-xs">@used.Id</td>
-                                <td>@used.PNickname</td>
-                                <td class="hidden-xs">@used.Building_Nickname</td>
+                                <td class="hidden-xs">@used.Used_Id</td>
+                                <td>@used.Used_Room_Nickname</td>
+                                <td class="hidden-xs">@used.Used_Building_Nickname</td>
                                 @if ((int) Session["role"] > 2)
                                 {
-                                    <td class="hidden-xs">@used.Dorm_Nickname</td>}
+                                    <td class="hidden-xs">@used.Used_Dorm_Nickname</td>}
                                 @{
-                                    var cold_water_value = Math.Round(used.Cold_water_value, 2);
-                                    var hot_water_value = Math.Round(used.Hot_water_value, 2);
-                                    var electric_value = Math.Round(used.Electric_value, 2);
+                                    var cold_water_value = Math.Round(used.Used_Cold_water_value, 2);
+                                    var hot_water_value = Math.Round(used.Used_Hot_water_value, 2);
+                                    var electric_value = Math.Round(used.Used_Electric_value, 2);
                                 }
                                 <td>@cold_water_value 吨</td>
                                 <td>@hot_water_value 吨</td>
                                 <td>@electric_value 千瓦时</td>
-                                <td class="hidden-xs">@used.Post_date</td>
+                                <td class="hidden-xs">@used.Used_Post_date</td>
                                 @if ((int) Session["role"] > 1)
                                 {
-                                    <td class="hidden-md">@used.Post_Nickname</td>
+                                    <td class="hidden-md">@used.Used_Post_User_Nickname</td>
                                 }
                                 <!--td class="hidden-xs">
-                                        @if (used.Is_active) {
+                                        @if (used.Used_Is_active) {
                                         <button class="layui-btn layui-btn-mini layui-btn-normal">正常</button>
                                         }else{<button class="layui-btn layui-btn-mini layui-btn-disabled">已注销</button>
                                         }
                                     </!td-->
                                 <td>
                                     <div class="layui-btn-group">
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary view-btn"
-                                                title="冷水用量:@used.Cold_water_value|热水用量:@used.Hot_water_value|用电量:@used.Electric_value|备注:@used.Note">
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary view-btn" title="冷水用量:@used.Used_Cold_water_value|热水用量:@used.Used_Hot_water_value|用电量:@used.Used_Electric_value|备注:@used.Used_Note">
                                             <i class="layui-icon">&#xe60e;</i>
                                         </button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-used" data-id="@used.Id"
-                                                data-url="/used/delete/@used.Id">
+                                        <button class="layui-btn layui-btn-sm layui-btn-primary del-used" data-id="@used.Used_Id" data-url="/used/delete/@used.Used_Id">
                                             <i class="layui-icon">&#xe640;</i>
                                         </button>
                                     </div>

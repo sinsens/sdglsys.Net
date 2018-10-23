@@ -54,6 +54,7 @@
                     return false;
                 }
                 var params = {
+                    "token": localStorage.token,
                     "title": $('#title').val(),
                     "content": zip(layedit.getContent(editor)),
                 }
@@ -69,7 +70,7 @@
                         layer.open({
                             'icon': 1,
                             'title': "温馨提示",
-                            'content': data['msg']
+                            'content': data['Message']
                         });
                     },
                     error: function (e) {

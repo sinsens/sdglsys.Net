@@ -53,7 +53,7 @@
     <Compile Include="Buildings.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="Dorms.cs" />
-    <Compile Include="LoginInfo.cs" />
+    <Compile Include="Token.cs" />
     <Compile Include="Logs.cs" />
     <Compile Include="Notices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,6 +68,10 @@
     <ProjectReference Include="..\sdglsys.Entity\sdglsys.Entity.csproj">
       <Project>{6db0bf4a-a0b2-4486-9c9f-9c934ec121a2}</Project>
       <Name>sdglsys.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\sdglsys.Utils\sdglsys.Utils.csproj">
+      <Project>{771c7fe7-7c69-4c81-9ef0-0eaee7171eb9}</Project>
+      <Name>sdglsys.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

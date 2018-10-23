@@ -33,14 +33,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var notice in ViewBag.notices)
+                        @foreach (sdglsys.Entity.T_Notice notice in ViewBag.notices)
                         {
                             <tr>
                                 <td>
-                                    <a href="/notice/view/@notice.Id" target="_blank">@notice.Title</a>
+                                    <a href="/notice/view/@notice.Notice_id" target="_blank">@notice.Notice_title</a>
                                 </td>
-                                <td>@notice.Login_name</td>
-                                <td style="float: right;">@notice.Post_date</td>
+                                <td>@notice.Notice_login_name</td>
+                                <td style="float: right;">@notice.Notice_post_date</td>
                             </tr>
                         }
                     </tbody>

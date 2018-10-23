@@ -15,6 +15,15 @@ namespace DesktopTools
         public FormDormMgr()
         {
             InitializeComponent();
+            client = DbContext.Client;
+        }
+
+        SqlSugar.SqlSugarClient client;
+        private void FormDormMgr_Load(object sender, EventArgs e)
+        {
+            var dt = client.Queryable<sdglsys.Entity.T_Dorm>().Where(x => x.Dorm_model_state).ToList();
+            
+            dataGridView1.DataSource = dt;
         }
     }
 }

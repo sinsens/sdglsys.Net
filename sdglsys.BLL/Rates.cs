@@ -11,17 +11,17 @@ namespace sdglsys.DbHelper
         /// 获取最新的费率信息
         /// </summary>
         /// <returns></returns>
-        public Entity.TRate getLast() {
-            return Db.Queryable<Entity.TRate>().OrderBy(a=>a.Id,SqlSugar.OrderByType.Desc).First();
+        public Entity.T_Rate GetLast() {
+            return Db.Queryable<Entity.T_Rate>().Where(a => a.Rate_model_state).OrderBy(a=>a.Rate_id,SqlSugar.OrderByType.Desc).First();
         }
 
-        public bool Update(Entity.TRate rate) {
-            if (rate.Id < 1)
+        public bool Update(Entity.T_Rate rate) {
+            if (rate.Rate_id < 1)
                 return Add(rate);
             return Db.Updateable(rate).ExecuteCommand()>0?true:false;
         }
 
-        public bool Add(Entity.TRate rate)
+        public bool Add(Entity.T_Rate rate)
         {
             return Db.Insertable(rate).ExecuteCommand() > 0 ? true : false;
         }
