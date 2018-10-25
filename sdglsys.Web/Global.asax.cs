@@ -84,19 +84,55 @@ namespace sdglsys.Web
 
         protected void Application_PreRequestHandlerExecute(object sender, EventArgs e)
         {
-            ///调试模式
-            if ((bool)Application["debug"] && Session["login_name"] == null)
+            try
             {
-                var user = new sdglsys.DbHelper.Users().GetAdminUser();
-                if (user != null)
+                /// 调试模式自动登录
+                if ((bool)Application["debug"] && Session["login_name"] == null)
                 {
-                    Session["id"] = user.User_id;
-                    Session["login_name"] = user.User_login_name;
-                    Session["nickname"] = "as_debug_admin";
-                    Session["role"] = 3;
-                    Session["pid"] = 0;
+                    var user = new sdglsys.DbHelper.Users().GetAdminUser();
+                    if (user != null)
+                    {
+                        Session["id"] = user.User_id;
+                        Session["login_name"] = user.User_login_name;
+                        Session["nickname"] = "as_debug_admin";
+                        Session["role"] = 3;
+                        Session["pid"] = 0;
+                        var Token = new DbHelper.Token();
+                        var token = Token.GetByUserId(user.User_id);
+                        if (token == null)
+                        {
+                            token = new Entity.T_Token();
+                            token.Token_expired_date = DateTime.Now.AddHours(2);
+                            token.Token_id = Guid.NewGuid().ToString("N");
+                            token.Token_user_id = user.User_id;
+                            Token.Add(token);
+                        }
+                        else {
+                            token.Token_expired_date = DateTime.Now.AddHours(2);
+                            token.Token_id = Guid.NewGuid().ToString("N");
+                            token.Token_user_id = user.User_id;
+                            Token.Update(token);
+                        }
+                        
+                        Session["token"] = token.Token_id;
+                        
+                        new WebUtils().Log(new Entity.T_Log
+                        {
+                            Log_info = "Login as debug admin",
+                            Log_ip = Request.UserHostAddress,
+                            Log_login_name = user.User_login_name,
+                        });
+                    }
+                    Response.Write(new Msg { Message = "请先添加一个系统管理员角色，否则无法继续进行调试。", Code = -1 });
+                    Response.End();
                 }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
 
@@ -109,40 +145,34 @@ namespace sdglsys.Web
         {
             /// 系统发生错误时的事件
             Exception ex = Server.GetLastError();
+            var WebUtils = new WebUtils();
             if (ex is HttpException)
             {
-                var WebUtil = new WebUtils();
-                WebUtil.Log(new Entity.T_Log
+                /// HTTP 异常，写入日志
+                WebUtils.Log(new Entity.T_Log
                 {
                     Log_info = ex.Message,
                     Log_login_name = "system",
                     Log_ip = "127.0.0.1"
                 });
-                if ((bool)Application["debug"] == false)
+            }
+            if ((bool)Application["debug"] == false)
+            {
+                /*
+                 非调试模式输出序列化错误信息
+                 */
+                //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
+                var msg = new Msg
                 {
-                    /*
-                     非调试模式输出序列化错误信息
-                     */
-                    //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
-                    var msg = new Msg
-                    {
-                        Message = "错误提示：" + ex.Message + "\n错误代码：" + ((HttpException)ex).GetHttpCode()
-                    };
-                    Response.Write(msg.ToJson());
-                    Response.End();
-                }
-                else
-                {
-                    /*
-                     调试模式直接抛出异常
-                     */
-                    throw ex;
-                }
+                    Message = "错误提示：" + ex.Message + "\n错误信息：" + WebUtils.ToJson(ex)
+                };
+                Response.Write(msg.ToJson());
+                Response.End();
             }
             else
             {
                 /*
-                非HTTP异常就直接抛出
+                直接抛出
                 */
                 throw ex;
             }

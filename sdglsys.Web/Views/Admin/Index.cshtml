@@ -12,8 +12,8 @@
     	 * 设计和开发过程中学到了不少东西，可以说是承载着我的回忆。
     	 * 所以如果你有缘看到这些话，请不要删除，否则我会很不开心。
     	 * 并且诅咒你Debug时bug永远无法复现。
-    	 * 有什么问题可以电邮联系我，但不保证能帮你解决。
-    	 * Email：sinsens@outlook.com
+    	 * 有什么问题可以联系我，但不保证能帮你解决。
+    	 * QQ：1278386874
     	 */
     -->
 	<!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             /// 询问
             if (confirm("是否退出登录？")) {
                 localStorage.clear();
-                document.cookie = "token=;";
+                //document.cookie = "token=;";
                 location.href = '/admin/logout';
             }
         }
@@ -195,7 +195,13 @@
                                     <div class="layui-card">
                                         <div class="layui-card-header" style="margin-top:10px">@Session["login_name"]，欢迎回来</div>
                                         <div class="layui-card-body">
-                                            欢迎使用旅游文化校园水电收费管理信息系统。
+                                            当前时间：<span id="datetime"></span><script>
+                                                function showTime() {
+                                                    document.getElementById("datetime").innerHTML = new Date().toLocaleString();
+                                                    setTimeout('showTime()', 1000);
+                                                }
+                                                showTime();
+                                            </script>
                                             @{/*<p>当前系统在线人数：@{System.Web.HttpContext.Current.Application["OnLineUserCount"]}</p>*/}
                                         </div>
                                     </div>

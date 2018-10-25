@@ -13,7 +13,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public Entity.T_Quota GetLast()
         {
-            return Db.Queryable<Entity.T_Quota>().Where(a=>a.Quota_model_state).OrderBy(a =>a.Quota_id, SqlSugar.OrderByType.Desc).First();
+            return Db.Queryable<Entity.T_Quota>().OrderBy(a =>a.Quota_id, SqlSugar.OrderByType.Desc).Where(a=>a.Quota_model_state).First();
         }
 
         /// <summary>

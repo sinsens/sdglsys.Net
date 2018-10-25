@@ -1,5 +1,6 @@
 ﻿namespace sdglsys.Entity
 {
+    [System.Serializable]
     /// <summary>
     /// 自定义Json消息
     /// </summary>

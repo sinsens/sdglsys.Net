@@ -43,6 +43,7 @@ namespace sdglsys.Web.Controllers
                     Session["nickname"] = user.User_nickname;
                     Session["role"] = user.User_role;
                     Session["pid"] = user.User_dorm_id;
+
                     msg.Message = "登录成功！";
                     msg.Content = "/admin/index";
                     /// 记录登录日志
@@ -74,7 +75,13 @@ namespace sdglsys.Web.Controllers
                             Token_user_id = user.User_id
                         });
                     }
+                    Session["token"] = token_id;
                     msg.Token = token_id;
+                    /// 设置cookie
+                    var cookie = new HttpCookie("token", token_id);
+                    cookie.Expires = token.Token_expired_date;
+                    cookie.HttpOnly = false;
+                    Response.Cookies.Add(cookie);
                 }
                 else
                 {
@@ -105,7 +112,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [NeedLogin]
-        public ActionResult Logout()
+        public void Logout()
         {
 
             try
@@ -119,19 +126,16 @@ namespace sdglsys.Web.Controllers
                 }); // 写入日志
                 // 清除Token
                 new Token().Delete((int)Session["id"]);
-                Logs.Add(new T_Log
-                {
-                    Log_info = "Clear Token By User Id:" + Session["id"],
-                    Log_login_name = "system"
-                });
             }
             catch (Exception ex)
             {
                 new WebUtils().Log("system", "", ex.Message);
             }
             Session.Clear();
+            Request.Cookies.Clear();
             Response.Cookies.Clear();
-            return Redirect("/");
+            Response.Redirect("/");
+            //return Redirect("/");
         }
         #endregion
 
@@ -162,7 +166,7 @@ namespace sdglsys.Web.Controllers
                 Response.Write("当前为调试模式");
                 Response.End();
             }*/
-            return View(new Users().FindById((int) Session["id"]));
+            return View(new Users().FindById((int)Session["id"]));
         }
 
         // GET: Admin/Info:修改个人信息
@@ -175,7 +179,8 @@ namespace sdglsys.Web.Controllers
             {
                 var User = new Users();
                 var user = User.FindById((int)Session["id"]);
-                if (user == null) {
+                if (user == null)
+                {
                     throw new Exception("非法访问！");
                 }
                 user.User_nickname = collection["nickname"];
@@ -206,7 +211,7 @@ namespace sdglsys.Web.Controllers
         {
             var msg = new Msg();
             var User = new Users();
-            var user = User.FindById((int) Session["id"]);
+            var user = User.FindById((int)Session["id"]);
             try
             {
                 var pwd_old = collection["pwd_old"];
@@ -227,7 +232,7 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-                    
+
                     throw new Exception("原密码输入有误");
                 }
             }
@@ -286,7 +291,8 @@ namespace sdglsys.Web.Controllers
                 quota.Quota_is_active = Convert.ToBoolean(collection["is_active"]);
                 quota.Quota_note = collection["note"];
                 /// 检查输入
-                if (quota.Quota_cold_water_value < 0 || quota.Quota_cold_water_value > 99999) {
+                if (quota.Quota_cold_water_value < 0 || quota.Quota_cold_water_value > 99999)
+                {
                     throw new Exception("冷水配额应在0~99999之间");
                 }
                 if (quota.Quota_hot_water_value < 0 || quota.Quota_hot_water_value > 99999)
@@ -482,7 +488,8 @@ namespace sdglsys.Web.Controllers
                     };
                     Response.Write(Utils.ToJson(msg));
                 }
-                else {
+                else
+                {
                     throw new Exception("请求参数不正确");
                 }
             }
@@ -491,7 +498,7 @@ namespace sdglsys.Web.Controllers
                 var error = new
                 {
                     code = -1,
-                    msg = "发生错误："+ex.Message,
+                    msg = "发生错误：" + ex.Message,
                     data = new
                     {
                         src = "",
@@ -500,7 +507,7 @@ namespace sdglsys.Web.Controllers
                 };
                 Response.Write(Utils.ToJson(error));
             }
-            
+
             Response.End();
         }
         #endregion
@@ -526,7 +533,7 @@ namespace sdglsys.Web.Controllers
         public void GetLogList()
         {
             var msg = new ResponseData();
-            
+
             string keyword = "";
             int page = 1;
             int limit = 10;
@@ -543,7 +550,7 @@ namespace sdglsys.Web.Controllers
                 Response.Write(msg.ToJson());
                 Response.End();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }

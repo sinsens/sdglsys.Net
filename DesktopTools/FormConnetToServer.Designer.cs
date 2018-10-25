@@ -141,7 +141,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "MySQL",
-            "SQL Server"});
+            "SQLServer"});
             this.comboBox1.Location = new System.Drawing.Point(111, 18);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(129, 20);
@@ -169,6 +169,7 @@
             this.MinimizeBox = false;
             this.Name = "FormConnetToServer";
             this.Text = "连接到数据库";
+            this.Load += new System.EventHandler(this.FormConnetToServer_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

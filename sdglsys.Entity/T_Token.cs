@@ -9,7 +9,7 @@ namespace sdglsys.Entity
     {
         private System.String _Token_id;
         /// <summary>
-        /// Token ID
+        /// Token ID，GUID字符串
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public System.String Token_id { get { return this._Token_id; } set { this._Token_id = value?.Trim(); } }
@@ -23,7 +23,7 @@ namespace sdglsys.Entity
 
         private System.DateTime _Token_login_date=System.DateTime.Now;
         /// <summary>
-        /// 登录时间
+        /// 登录时间，默认取当前系统时间
         /// </summary>
         public System.DateTime Token_login_date { get { return this._Token_login_date; } set { this._Token_login_date = value; } }
 

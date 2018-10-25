@@ -19,7 +19,7 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            if (session[ "login_name" ] == null)
+            if (session["login_name"] == null)
             {
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
@@ -45,7 +45,7 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            if (session[ "role" ] == null || (int) session[ "role" ] < 3)
+            if (session["role"] == null || (int)session["role"] < 3)
             {
 
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
@@ -70,14 +70,14 @@ namespace sdglsys.Web
             var httpContext = authorizationContext.HttpContext;
             var request = httpContext.Request;
             var session = HttpContext.Current.Session;
-            
+
             ActionResult actionResult = null;
             string message = string.Empty;
-            if (session[ "role" ] == null || (int) session[ "role" ] < 2)
+            if (session["role"] == null || (int)session["role"] < 2)
             {
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
-                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message});
+                string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message });
                 actionResult = new RedirectResult(returnUrl);
             }
             new WebUtils().Log(httpContext);
@@ -88,33 +88,47 @@ namespace sdglsys.Web
     /// <summary>
     /// 自动登录
     /// </summary>
-    public class AutoLogin  {
-        public void LoginMe(HttpRequestBase request) {
+    public class AutoLogin
+    {
+        public void LoginMe(HttpRequestBase request)
+        {
             var session = request.RequestContext.HttpContext.Session;
             if (session["login_name"] == null && request["token"] != null)
             {
                 /*
-                 Cookies中有Token
-                 */
-                var Token = new DbHelper.Token();
-                var token = Token.GetToken(request["token"]);
-                if (token != null && token.Token_expired_date > DateTime.Now) // 登录信息不是null且未过期
+                Cookies中有Token
+                */
+                try
                 {
-                    var user = Token.GetUserById(token.Token_id);
-                    if (user != null)
+                    var Token = new DbHelper.Token();
+                    var token = Token.GetToken(request["token"]);
+                    if (token != null && token.Token_expired_date > DateTime.Now) // 登录信息不是null且未过期
                     {
-                        session["id"] = user.User_id;
-                        session["login_name"] = user.User_login_name;
-                        session["nickname"] = user.User_nickname;
-                        session["role"] = user.User_role;
-                        session["pid"] = user.User_dorm_id;
-                        /// 预防身份过期
-                        if (token.Token_expired_date < DateTime.Now.AddDays(1))
+                        var user = Token.GetUserById(token.Token_id);
+                        if (user != null)
                         {
+                            session["id"] = user.User_id;
+                            session["login_name"] = user.User_login_name;
+                            session["nickname"] = user.User_nickname;
+                            session["role"] = user.User_role;
+                            session["pid"] = user.User_dorm_id;
+                            /// 预防身份过期
                             token.Token_expired_date = DateTime.Now.AddDays(1);
+                            token.Token_login_date = DateTime.Now;
                             Token.Update(token);
+                            /// 记录日志
+                            new sdglsys.Web.WebUtils().Log(new Entity.T_Log
+                            {
+                                Log_info = "Login by token",
+                                Log_ip = request.UserHostAddress,
+                                Log_login_name = user.User_login_name
+                            });
+                            session["token"] = token.Token_id;
                         }
                     }
+                }
+                catch
+                {
 
                 }
             }

@@ -122,7 +122,6 @@
                         if (data['Code'] == 0) {
                             layer.msg(data['Message'], { icon: 6 });
                             localStorage.token = data["Token"];
-                            document.cookie = "token=" + data["Token"];
                             load(data['Content']);
                         } else {
                             layer.msg(data['Message'], { icon: 5 });

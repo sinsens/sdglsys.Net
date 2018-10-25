@@ -109,10 +109,6 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("请先到'系统设置-费率及基础配额设置'设置基础配额信息");
                 }
 
-                var Used = new Useds();
-                var Used_total = new Useds_total();
-                var Bill = new Bills();
-
                 ///1.获取数据
 
                 var cold_water_value = Convert.ToSingle(collection["cold_water_value"]);
@@ -130,7 +126,7 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("宿舍ID输入有误，应在1~99999999之间");
                 }
                 ///1.2获取宿舍信息
-                var room = new Rooms().FindById(Pid);
+                var room = Db.Queryable<T_Room>().Single(x=>x.Room_id==Pid&&x.Room_model_state);
                 if (room == null)
                 {
                     throw new Exception("该宿舍不存在");
@@ -140,7 +136,7 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("该宿舍无人居住，无需登记");
                 }
                 ///1.3判断该宿舍是否已登记, 避免重复操作
-                if (Used.IsRecord(Pid))
+                if (new DbHelper.Useds().IsRecord(Pid))
                 {
                     throw new Exception("该宿舍本月已经登记过了，无需再次登记");
                 }
@@ -150,7 +146,7 @@ namespace sdglsys.Web.Controllers
                 var this_hot_water_value = hot_water_value;
                 var this_electric_value = electric_value;
                 ///3.计算本次用量
-                var usedinfo = new Useds_total().FindByPid(Pid);
+                var usedinfo = Db.Queryable<T_Used_total>().Single(x=>x.Ut_room_id==Pid&&x.Ut_model_state);
                 if (usedinfo != null)
                 {
                     ///3.1判断本次数值是否大于等于上次数值
@@ -246,7 +242,7 @@ namespace sdglsys.Web.Controllers
                 }
 
                 Db.Ado.CommitTran();// 提交事务
-                msg.Message = "添加成功！";
+                msg.Message = "登记成功！";
             }
             catch (Exception ex)
             {

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 
 namespace DesktopTools
@@ -46,6 +48,32 @@ namespace DesktopTools
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            if (File.Exists("info.dat")) {
+                try
+                {
+                    using (var fs = new FileStream("info.dat", FileMode.Open))
+                    {
+                        var bf = new BinaryFormatter();
+                        var info = bf.Deserialize(fs) as Info;
+                        bf = null;
+                        fs.Dispose();
+                        GC.Collect();
+                        if (info.DbInfo != null)
+                        {
+                            FormConnetToServer.DBName = info.DbInfo.DbName;
+                            FormConnetToServer.DBType = info.DbInfo.DbType;
+                            FormConnetToServer.UserName = info.DbInfo.Username;
+                            FormConnetToServer.Server = info.DbInfo.Server;
+                            FormConnetToServer.Pwd = info.DbInfo.Pwd;
+                        }
+                    }
+                }
+                catch
+                {
+                   
+                }
+                
+            }
             SetTip("请连接到数据库");
         }
 

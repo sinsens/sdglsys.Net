@@ -22,7 +22,7 @@ namespace DesktopTools
                         dbType = DbType.MySql;
                         connectionString += "Allow User Variables=True;AllowZeroDateTime=True;ConvertZeroDateTime=True;SslMode=none;";
                         break;
-                    case "sql server": dbType = DbType.SqlServer; break;
+                    case "sqlserver": dbType = DbType.SqlServer; break;
                     case "postgresql": dbType = DbType.PostgreSQL; break;
                     case "sqlite": dbType = DbType.Sqlite; break;
                     case "oracle": dbType = DbType.Oracle; break;

@@ -34,7 +34,7 @@ namespace sdglsys.Entity
 
         private System.DateTime _Log_post_date=System.DateTime.Now;
         /// <summary>
-        /// 发生时间
+        /// 发生时间，默认取当前系统时间
         /// </summary>
         public System.DateTime Log_post_date { get { return this._Log_post_date; } set { this._Log_post_date = value; } }
     }

@@ -12,7 +12,7 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <returns></returns>
         public Entity.T_Rate GetLast() {
-            return Db.Queryable<Entity.T_Rate>().Where(a => a.Rate_model_state).OrderBy(a=>a.Rate_id,SqlSugar.OrderByType.Desc).First();
+            return Db.Queryable<Entity.T_Rate>().OrderBy(a=>a.Rate_id,SqlSugar.OrderByType.Desc).Where(a => a.Rate_model_state).First();
         }
 
         public bool Update(Entity.T_Rate rate) {

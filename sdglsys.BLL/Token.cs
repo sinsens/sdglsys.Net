@@ -22,8 +22,8 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="login_Info"></param>
         /// <returns></returns>
-        public bool Add(Entity.T_Token login_Info) {
-            return TokenDb.Insert(login_Info);
+        public bool Add(Entity.T_Token token) {
+            return TokenDb.Insert(token);
         }
 
         /// <summary>

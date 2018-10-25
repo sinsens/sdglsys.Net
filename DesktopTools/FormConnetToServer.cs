@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
 
@@ -11,11 +13,11 @@ namespace DesktopTools
 {
     public partial class FormConnetToServer : Form
     {
-        static string DBName = "sdglsys";
-        static string Server = "127.0.0.1";
-        static string UserName;
-        static string Pwd;
-        static string DBType = "MySQL";
+        internal static string DBName = "sdglsys";
+        internal static string Server = "127.0.0.1";
+        internal static string UserName;
+        internal static string Pwd;
+        internal static string DBType = "MySQL";
         private string title;
         public FormConnetToServer()
         {
@@ -58,12 +60,30 @@ namespace DesktopTools
                 UserName = tbxUserName.Text;
                 DBType = comboBox1.Text;
                 Text = title + " - 已保存";
+                Info info = new Info();
+                info.DbInfo = new DbInfo();
+                info.DbInfo.DbName = DBName;
+                info.DbInfo.DbType = DBType;
+                info.DbInfo.Server = Server;
+                info.DbInfo.Username = UserName;
+                info.DbInfo.Pwd = Pwd;
+                var fs = new FileStream("info.dat", FileMode.Create);
+                var bf = new BinaryFormatter();
+                bf.Serialize(fs, info);
+                bf = null;
+                fs.Close();
                 DialogResult = DialogResult.OK;
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                throw;// ex;
+                //MessageBox.Show(ex.Source + ex.Message);
             }
+
+        }
+
+        private void FormConnetToServer_Load(object sender, EventArgs e)
+        {
 
         }
     }
