@@ -395,7 +395,7 @@ namespace sdglsys.Web.Controllers
         /// <returns></returns>
         public ActionResult Charts()
         {
-            return View(new DbHelper.Useds().GeT_UsedDatas());
+            return View(new DbHelper.Useds().GetUsedDatas());
         }
 
         /// <summary>
@@ -423,7 +423,7 @@ namespace sdglsys.Web.Controllers
             {
                 data.info = "请求参数有误";
             }
-            data = Used_data.GeT_UsedDatas(_type, _id, _start, _end);
+            data = Used_data.GetUsedDatas(_type, _id, _start, _end);
             Response.Write(new Utils.Utils().ToJson(data));
             Response.End();
         }

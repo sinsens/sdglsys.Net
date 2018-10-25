@@ -131,7 +131,7 @@ namespace sdglsys.DbHelper
             }).Where((u, d) => u.User_model_state);
             if (pid != 0)
             {
-                sql = sql.Where(x => x.User_dorm_id == pid);
+                sql = sql.Where(u => u.User_dorm_id == pid);
             }
             if (!string.IsNullOrWhiteSpace(where))
             {

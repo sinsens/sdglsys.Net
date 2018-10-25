@@ -72,6 +72,7 @@ namespace sdglsys.Web.Controllers
 
             try
             {
+                var Db = new Users().Db;
                 var Utils = new Utils.Utils();
                 // 初始化对象
                 Entity.T_User user = new Entity.T_User()
@@ -82,12 +83,12 @@ namespace sdglsys.Web.Controllers
                     User_role = Convert.ToInt32(collection["role"]),
                     User_dorm_id = Convert.ToInt32(collection["pid"]),
                     User_login_name = collection["login_name"],
-                    User_pwd = new Utils.Utils().HashPassword(((string)Utils.GetAppSetting("DefaultPassword", typeof(string)))), // 设置默认密码
+                    User_pwd = Utils.HashPassword(((string)Utils.GetAppSetting("DefaultPassword", typeof(string)))), // 设置默认密码
                 };
                 if (user.User_login_name.Trim().Length < 3) {
                     throw new Exception("用户名不能少于3个字符长度");
                 }
-                var User = new Users();
+                
 
                 if (user.User_dorm_id == 0 && user.User_role < 3)
                 {
@@ -98,14 +99,15 @@ namespace sdglsys.Web.Controllers
                     // 判断权限
                     throw new Exception("权限不足");
                 }
-                if (User.FindByLoginName(user.User_login_name) != null)
+                /// 检查用户名是否已存在
+                
+                if (Db.Queryable<Entity.T_User>().Count(x => x.User_login_name == user.User_login_name)>0)
                 {
                     // 用户名已存在
-                    throw new Exception("用户名已存在！");
+                    throw new Exception("用户名已存在！如果列表不显示可能是未实际从数据库中删除。");
                 }
-                if (User.Add(user))
+                if (Db.Insertable(user).ExecuteCommand()>0)
                 {
-                    msg.Code = 0;
                     msg.Message = "添加成功！";
                 }
                 else

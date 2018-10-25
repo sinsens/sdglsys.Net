@@ -194,7 +194,7 @@ namespace sdglsys.DbHelper
         /// <param name="_start">开始日期</param>
         /// <param name="_end">截至日期</param>
         /// <returns></returns>
-        public Used_datas GeT_UsedDatas(int _type = 0, int _id = 0, DateTime _start = default(DateTime), DateTime _end = default(DateTime))
+        public Used_datas GetUsedDatas(int _type = 0, int _id = 0, DateTime _start = default(DateTime), DateTime _end = default(DateTime))
         {
             var data = new Used_datas();
             var list = new List<Used_data>();

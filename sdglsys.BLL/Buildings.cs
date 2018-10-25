@@ -109,9 +109,9 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<VBuilding> GetByPages(int page, int limit, ref int totalCount, string where = null, int pid=0)
         {
-            var sql = Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state && b.Building_dorm_id == pid);
+            var sql = Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state);
             if (pid != 0) {
-                sql = sql.Where(x => x.Building_dorm_id == pid);
+                sql = sql.Where(b => b.Building_dorm_id == pid);
             }
             if (where != null)
             {

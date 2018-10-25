@@ -105,7 +105,7 @@ namespace sdglsys.DbHelper
                 sql = sql.Where((e, u, r, b, d) => e.Bill_is_active == stat);
             }
             if (pid!=0) {
-                sql = sql.Where(x => pid == x.Bill_dorm_id);
+                sql = sql.Where((e, u, r, b, d) => pid == e.Bill_dorm_id);
             }
                 return sql.Select((e, u, r, b, d) => new VBill
             {
