@@ -145,29 +145,49 @@ namespace sdglsys.Web
         {
             /// 系统发生错误时的事件
             Exception ex = Server.GetLastError();
-            var WebUtils = new WebUtils();
-            if (ex is HttpException)
+            
+            if (ex is HttpException&& (bool)Application["debug"] == false)
             {
-                /// HTTP 异常，写入日志
-                WebUtils.Log(new Entity.T_Log
-                {
-                    Log_info = ex.Message,
-                    Log_login_name = "system",
-                    Log_ip = "127.0.0.1"
-                });
-            }
-            if ((bool)Application["debug"] == false)
+                var msg = new Web.Msg {
+                    Code = -1
+                };
+                switch (((HttpException)ex).GetHttpCode()){
+                    case 404:
+                        msg.Message = "页面不存在";
+                        break;
+                    case 500:
+                        msg.Message = "系统内部错误";
+                        break;
+                    default:
+                        msg.Message = ex.Message;
+                        break;
+                }
+                
+
+                Response.Write(msg.ToJson());
+                Response.End();
+            }else if ((bool)Application["debug"] == false)
             {
                 /*
                  非调试模式输出序列化错误信息
                  */
                 //Response.Redirect("/Error/" + ((HttpException)ex).GetHttpCode());
-                var msg = new Msg
+                /// 非HTTP 异常，写入日志
+                new WebUtils().Log(new Entity.T_Log
                 {
-                    Message = "错误提示：" + ex.Message + "\n错误信息：" + WebUtils.ToJson(ex)
-                };
-                Response.Write(msg.ToJson());
+                    Log_info = ex.Message,
+                    Log_login_name = "system error",
+                    Log_ip = "127.0.0.1"
+                });
+
+                Response.Write(new Web.Msg
+                {
+                    Code = -1,
+                    Message = "发生系统错误",
+                    Content = "请查看系统日志以获取详细信息"
+                }.ToJson());
                 Response.End();
+                
             }
             else
             {

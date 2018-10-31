@@ -36,7 +36,6 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.AdminMgrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.园区信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.宿舍楼信息管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -60,10 +59,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -101,8 +100,7 @@
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AdminMgrToolStripMenuItem,
-            this.园区信息管理ToolStripMenuItem,
-            this.宿舍楼信息管理ToolStripMenuItem});
+            this.园区信息管理ToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(44, 21);
             this.toolStripMenuItem1.Text = "工具";
@@ -110,22 +108,16 @@
             // AdminMgrToolStripMenuItem
             // 
             this.AdminMgrToolStripMenuItem.Name = "AdminMgrToolStripMenuItem";
-            this.AdminMgrToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.AdminMgrToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.AdminMgrToolStripMenuItem.Text = "系统角色管理";
             this.AdminMgrToolStripMenuItem.Click += new System.EventHandler(this.AdminMgrToolStripMenuItem_Click);
             // 
             // 园区信息管理ToolStripMenuItem
             // 
             this.园区信息管理ToolStripMenuItem.Name = "园区信息管理ToolStripMenuItem";
-            this.园区信息管理ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.园区信息管理ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.园区信息管理ToolStripMenuItem.Text = "园区信息管理";
             this.园区信息管理ToolStripMenuItem.Click += new System.EventHandler(this.园区信息管理ToolStripMenuItem_Click);
-            // 
-            // 宿舍楼信息管理ToolStripMenuItem
-            // 
-            this.宿舍楼信息管理ToolStripMenuItem.Name = "宿舍楼信息管理ToolStripMenuItem";
-            this.宿舍楼信息管理ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.宿舍楼信息管理ToolStripMenuItem.Text = "宿舍楼信息管理";
             // 
             // 关于ToolStripMenuItem
             // 
@@ -369,6 +361,19 @@
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(131, 17);
             this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
             // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(523, 17);
+            this.toolStripStatusLabel1.Spring = true;
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(131, 17);
+            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
+            // 
             // toolTip1
             // 
             this.toolTip1.AutomaticDelay = 200;
@@ -388,19 +393,6 @@
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(776, 195);
             this.dataGridView1.TabIndex = 3;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(492, 17);
-            this.toolStripStatusLabel1.Spring = true;
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(131, 17);
-            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
             // 
             // FormMain
             // 
@@ -462,7 +454,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem AdminMgrToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 园区信息管理ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 宿舍楼信息管理ToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
     }

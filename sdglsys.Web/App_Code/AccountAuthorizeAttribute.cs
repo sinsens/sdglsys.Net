@@ -45,13 +45,26 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            if (session["role"] == null || (int)session["role"] < 3)
+            if (session["role"] == null)
             {
+
 
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message });
                 actionResult = new RedirectResult(returnUrl);
+            }
+            else if ((int)session["role"] < 3)
+            {
+                /// 已登录但不是系统管理员
+                var response = httpContext.Response;
+                response.Write(new Entity.Msg
+                {
+                    Code = -1,
+                    Message = "权限不足"
+                });
+                response.End();
+                return;
             }
             new WebUtils().Log(httpContext);
 
@@ -73,12 +86,24 @@ namespace sdglsys.Web
 
             ActionResult actionResult = null;
             string message = string.Empty;
-            if (session["role"] == null || (int)session["role"] < 2)
+            if (session["role"] == null)
             {
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message });
                 actionResult = new RedirectResult(returnUrl);
+            }
+            else if ((int)session["role"] < 2)
+            {
+                /// 已登录但不是系统管理员
+                var response = httpContext.Response;
+                response.Write(new Entity.Msg
+                {
+                    Code = -1,
+                    Message = "权限不足"
+                });
+                response.End();
+                return;
             }
             new WebUtils().Log(httpContext);
             authorizationContext.Result = actionResult;
@@ -88,11 +113,13 @@ namespace sdglsys.Web
     /// <summary>
     /// 自动登录
     /// </summary>
-    public class AutoLogin
+    public class AutoLogin:AuthorizeAttribute
     {
-        public void LoginMe(HttpRequestBase request)
+        public override void OnAuthorization(AuthorizationContext authorizationContext)
         {
-            var session = request.RequestContext.HttpContext.Session;
+            var httpContext = authorizationContext.HttpContext;
+            var request = httpContext.Request;
+            var session = HttpContext.Current.Session;
             if (session["login_name"] == null && request["token"] != null)
             {
                 /*
@@ -113,7 +140,7 @@ namespace sdglsys.Web
                             session["role"] = user.User_role;
                             session["pid"] = user.User_dorm_id;
                             /// 预防身份过期
-                            token.Token_expired_date = DateTime.Now.AddDays(1);
+                            token.Token_expired_date = DateTime.Now.AddDays(30); // 设置token为30天后过期
                             token.Token_login_date = DateTime.Now;
                             Token.Update(token);
                             /// 记录日志
