@@ -529,24 +529,37 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [IsAdmin]
-        [OutputCache(Duration = 10)]
+        [OutputCache(Duration = 300)] // 设置缓存时间为300秒，5分钟
         public void GetLogList()
         {
             var msg = new ResponseData();
 
-            string keyword = "";
+            string keyword = null;
             int page = 1;
             int limit = 10;
             int count = 0;
             try
             {
-                var Log = new DbHelper.Logs();
-                keyword = Request["keyword"]; // 搜索关键词
-                page = Convert.ToInt32(Request["page"]); if (page < 1) page = 1;
-                limit = Convert.ToInt32(Request["limit"]); if (limit > 99 || limit < 1) limit = 10;
+                if (!string.IsNullOrWhiteSpace(Request["keyword"]))
+                {
+                    keyword = Request["keyword"]; // 搜索关键词
+                }
+                // 当前页码
+                if (!string.IsNullOrWhiteSpace(Request["page"]))
+                {
+                    int.TryParse(Request["page"], out page);
+                    page = page > 0 ? page : 1;
+                }
+                // 每页数量
+                if (!string.IsNullOrWhiteSpace(Request["limit"]))
+                {
+                    int.TryParse(Request["limit"], out limit);
+                    limit = limit > 0 ? limit : 10;
+                }
 
-                msg.data = Log.getByPages(page, limit, ref count, keyword); // 获取列表
+                msg.data = new DbHelper.Logs().GetByPages(page, limit, ref count, keyword); // 获取列表
                 msg.count = count;
+                
                 Response.Write(msg.ToJson());
                 Response.End();
             }

@@ -3,10 +3,6 @@ namespace sdglsys.DbHelper
 {
     public class Logs : DbContext
     {
-        public List<Entity.T_Log> getAll()
-        {
-            return Db.Queryable<Entity.T_Log>().ToList();
-        }
 
         /// <summary>
         /// 通过ID查询
@@ -71,12 +67,16 @@ namespace sdglsys.DbHelper
         /// <param name="page">当前页数</param>
         /// <param name="limit">每页数量</param>
         /// <param name="totalCount">当前页结果数</param>
-        /// <param name="where">条件</param>
+        /// <param name="keyword">关键词</param>
         /// <returns></returns>
-        public List<Entity.T_Log> getByPages(int page, int limit, ref int totalCount, string where = null)
+        public List<Entity.T_Log> GetByPages(int page, int limit, ref int totalCount, string keyword = null)
         {
-            return (where == null) ? Db.Queryable<Entity.T_Log>().OrderBy(a => a.Log_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount) :
-                Db.Queryable<Entity.T_Log>().Where(a => a.Log_info.Contains(where) || a.Log_ip.Contains(where) || a.Log_login_name.Contains(where)).OrderBy(a => a.Log_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<Entity.T_Log>().OrderBy(a => a.Log_post_date, SqlSugar.OrderByType.Desc);
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                sql = sql.Where(a => a.Log_info.Contains(keyword) || a.Log_ip.Contains(keyword) || a.Log_login_name.Contains(keyword));
+            }
+            return sql.OrderBy(a => a.Log_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
         }
     }
 }

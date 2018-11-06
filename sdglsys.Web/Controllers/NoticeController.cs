@@ -195,7 +195,7 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [OutputCache(Duration = 60)]
+        [OutputCache(Duration = 300)]
         public ActionResult View(int id)
         {
             var db = new Notices().NoticeDb;
@@ -205,6 +205,7 @@ namespace sdglsys.Web.Controllers
             return View(notice);
         }
 
+        [OutputCache(Duration = 300)]
         public ActionResult List()
         {
             

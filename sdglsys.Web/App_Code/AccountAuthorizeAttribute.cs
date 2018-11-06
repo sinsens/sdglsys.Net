@@ -144,7 +144,7 @@ namespace sdglsys.Web
                             token.Token_login_date = DateTime.Now;
                             Token.Update(token);
                             /// 记录日志
-                            new sdglsys.Web.WebUtils().Log(new Entity.T_Log
+                            new WebUtils().Log(new Entity.T_Log
                             {
                                 Log_info = "Login by token",
                                 Log_ip = request.UserHostAddress,

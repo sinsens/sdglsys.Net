@@ -15,7 +15,7 @@ namespace sdglsys.DbHelper
         /// 清除过期的Token
         /// </summary>
         public void DistroyExpiredToken() {
-            Db.Deleteable<sdglsys.Entity.T_Token>().Where(x => x.Token_expired_date <= DateTime.Now);
+            Db.Deleteable<sdglsys.Entity.T_Token>().Where(x => x.Token_expired_date <= DateTime.Now).ExecuteCommand();
         }
         /// <summary>
         /// 插入数据

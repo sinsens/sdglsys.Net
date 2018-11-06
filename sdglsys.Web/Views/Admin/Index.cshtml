@@ -32,7 +32,7 @@
             /// 询问
             if (confirm("是否退出登录？")) {
                 localStorage.clear();
-                //document.cookie = "token=;";
+                document.cookie = "token=;";
                 location.href = '/admin/logout';
             }
         }

@@ -50,7 +50,7 @@
             var form = layui.form;
             form.on("submit(search)", function (data) {
                 table.reload('notice', {
-                    url: encodeURI('/Admin/GetLogList/?token=' + localStorage.token+'?keyword=' + $("#keyword").val()) //数据接口
+                    url: encodeURI('/Admin/GetLogList/?token=' + localStorage.token+'&keyword=' + $("#keyword").val()) //数据接口
                 });
             });
 
