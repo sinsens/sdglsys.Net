@@ -8,6 +8,7 @@ using sdglsys.Entity;
 using sdglsys.Web;
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class BillController : Controller
     {
         // GET: Used

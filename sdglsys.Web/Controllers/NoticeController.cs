@@ -8,6 +8,7 @@ using sdglsys.Entity;
 using sdglsys.Web;
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class NoticeController : Controller
     {
         // GET: Notice
@@ -198,6 +199,11 @@ namespace sdglsys.Web.Controllers
         [OutputCache(Duration = 300)]
         public ActionResult View(int id)
         {
+            /*
+             http://www.cnblogs.com/dudu/archive/2012/08/27/asp_net_mvc_outputcache.html
+             加不加 Response.Cache.SetOmitVaryStar(true)，服务端的缓存情况都是一样的。只是不加 SetOmitVaryStar(true) 时，对于同一个客户端浏览器，每隔一次请求，服务器端就不管客户端浏览器的缓存，重新发送页面内容，但是只要在缓存有效期内，内容还是从服务器端缓存中读取。
+             */
+            Response.Cache.SetOmitVaryStar(true);
             var db = new Notices().NoticeDb;
             var notice = db.GetById(id);
             if (notice == null)
@@ -208,7 +214,7 @@ namespace sdglsys.Web.Controllers
         [OutputCache(Duration = 300)]
         public ActionResult List()
         {
-            
+            Response.Cache.SetOmitVaryStar(true);
             int page = 1;
             int limit = 10;
             int count = 0;
@@ -245,6 +251,7 @@ namespace sdglsys.Web.Controllers
         [HttpPost]
         public void GetList()
         {
+            Response.Cache.SetOmitVaryStar(true);
             //var data = new DbHelper.
             var msg = new ResponseData();
             int page = 1;

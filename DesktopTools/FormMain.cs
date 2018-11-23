@@ -28,11 +28,12 @@ namespace DesktopTools
             };
             timer.Tick += Timer_Tick;
             timer.Start();
-            
         }
-        static string procName = Process.GetCurrentProcess().ProcessName;
-        PerformanceCounter pc = new PerformanceCounter("Process", "Private Bytes", procName);
-        void ShowMemory()
+
+        private static string procName = Process.GetCurrentProcess().ProcessName;
+        private PerformanceCounter pc = new PerformanceCounter("Process", "Private Bytes", procName);
+
+        private void ShowMemory()
         {
             /*
              动态显示内存使用量
@@ -44,7 +45,6 @@ namespace DesktopTools
         {
             ShowMemory();
         }
-
 
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -70,9 +70,7 @@ namespace DesktopTools
                 }
                 catch
                 {
-                   
                 }
-                
             }
             SetTip("请连接到数据库");
         }
@@ -104,7 +102,7 @@ namespace DesktopTools
                     UT_Electric_value = u.Ut_electric_value,
                     UT_Hot_water_value = u.Ut_hot_water_value
                 }).ToSql();
-                Clipboard.SetText(sqlstring.ToString());
+                //Clipboard.SetText(sqlstring.ToString());
                 //MessageBox.Show(sqlstring.ToString());
                 SetTip("已成功连接到数据库");
                 groupBox1.Enabled = true;
@@ -128,11 +126,13 @@ namespace DesktopTools
         /// 选中的宿舍楼信息
         /// </summary>
         private T_Building selecT_Building = new T_Building();
+
         private List<VBuilding> vBuilding = new List<VBuilding>();
+
         /// <summary>
         /// 载入园区信息
         /// </summary>
-        void LoadDorm()
+        private void LoadDorm()
         {
             try
             {
@@ -157,6 +157,7 @@ namespace DesktopTools
                 throw;
             }
         }
+
         private void BtnReloadDorm_Click(object sender, EventArgs e)
         {
             LoadDorm();
@@ -203,7 +204,8 @@ namespace DesktopTools
             }
         }
 
-        DataTable table;
+        private DataTable table;
+
         private void GenRoomData()
         {
             SetTip("正在生成数据，请勿进行其他操作。。。");
@@ -267,7 +269,6 @@ namespace DesktopTools
                     }
                 }
             }
-
         }
 
         private void BtnSaveDataToDB_Click(object sender, EventArgs e)
@@ -312,7 +313,6 @@ namespace DesktopTools
                     Ado.RollbackTran();
                     SetTip("发生错误，已撤销提交。错误信息：" + ex.Message);
                 }
-
             }
             else
             {
@@ -320,7 +320,6 @@ namespace DesktopTools
             }
             Enabled = true; // 解除禁止
         }
-
 
         private void AdminMgrToolStripMenuItem_Click(object sender, EventArgs e)
         {

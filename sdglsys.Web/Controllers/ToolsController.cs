@@ -8,6 +8,7 @@ using sdglsys.Web;
 
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class ToolsController : Controller
     {
         // GET: Tools

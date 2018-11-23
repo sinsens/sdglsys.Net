@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class HomeController : Controller
     {
-        [AutoLogin]
         public void Index()
         {
             /// #trial

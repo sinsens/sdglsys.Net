@@ -10,6 +10,7 @@ using SqlSugar;
 
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class RoomController : Controller
     {
         // GET: Dorm

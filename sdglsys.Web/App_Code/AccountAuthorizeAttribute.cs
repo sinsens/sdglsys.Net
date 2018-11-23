@@ -4,7 +4,7 @@ using System.Web.Mvc;
 
 namespace sdglsys.Web
 {
-
+    
     /// <summary>
     /// 登录验证
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -30,7 +30,7 @@ namespace sdglsys.Web
             authorizationContext.Result = actionResult;
         }
     }
-
+    
     /// <summary>
     /// 登录验证，验证是否为系统管理员
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -71,7 +71,7 @@ namespace sdglsys.Web
             authorizationContext.Result = actionResult;
         }
     }
-
+    
     /// <summary>
     /// 登录验证，验证权限是否大于辅助登记员
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -151,6 +151,8 @@ namespace sdglsys.Web
                                 Log_login_name = user.User_login_name
                             });
                             session["token"] = token.Token_id;
+                            httpContext.Server.TransferRequest(httpContext.Request.Url.ToString()); // 自动跳转到需要的页面，而不是以前的首页
+                            //httpContext.Response.End();
                         }
                     }
                 }

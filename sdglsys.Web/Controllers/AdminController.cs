@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace sdglsys.Web.Controllers
 {
+    [AutoLogin]
     public class AdminController : Controller
     {
 
@@ -559,7 +560,7 @@ namespace sdglsys.Web.Controllers
 
                 msg.data = new DbHelper.Logs().GetByPages(page, limit, ref count, keyword); // 获取列表
                 msg.count = count;
-                
+                Response.Cache.SetOmitVaryStar(true);
                 Response.Write(msg.ToJson());
                 Response.End();
             }
