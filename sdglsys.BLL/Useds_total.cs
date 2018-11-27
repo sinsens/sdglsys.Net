@@ -31,9 +31,9 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Entity.T_Used_total findByPid(int id)
+        public Entity.T_Used_total FindByPid(int id)
         {
-            return Db.Queryable<T_Used_total>().Where(u => u.Ut_room_id == id).First();
+            return Db.Queryable<T_Used_total>().Where(u => u.Ut_model_state && u.Ut_room_id == id).First();
         }
 
         /// <summary>
@@ -94,17 +94,6 @@ namespace sdglsys.DbHelper
                      UT_Electric_value = u.Ut_electric_value,
                      UT_Hot_water_value = u.Ut_hot_water_value
                  }).First();
-        }
-
-        /// <summary>
-        /// 查找读表数值
-        /// </summary>
-        /// <param name="id">宿舍ID</param>
-        /// <returns></returns>
-        public T_Used_total FindByPid(int id)
-        {
-            return Db.Queryable<T_Used_total, T_Room, T_Building, T_Dorm>((u, r, b, d) => new object[] { JoinType.Left, u.Ut_room_id == r.Room_dorm_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
-                Where((u, r, b, d) => u.Ut_model_state && u.Ut_room_id == id).First();
         }
 
         /// <summary>

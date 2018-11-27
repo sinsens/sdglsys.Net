@@ -6,7 +6,7 @@ namespace sdglsys.DbHelper
     {
         public List<Entity.T_Dorm> GetAll()
         {
-            return Db.Queryable<Entity.T_Dorm>().Where(x=>x.Dorm_model_state).ToList();
+            return Db.Queryable<Entity.T_Dorm>().Where(x => x.Dorm_model_state).ToList();
         }
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.T_Dorm> GetAllActive()
         {
-            return Db.Queryable<Entity.T_Dorm>().Where(a=>a.Dorm_is_active&&a.Dorm_model_state).ToList();
+            return Db.Queryable<Entity.T_Dorm>().Where(a => a.Dorm_is_active && a.Dorm_model_state).ToList();
         }
 
         /// <summary>
@@ -36,7 +36,8 @@ namespace sdglsys.DbHelper
         public bool Delete(int id)
         {
             var dorm = FindById(id);
-            if (dorm != null) {
+            if (dorm != null)
+            {
                 dorm.Dorm_model_state = false;
                 return DormDb.Update(dorm);
             }
@@ -71,11 +72,14 @@ namespace sdglsys.DbHelper
         /// <param name="totalCount">当前页结果数</param>
         /// <param name="where">条件</param>
         /// <returns></returns>
-        public List<Entity.T_Dorm> GetByPages(int page, int limit, ref int totalCount, string where=null)
+        public List<Entity.T_Dorm> GetByPages(int page, int limit, ref int totalCount, string where = null)
         {
-            if(where==null)
-                return Db.Queryable<Entity.T_Dorm>().Where(x=>x.Dorm_model_state).OrderBy(d=>d.Dorm_id, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<Entity.T_Dorm>().Where(a=>a.Dorm_model_state&&a.Dorm_nickname.Contains(where)||a.Dorm_note.Contains(where)).OrderBy(d=>d.Dorm_id, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<Entity.T_Dorm>().Where(a => a.Dorm_model_state);
+            if (!string.IsNullOrWhiteSpace(where))
+            {
+                sql = sql.Where(a => a.Dorm_nickname.Contains(where) || a.Dorm_note.Contains(where));
+            }
+            return sql.OrderBy(a => a.Dorm_id, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿using sdglsys.Entity;
-using SqlSugar;
+﻿using SqlSugar;
 using System.Collections.Generic;
 
 namespace sdglsys.DbHelper
 {
     public class Users : DbContext
     {
-
         /// <summary>
         /// 获取一个系统管理员权限的角色
         /// </summary>
@@ -25,11 +23,7 @@ namespace sdglsys.DbHelper
         public Entity.T_User Login(string login_name, string pwd)
         {
             var user = FindByLoginName(login_name);
-            if (user == null)
-            {
-                return null;
-            }
-            if (!user.User_is_active)
+            if (user == null || !user.User_is_active)
             {
                 return null;
             }
@@ -54,28 +48,6 @@ namespace sdglsys.DbHelper
         public Entity.T_User FindByLoginName(string login_name)
         {
             return Db.Queryable<Entity.T_User>().Where(a => a.User_model_state && a.User_login_name == login_name).First();
-        }
-
-        /// <summary>
-        /// 通过login_name查询
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Entity.VUser findVUserByLoginName(string login_name)
-        {
-            var user = Db.Queryable<Entity.T_User>().Where(u => u.User_model_state && u.User_login_name == login_name).Select<VUser>().Single();
-            if (user == null)
-                return user;
-            foreach (var item in new Dorms().GetAllActive())
-            {
-                if (item.Dorm_id == user.User_Id)
-                {
-                    user.User_Dorm_Nickname = item.Dorm_nickname;
-                    break;
-                };
-            }
-            user.User_RoleName = user.User_Role < 3 ? (user.User_Role < 2 ? "辅助登记员" : "宿舍管理员") : "系统管理员";
-            return user;
         }
 
         /// <summary>
@@ -114,7 +86,6 @@ namespace sdglsys.DbHelper
             return UserDb.Insert(user);
         }
 
-
         /// <summary>
         /// 获取角色列表
         /// </summary>
@@ -150,6 +121,5 @@ namespace sdglsys.DbHelper
                 User_Reg_date = u.User_reg_date,
             }).ToPageList(page, limit, ref totalCount);
         }
-
     }
 }

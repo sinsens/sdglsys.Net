@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DesktopTools
@@ -20,15 +15,17 @@ namespace DesktopTools
         /// <summary>
         /// 系统角色信息列表
         /// </summary>
-        List<sdglsys.Entity.T_User> users = new List<sdglsys.Entity.T_User>();
+        private List<sdglsys.Entity.T_User> users = new List<sdglsys.Entity.T_User>();
+
         /// <summary>
         /// 已选中系统角色
         /// </summary>
-        sdglsys.Entity.T_User selectedUser = new sdglsys.Entity.T_User();
+        private sdglsys.Entity.T_User selectedUser = new sdglsys.Entity.T_User();
+
         /// <summary>
         /// 加载系统角色并添加到ComboBox
         /// </summary>
-        void LoadUser()
+        private void LoadUser()
         {
             users = DbContext.Client.Queryable<sdglsys.Entity.T_User>().ToList();
             if (users != null && users.Count() > 0)
@@ -70,7 +67,7 @@ namespace DesktopTools
                 return;
             }
             /// 检查用户名
-            var res = DbContext.Client.Queryable<sdglsys.Entity.T_User>().Where(x =>x.User_model_state&& x.User_login_name == tbxAddUserName.Text.Trim());
+            var res = DbContext.Client.Queryable<sdglsys.Entity.T_User>().Where(x => x.User_model_state && x.User_login_name == tbxAddUserName.Text.Trim());
             if (res.Count() > 0)
             {
                 MessageBox.Show("该用户名已存在");

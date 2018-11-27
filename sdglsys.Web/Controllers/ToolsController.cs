@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using sdglsys.DbHelper;
-using sdglsys.Web;
 
 namespace sdglsys.Web.Controllers
 {
@@ -17,11 +13,13 @@ namespace sdglsys.Web.Controllers
             var hash = Request["hash"];
             var txt = Request["txt"];
             var Utils = new Utils.Utils();
-            if (hash != null&&hash.Length>20) {
-                Response.Write(Utils.CheckPasswd(txt, hash)?true:false);
+            if (hash != null && hash.Length > 20)
+            {
+                Response.Write(Utils.CheckPasswd(txt, hash) ? true : false);
                 Response.End();
             }
-            if (txt != null&&txt.Length>0) {
+            if (txt != null && txt.Length > 0)
+            {
                 var msg = new Msg();
                 msg.Content = new
                 {
@@ -34,24 +32,28 @@ namespace sdglsys.Web.Controllers
             return View();
         }
 
-        public void Stat() {
-            string cookie= null;
+        public void Stat()
+        {
+            string cookie = null;
             if (Request.Cookies.Get("Session_ID") == null)
             {
                 Response.SetCookie(new HttpCookie("Session_ID", Session.SessionID));
                 cookie = Session.SessionID;
             }
-            else {
+            else
+            {
                 cookie = Request.Cookies.Get("Session_ID").Value;
             }
-            
-            Response.Write(new Msg {
-                Content = new {
+
+            Response.Write(new Msg
+            {
+                Content = new
+                {
                     Is_NewSession = Session.IsNewSession,
                     Session_Id = Session.SessionID,
-                    Cookie_Session_Id = cookie ,
-                     Add_ten_minutes = DateTime.Now.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes
-                 }
+                    Cookie_Session_Id = cookie,
+                    Add_ten_minutes = DateTime.Now.Subtract(DateTime.Now.AddMinutes(10)).TotalMinutes
+                }
             }.ToJson());
         }
     }

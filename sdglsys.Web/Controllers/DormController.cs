@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.Web;
+using System;
+using System.Web.Mvc;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -44,12 +41,10 @@ namespace sdglsys.Web.Controllers
                 ViewBag.page = page;  // 获取当前页
                 return View(dorms);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
-
-            
         }
 
         // GET: Dorm/Details/5
@@ -168,7 +163,6 @@ namespace sdglsys.Web.Controllers
                     {
                         msg.Message = "删除成功！";
                     }
-
                     else
                     {
                         throw new Exception("发生未知错误，删除失败！");
@@ -196,7 +190,6 @@ namespace sdglsys.Web.Controllers
         {
             try
             {
-
                 using (var db = new Dorms().Db)
                 {
                     Response.Write(db.Queryable<T_Dorm>().Where(d => d.Dorm_model_state && d.Dorm_is_active).ToJson());
@@ -206,8 +199,8 @@ namespace sdglsys.Web.Controllers
             {
                 Response.Write(new Msg
                 {
-                     Message = ex.Message,
-                     Code = -1
+                    Message = ex.Message,
+                    Code = -1
                 }.ToJson());
             }
         }

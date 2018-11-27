@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace sdglsys.DbHelper
 {
@@ -14,15 +10,18 @@ namespace sdglsys.DbHelper
         /// <summary>
         /// 清除过期的Token
         /// </summary>
-        public void DistroyExpiredToken() {
+        public void DistroyExpiredToken()
+        {
             Db.Deleteable<sdglsys.Entity.T_Token>().Where(x => x.Token_expired_date <= DateTime.Now).ExecuteCommand();
         }
+
         /// <summary>
         /// 插入数据
         /// </summary>
         /// <param name="login_Info"></param>
         /// <returns></returns>
-        public bool Add(Entity.T_Token token) {
+        public bool Add(Entity.T_Token token)
+        {
             return TokenDb.Insert(token);
         }
 
@@ -31,10 +30,10 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="tokenId">TokenID</param>
         /// <returns></returns>
-        public bool Delete(string tokenId) {
+        public bool Delete(string tokenId)
+        {
             return TokenDb.Delete(u => u.Token_id == tokenId);
         }
-
 
         /// <summary>
         /// 通过用户ID删除
@@ -61,7 +60,8 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="tokenId"></param>
         /// <returns></returns>
-        public Entity.T_Token GetToken(string tokenId) {
+        public Entity.T_Token GetToken(string tokenId)
+        {
             return TokenDb.GetSingle(u => u.Token_id == tokenId);
         }
 
@@ -70,10 +70,12 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="tokenId"></param>
         /// <returns></returns>
-        public Entity.T_User GetUserById(string tokenId) {
+        public Entity.T_User GetUserById(string tokenId)
+        {
             var token = GetToken(tokenId);
-            if (token != null&&token.Token_expired_date>DateTime.Now) {
-                return Db.Queryable<Entity.T_User>().Single(u=>u.User_model_state&&u.User_is_active&&u.User_id==token.Token_user_id);
+            if (token != null && token.Token_expired_date > DateTime.Now)
+            {
+                return Db.Queryable<Entity.T_User>().Single(u => u.User_model_state && u.User_is_active && u.User_id == token.Token_user_id);
             }
             return null;
         }
@@ -83,7 +85,8 @@ namespace sdglsys.DbHelper
         /// </summary>
         /// <param name="login_Info"></param>
         /// <returns></returns>
-        public bool Update(Entity.T_Token token) {
+        public bool Update(Entity.T_Token token)
+        {
             return TokenDb.Update(token);
         }
     }

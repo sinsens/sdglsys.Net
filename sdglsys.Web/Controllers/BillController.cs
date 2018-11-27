@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.Web;
+using System;
+using System.Web.Mvc;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -50,11 +47,10 @@ namespace sdglsys.Web.Controllers
 
                 return View(vbills);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
-            
         }
 
         /// <summary>
@@ -66,10 +62,9 @@ namespace sdglsys.Web.Controllers
         public ActionResult Create()
         {
             var Building = new Buildings();
-            ViewBag.buildings = (int) Session["role"] < 3 ? Building.GetAllActiveById((int) Session["pid"]) : Building.GetAllActive();
+            ViewBag.buildings = (int)Session["role"] < 3 ? Building.GetAllActiveById((int)Session["pid"]) : Building.GetAllActive();
             return View();
         }
-
 
         // POST: Used/Create
         /// <summary>
@@ -119,7 +114,7 @@ namespace sdglsys.Web.Controllers
                     Used_note = "手动添加账单后自动生成的登记信息，并不会更新读表数据",
                     Used_building_id = Building_id,
                     Used_dorm_id = Dorm_id,
-                    Used_post_user_id = (int) Session["id"],
+                    Used_post_user_id = (int)Session["id"],
                 };
                 /// 开始事务
                 Db = new DbContext().Db;
@@ -133,9 +128,9 @@ namespace sdglsys.Web.Controllers
                     Bill_room_id = Pid,
                     Bill_building_id = Building_id,
                     Bill_dorm_id = Dorm_id,
-                    Bill_cold_water_cost = (decimal) cold_water_value,
-                    Bill_electric_cost = (decimal) hot_water_value,
-                    Bill_hot_water_cost = (decimal) electric_value,
+                    Bill_cold_water_cost = (decimal)cold_water_value,
+                    Bill_electric_cost = (decimal)hot_water_value,
+                    Bill_hot_water_cost = (decimal)electric_value,
                     Bill_rates_id = rate.Rate_id,
                     Bill_quota_id = quota.Quota_id,
                 };
@@ -151,7 +146,8 @@ namespace sdglsys.Web.Controllers
             catch (Exception ex)
             {
                 //发生错误，回滚事务
-                if (Db != null) {
+                if (Db != null)
+                {
                     Db.Ado.RollbackTran();
                 }
                 msg.Code = -1;
@@ -167,7 +163,6 @@ namespace sdglsys.Web.Controllers
         /// <param name="id"></param>
         // GET: Used/Delete/5
         [NotLowUser]
-
         public void Delete(int id)
         {
             var msg = new Msg();
@@ -185,7 +180,8 @@ namespace sdglsys.Web.Controllers
                 {
                     msg.Message = "删除成功！";
                 }
-                else {
+                else
+                {
                     msg.Message = "发生未知错误";
                 }
             }

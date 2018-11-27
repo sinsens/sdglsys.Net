@@ -2,13 +2,14 @@
 
 namespace sdglsys.Web
 {
-    public class Msg:Entity.Msg
+    public class Msg : Entity.Msg
     {
         /// <summary>
         /// 返回Json
         /// </summary>
         /// <returns></returns>
-        public string ToJson() {
+        public string ToJson()
+        {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
     }

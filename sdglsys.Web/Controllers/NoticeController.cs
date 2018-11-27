@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using sdglsys.DbHelper;
+using System;
 using System.Web.Mvc;
-using sdglsys.DbHelper;
-using sdglsys.Entity;
-using sdglsys.Web;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -22,7 +18,6 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                
                 if (!string.IsNullOrWhiteSpace(Request["keyword"]))
                 {
                     keyword = Request["keyword"]; // 搜索关键词
@@ -46,11 +41,10 @@ namespace sdglsys.Web.Controllers
                 ViewBag.page = page;  // 获取当前页
                 return View(notices);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
-            
         }
 
         // GET: Notice/Details/5
@@ -88,10 +82,12 @@ namespace sdglsys.Web.Controllers
                     //Notice_post_date = DateTime.Now,
                 };
                 var Notice = new Notices();
-                if (Notice.Add(notice)) {
+                if (Notice.Add(notice))
+                {
                     msg.Message = "发布公告成功！";
                 }
-                else {
+                else
+                {
                     throw new Exception("发生未知错误，发布公告失败！");
                 }
             }
@@ -147,7 +143,6 @@ namespace sdglsys.Web.Controllers
             }
             Response.Write(msg.ToJson());
             Response.End();
-
         }
 
         // GET: Notice/Delete/5
@@ -177,7 +172,7 @@ namespace sdglsys.Web.Controllers
                 msg.Code = -1;
                 msg.Message = ex.Message;
             }
-            
+
             Response.Write(msg.ToJson());
             Response.End();
         }
@@ -189,7 +184,6 @@ namespace sdglsys.Web.Controllers
         {
             Delete(id);
         }
-
 
         /// <summary>
         /// 查看公告
@@ -228,7 +222,7 @@ namespace sdglsys.Web.Controllers
             catch
             {
             }
-            
+
             ViewBag.count = count;  // 获取当前页数量
             ViewBag.page = page;  // 获取当前页
 
@@ -266,7 +260,7 @@ namespace sdglsys.Web.Controllers
             }
             catch
             { }
-            
+
             Response.Write(msg.ToJson());
             Response.End();
         }

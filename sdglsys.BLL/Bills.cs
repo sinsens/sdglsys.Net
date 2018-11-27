@@ -90,11 +90,11 @@ namespace sdglsys.DbHelper
         /// <param name="stat">账单状态：-1全部，0已注销，1已登记，2已结算</param>
         /// <param name="pid">园区ID：0</param>
         /// <returns></returns>
-        public List<VBill> GetByPages(int page, int limit, ref int totalCount, string where = null, short stat = -1,int pid=0)
+        public List<VBill> GetByPages(int page, int limit, ref int totalCount, string where = null, short stat = -1, int pid = 0)
         {
             var sql = Db.Queryable<T_Bill, T_Used, T_Room, T_Building, T_Dorm>((e, u, r, b, d) => new object[] { JoinType.Left, e.Bill_used_id == u.Used_id, JoinType.Left, u.Used_room_id == r.Room_id, JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).
                     OrderBy((e, u, r, b, d) => e.Bill_id, OrderByType.Desc).Where(e => e.Bill_model_state);
-            
+
             if (where != null)
             {
                 sql = sql.Where((e, u, r, b, d) => r.Room_vid.Contains(where) || r.Room_nickname.Contains(where) || b.Building_vid.Contains(where) || b.Building_nickname.Contains(where) || d.Dorm_nickname.Contains(where));
@@ -104,10 +104,11 @@ namespace sdglsys.DbHelper
             {
                 sql = sql.Where((e, u, r, b, d) => e.Bill_is_active == stat);
             }
-            if (pid!=0) {
+            if (pid != 0)
+            {
                 sql = sql.Where((e, u, r, b, d) => pid == e.Bill_dorm_id);
             }
-                return sql.Select((e, u, r, b, d) => new VBill
+            return sql.Select((e, u, r, b, d) => new VBill
             {
                 Bill_Id = e.Bill_id,
                 Bill_Room_Nickname = r.Room_nickname,
@@ -125,6 +126,5 @@ namespace sdglsys.DbHelper
                 Bill_Mod_date = e.Bill_mod_date
             }).ToPageList(page, limit, ref totalCount);
         }
-
     }
 }

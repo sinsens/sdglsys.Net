@@ -35,7 +35,6 @@ ul, ol { list-style: none; }
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-
 /** 重置表单元素 **/
 legend { color: #000; } /* for ie6 */
 fieldset, img { border: 0; } /* img 搭车：让链接里的 img 无边框 */
@@ -74,7 +73,6 @@ margin: 0 auto;
 
 .icon_lists{
   width: 100% !important;
-
 }
 
 .icon_lists li{
@@ -92,13 +90,10 @@ margin: 0 auto;
   -webkit-transition: font-size 0.25s ease-out 0s;
   -moz-transition: font-size 0.25s ease-out 0s;
   transition: font-size 0.25s ease-out 0s;
-
 }
 .icon_lists .icon:hover{
   font-size: 100px;
 }
-
-
 
 .markdown {
   color: #666;
@@ -240,7 +235,6 @@ margin: 0 auto;
   white-space: nowrap;
   color: #333;
   font-weight: 600;
-
 }
 
 .markdown > table th,
@@ -291,7 +285,6 @@ margin: 0 auto;
 .markdown > p > br {
   clear: both;
 }
-
 
 .hljs {
   display: block;
@@ -363,8 +356,3 @@ margin: 0 auto;
 pre{
   background: #fff;
 }
-
-
-
-
-

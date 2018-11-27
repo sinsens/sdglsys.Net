@@ -4,7 +4,6 @@ using System.Web.Mvc;
 
 namespace sdglsys.Web
 {
-    
     /// <summary>
     /// 登录验证
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -30,7 +29,7 @@ namespace sdglsys.Web
             authorizationContext.Result = actionResult;
         }
     }
-    
+
     /// <summary>
     /// 登录验证，验证是否为系统管理员
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -47,8 +46,6 @@ namespace sdglsys.Web
             string message = string.Empty;
             if (session["role"] == null)
             {
-
-
                 UrlHelper urlHelper = new UrlHelper(request.RequestContext);
                 //利用Action 指定的操作名称、控制器名称和路由值生成操作方法的完全限定 URL。
                 string returnUrl = urlHelper.Action("Index", "Home", new { returnUrl = "", message });
@@ -71,7 +68,7 @@ namespace sdglsys.Web
             authorizationContext.Result = actionResult;
         }
     }
-    
+
     /// <summary>
     /// 登录验证，验证权限是否大于辅助登记员
     /// https://www.cnblogs.com/xinbaba/p/8194142.html
@@ -113,7 +110,7 @@ namespace sdglsys.Web
     /// <summary>
     /// 自动登录
     /// </summary>
-    public class AutoLogin:AuthorizeAttribute
+    public class AutoLogin : AuthorizeAttribute
     {
         public override void OnAuthorization(AuthorizationContext authorizationContext)
         {
@@ -158,7 +155,6 @@ namespace sdglsys.Web
                 }
                 catch
                 {
-
                 }
             }
         }

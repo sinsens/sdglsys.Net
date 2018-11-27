@@ -8,12 +8,16 @@
     {
         public DbInfo DbInfo { get; set; }
     }
+
     [System.Serializable]
     /// <summary>
     /// 数据库连接信息
     /// </summary>
-    public class DbInfo {
-        public DbInfo() { }
+    public class DbInfo
+    {
+        public DbInfo()
+        {
+        }
 
         /// <summary>
         /// 数据库类型：SQLServer,MySQL
@@ -36,18 +40,22 @@
         /// 数据库类型
         /// </summary>
         public string DbType { get; set; }
+
         /// <summary>
         /// 数据库域名或IP
         /// </summary>
         public string Server { get; set; }
+
         /// <summary>
         /// 数据库名称
         /// </summary>
         public string DbName { get; set; }
+
         /// <summary>
         /// 数据库用户名
         /// </summary>
         public string Username { get; set; }
+
         /// <summary>
         /// 数据库密码
         /// </summary>

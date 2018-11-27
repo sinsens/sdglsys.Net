@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,8 +10,8 @@ namespace sdglsys.Web.Controllers
     [AutoLogin]
     public class AdminController : Controller
     {
-
         #region 登录处理
+
         /// <summary>
         /// 登录处理
         /// </summary>
@@ -95,7 +92,6 @@ namespace sdglsys.Web.Controllers
                         Log_login_name = login_name,
                     });
                 }
-
             }
             catch (Exception ex)
             {
@@ -105,9 +101,11 @@ namespace sdglsys.Web.Controllers
             Response.Write(msg.ToJson());
             Response.End();
         }
-        #endregion
+
+        #endregion 登录处理
 
         #region 注销处理
+
         /// <summary>
         /// 注销处理
         /// </summary>
@@ -115,7 +113,6 @@ namespace sdglsys.Web.Controllers
         [NeedLogin]
         public void Logout()
         {
-
             try
             {
                 var Logs = new DbHelper.Logs();
@@ -138,7 +135,8 @@ namespace sdglsys.Web.Controllers
             Response.Redirect("/");
             //return Redirect("/");
         }
-        #endregion
+
+        #endregion 注销处理
 
         // GET: Admin
         [NeedLogin]
@@ -233,7 +231,6 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-
                     throw new Exception("原密码输入有误");
                 }
             }
@@ -378,7 +375,6 @@ namespace sdglsys.Web.Controllers
             Response.End();
         }
 
-
         [NeedLogin]
         /// <summary>
         /// 欢迎页面
@@ -418,7 +414,6 @@ namespace sdglsys.Web.Controllers
                 _id = _type == 0 ? 0 : Convert.ToInt32(collection["id"]);
                 _start = _type == 0 ? default(DateTime) : DateTime.Parse(collection["start_date"]);
                 _end = _type == 0 ? default(DateTime) : DateTime.Parse(collection["end_date"]);
-
             }
             catch
             {
@@ -428,7 +423,6 @@ namespace sdglsys.Web.Controllers
             Response.Write(new Utils.Utils().ToJson(data));
             Response.End();
         }
-
 
         /// <summary>
         /// 测试用的上传文件界面
@@ -440,8 +434,8 @@ namespace sdglsys.Web.Controllers
             return View();
         }
 
-
         #region 上传文件
+
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -511,7 +505,8 @@ namespace sdglsys.Web.Controllers
 
             Response.End();
         }
-        #endregion
+
+        #endregion 上传文件
 
         /// <summary>
         /// 查看系统日志
@@ -522,7 +517,6 @@ namespace sdglsys.Web.Controllers
         {
             return View();
         }
-
 
         /// <summary>
         /// 查看系统日志

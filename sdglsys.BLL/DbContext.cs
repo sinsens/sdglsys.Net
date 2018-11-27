@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace sdglsys.DbHelper
 {
-    public class DbContext:IDisposable
+    public class DbContext : IDisposable
     {
         /// <summary>
         /// 获取App配置信息
@@ -21,6 +21,7 @@ namespace sdglsys.DbHelper
         public SqlSugarClient Db;
         public static string dbtype = null;
         public static string connectstring = null;
+
         public DbContext()
         {
             var dbType = new SqlSugar.DbType();
@@ -86,7 +87,6 @@ namespace sdglsys.DbHelper
         public SimpleClient<Entity.T_Used_total> Used_totalDb { get { return new SimpleClient<Entity.T_Used_total>(Db); } }
         public SimpleClient<Entity.T_Token> TokenDb { get { return new SimpleClient<Entity.T_Token>(Db); } }
 
-        
         /// <summary>
         /// 解决MSBUILD : warning CA1001: Microsoft.Design 报错提示
         /// fork from https://blog.csdn.net/unopenmycode/article/details/38311797?hp.com
@@ -103,12 +103,12 @@ namespace sdglsys.DbHelper
                 Db.Dispose();
             }
         }
+
         //弥补方法
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this); // 调用GC释放对象资源
         }
-
     }
 }

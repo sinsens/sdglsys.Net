@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace sdglsys.DbHelper
+﻿namespace sdglsys.DbHelper
 {
     public class Quotas : DbContext
     {
@@ -13,7 +8,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public Entity.T_Quota GetLast()
         {
-            return Db.Queryable<Entity.T_Quota>().OrderBy(a =>a.Quota_id, SqlSugar.OrderByType.Desc).Where(a=>a.Quota_model_state).First();
+            return Db.Queryable<Entity.T_Quota>().OrderBy(a => a.Quota_id, SqlSugar.OrderByType.Desc).Where(a => a.Quota_model_state).First();
         }
 
         /// <summary>

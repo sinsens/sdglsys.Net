@@ -7,7 +7,7 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 	var hideBtn = $('#hideBtn');
 	var mainLayout = $('#main-layout');
 	var mainMask = $('.main-mask');
-	
+
 	//监听导航点击
 	element.on('nav(leftNav)', function(elem) {
 		var navA = elem[0];
@@ -52,7 +52,6 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 				id: id
 			});
 			element.tabChange('tab', id);
-			
 		}
 		mainLayout.removeClass('hide-side');
 	});
@@ -68,7 +67,6 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 	mainMask.on('click', function () {
 		mainLayout.removeClass('hide-side');
 	});
-
 
 	//快捷操作菜单
 	$("#qlinks").on('click', function (elem) {
@@ -93,8 +91,6 @@ layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function () {
 		}
 		mainLayout.removeClass('hide-side');
 	});
-	
-	
 
 //示范一个公告层
 //	layer.open({

@@ -7,7 +7,6 @@ namespace sdglsys.DbHelper
 {
     public class Useds : DbContext
     {
-
         /// <summary>
         /// 通过ID查询
         /// </summary>
@@ -34,8 +33,7 @@ namespace sdglsys.DbHelper
             return false;
         }
 
-
-        public void BllDelete(int id)
+        public void BillDelete(int id)
         {
             /// 开始事务
             Db.Ado.BeginTran();
@@ -54,13 +52,15 @@ namespace sdglsys.DbHelper
                 {
                     throw new Exception("关联账单的状态已被更改，无法删除");
                 }
-                else if (bill != null) {
+                else if (bill != null)
+                {
                     bill.Bill_model_state = false; // 标记账单为已删除
-                    if (!Db.Updateable(bill).ExecuteCommandHasChange()) {
+                    if (!Db.Updateable(bill).ExecuteCommandHasChange())
+                    {
                         throw new Exception("删除关联账单时发生错误");
                     }
                 }
-                
+
                 ///3.更新读表信息
                 var Used_total = new Useds_total();
                 var last = Used_total.Last(used.Used_room_id);
@@ -74,7 +74,7 @@ namespace sdglsys.DbHelper
                     /// 避免产生负数
                     last.Ut_cold_water_value = last.Ut_cold_water_value >= 0 ? last.Ut_cold_water_value : 0;
                     last.Ut_hot_water_value = used.Used_hot_water_value >= 0 ? last.Ut_hot_water_value : 0;
-                    last.Ut_electric_value = used.Used_electric_value>=0? last.Ut_electric_value:0;
+                    last.Ut_electric_value = used.Used_electric_value >= 0 ? last.Ut_electric_value : 0;
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace sdglsys.DbHelper
                     throw new Exception("更新读表信息时发生错误！");
                 }
                 used.Used_model_state = false; // 标记为已删除
-                
+
                 if (Db.Ado.Context.Updateable(used).ExecuteCommandHasChange())
                 {
                     Db.Ado.CommitTran();// 提交事务
@@ -185,7 +185,6 @@ namespace sdglsys.DbHelper
             }).ToPageList(page, limit, ref totalCount);
         }
 
-
         /// <summary>
         /// 获取用量统计信息
         /// </summary>
@@ -213,6 +212,7 @@ namespace sdglsys.DbHelper
                     data.title = "园区 " + dorm.Dorm_nickname + " 从 " + _start + " 到 " + _end + " 的统计图表";
                     sql = sql.Where(u => u.Used_dorm_id == _id);
                     break;
+
                 case 2:
                     // 获取宿舍楼信息
                     var B = new Buildings();
@@ -225,6 +225,7 @@ namespace sdglsys.DbHelper
                     data.title = "宿舍楼 " + b.Building_nickname + " 从 " + _start + " 到 " + _end + " 的统计图表";
                     sql = sql.Where(u => u.Used_building_id == _id);
                     break;
+
                 case 3:
                     // 获取宿舍信息
                     var R = new Rooms();
@@ -237,9 +238,11 @@ namespace sdglsys.DbHelper
                     data.title = "宿舍 " + r.Room_nickname + " 从 " + _start + " 到 " + _end + " 的统计图表";
                     sql = sql.Where(u => u.Used_room_id == _id);
                     break;
+
                 case 5:
                     data.title = "所有园区从 " + _start + " 到 " + _end + " 的统计图表";
                     break;
+
                 default:
                     data.title = "所有园区最近一年的统计图表";
                     _start = DateTime.Now.AddYears(-1);

@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Windows.Forms;
 
 namespace DesktopTools
@@ -19,6 +13,7 @@ namespace DesktopTools
         internal static string Pwd;
         internal static string DBType = "MySQL";
         private string title;
+
         public FormConnetToServer()
         {
             InitializeComponent();
@@ -37,7 +32,6 @@ namespace DesktopTools
         {
             this.Close();
         }
-
 
         private void btnTest_Click(object sender, EventArgs e)
         {
@@ -79,12 +73,10 @@ namespace DesktopTools
                 throw;// ex;
                 //MessageBox.Show(ex.Source + ex.Message);
             }
-
         }
 
         private void FormConnetToServer_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

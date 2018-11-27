@@ -48,7 +48,8 @@ namespace DesktopTools
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            if (File.Exists("info.dat")) {
+            if (File.Exists("info.dat"))
+            {
                 try
                 {
                     using (var fs = new FileStream("info.dat", FileMode.Open))

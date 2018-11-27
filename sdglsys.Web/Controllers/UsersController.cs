@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using sdglsys.DbHelper;
+using System;
 using System.Web.Mvc;
-using sdglsys.DbHelper;
-using sdglsys.Entity;
-using sdglsys.Web;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -48,7 +44,6 @@ namespace sdglsys.Web.Controllers
             {
                 throw;
             }
-
         }
 
         // GET: Users/Create
@@ -86,10 +81,10 @@ namespace sdglsys.Web.Controllers
                     User_login_name = collection["login_name"],
                     User_pwd = Utils.HashPassword(((string)Utils.GetAppSetting("DefaultPassword", typeof(string)))), // 设置默认密码
                 };
-                if (user.User_login_name.Trim().Length < 3) {
+                if (user.User_login_name.Trim().Length < 3)
+                {
                     throw new Exception("用户名不能少于3个字符长度");
                 }
-                
 
                 if (user.User_dorm_id == 0 && user.User_role < 3)
                 {
@@ -101,13 +96,13 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("权限不足");
                 }
                 /// 检查用户名是否已存在
-                
-                if (Db.Queryable<Entity.T_User>().Count(x => x.User_login_name == user.User_login_name)>0)
+
+                if (Db.Queryable<Entity.T_User>().Count(x => x.User_login_name == user.User_login_name) > 0)
                 {
                     // 用户名已存在
                     throw new Exception("用户名已存在！如果列表不显示可能是未实际从数据库中删除。");
                 }
-                if (Db.Insertable(user).ExecuteCommand()>0)
+                if (Db.Insertable(user).ExecuteCommand() > 0)
                 {
                     msg.Message = "添加成功！";
                 }
@@ -155,7 +150,7 @@ namespace sdglsys.Web.Controllers
             {
                 var User = new Users();
                 var user = User.FindById(id);
-                if (user==null)
+                if (user == null)
                 {
                     throw new Exception("该用户不存在！");
                 }

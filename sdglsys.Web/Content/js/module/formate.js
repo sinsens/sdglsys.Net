@@ -59,6 +59,3 @@ layui.define(function(exports){
     //输出test接口
     exports('formate', formate);
 });
-
-
-

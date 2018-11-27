@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.Web;
-using SqlSugar;
+using System;
+using System.Web.Mvc;
 
 namespace sdglsys.Web.Controllers
 {
@@ -46,7 +41,7 @@ namespace sdglsys.Web.Controllers
                 ViewBag.keyword = keyword;
                 return View(vrooms);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -97,7 +92,6 @@ namespace sdglsys.Web.Controllers
                 else
                 {
                     throw new Exception("发生未知错误，添加失败！");
-
                 }
             }
             catch (Exception ex)
@@ -134,7 +128,6 @@ namespace sdglsys.Web.Controllers
                 var room = Room.FindById(id);
                 if (room == null)
                 {
-
                     throw new Exception("该宿舍不存在！");
                 }
                 else

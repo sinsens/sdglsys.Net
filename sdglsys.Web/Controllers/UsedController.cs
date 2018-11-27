@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.Web;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -54,8 +52,6 @@ namespace sdglsys.Web.Controllers
             {
                 throw;
             }
-
-
         }
 
         // GET: Used/Details/5
@@ -127,7 +123,7 @@ namespace sdglsys.Web.Controllers
                     throw new Exception("宿舍ID输入有误，应在1~99999999之间");
                 }
                 ///1.2获取宿舍信息
-                var room = Db.Queryable<T_Room>().Single(x=>x.Room_id==Pid&&x.Room_model_state);
+                var room = Db.Queryable<T_Room>().Single(x => x.Room_id == Pid && x.Room_model_state);
                 if (room == null)
                 {
                     throw new Exception("该宿舍不存在");
@@ -147,7 +143,7 @@ namespace sdglsys.Web.Controllers
                 var this_hot_water_value = hot_water_value;
                 var this_electric_value = electric_value;
                 ///3.计算本次用量
-                var usedinfo = Db.Queryable<T_Used_total>().Single(x=>x.Ut_room_id==Pid&&x.Ut_model_state);
+                var usedinfo = Db.Queryable<T_Used_total>().Single(x => x.Ut_room_id == Pid && x.Ut_model_state);
                 if (usedinfo != null)
                 {
                     ///3.1判断本次数值是否大于等于上次数值
@@ -230,7 +226,6 @@ namespace sdglsys.Web.Controllers
                     {
                         throw new Exception("保存读表信息时发生错误！");
                     }
-
                 }
                 else if (Db.Updateable(usedinfo).ExecuteCommand() < 1)
                 {
@@ -256,8 +251,6 @@ namespace sdglsys.Web.Controllers
             Response.End();
         }
 
-
-
         /// <summary>
         /// 删除登记信息
         /// </summary>
@@ -270,7 +263,7 @@ namespace sdglsys.Web.Controllers
             var msg = new Msg();
             try
             {
-                new Useds().BllDelete(id);
+                new Useds().BillDelete(id);
                 msg.Message = "删除成功！";
             }
             catch (Exception ex)
@@ -298,7 +291,6 @@ namespace sdglsys.Web.Controllers
             {
                 throw;
             }
-
         }
 
         /// <summary>
@@ -371,7 +363,6 @@ namespace sdglsys.Web.Controllers
                 }
                 else
                 {
-
                     var usedinfo = Db.Queryable<T_Used_total>().Single(u => u.Ut_model_state && pid == u.Ut_room_id);
                     if (usedinfo == null)//如果读表数值为null，新建一个读表数值对象
                     {
@@ -457,7 +448,6 @@ namespace sdglsys.Web.Controllers
             Response.Write(msg.ToJson());
             Response.End();
         }
-
 
         /// <summary>
         /// 删除宿舍读表信息

@@ -131,8 +131,7 @@
                             <span>
                                 @if (ViewBag.count / ViewBag.page - 9 > 1)
                                 {
-                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)">
-                                        >
+                                    <a href="?page=@(ViewBag.page + 1)&limit=@(ViewBag.limit)&keyword=@(ViewBag.keyword)">>
                                     </a>
                                 }
                                 else
@@ -148,5 +147,4 @@
     </div>
     @Scripts.Render("~/Content/js")
 </body>
-
 </html>

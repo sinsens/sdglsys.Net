@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+
 namespace sdglsys.DbHelper
 {
     public class Logs : DbContext
     {
-
         /// <summary>
         /// 通过ID查询
         /// </summary>

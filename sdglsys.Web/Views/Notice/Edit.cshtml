@@ -31,7 +31,6 @@
                     var content = document.getElementById("content");
                     content.innerHTML = (unzip('@Html.Raw(Model.Notice_content)'));
                 </script>
-
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">激活：</label>
@@ -94,7 +93,7 @@
                         layer.open({
                             'icon': 0,
                             'title': "发生错误",
-                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            'content': "错误代码：" + e['status'] + "<br />错误提示信息：" + e["statusText"]
                         });
                     }
                 });
@@ -102,5 +101,4 @@
         });
     </script>
 </body>
-
 </html>

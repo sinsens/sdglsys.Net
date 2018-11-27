@@ -4,7 +4,8 @@ namespace DesktopTools
 {
     public static class DbContext
     {
-        public static SqlSugarClient Client=null;
+        public static SqlSugarClient Client = null;
+
         /// <summary>
         /// 自定义连接
         /// </summary>
@@ -22,6 +23,7 @@ namespace DesktopTools
                         dbType = DbType.MySql;
                         connectionString += "Allow User Variables=True;AllowZeroDateTime=True;ConvertZeroDateTime=True;SslMode=none;";
                         break;
+
                     case "sqlserver": dbType = DbType.SqlServer; break;
                     case "postgresql": dbType = DbType.PostgreSQL; break;
                     case "sqlite": dbType = DbType.Sqlite; break;

@@ -53,7 +53,6 @@ namespace sdglsys.DbHelper
             return RoomDb.Insert(room);
         }
 
-
         /// <summary>
         /// 按宿舍楼查找当月未登记宿舍并返回Json
         /// </summary>
@@ -92,7 +91,6 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<VRoom> GetVRoomWithouT_UsedInfo()
         {
-
             /// 先获取已存在于宿舍读表数值的宿舍ID
             var rooms = Db.Queryable<T_Used_total>().Where(u => u.Ut_model_state).Select(u => u.Ut_room_id).ToList();
 
@@ -173,14 +171,16 @@ namespace sdglsys.DbHelper
         /// <param name="where">关键词</param>
         /// <param name="dorm_id">园区id：默认0</param>
         /// <returns></returns>
-        public List<Entity.VRoom> GetVRoomByPages(int page, int limit, ref int count, string where = null, int dorm_id = 0) {
+        public List<Entity.VRoom> GetVRoomByPages(int page, int limit, ref int count, string where = null, int dorm_id = 0)
+        {
             var sql = Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] { JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_model_state && b.Building_model_state && d.Dorm_model_state);
 
             if (dorm_id != 0)
             {
                 sql = sql.Where(r => r.Room_dorm_id == dorm_id);
             }
-            if (!string.IsNullOrWhiteSpace(where)) {
+            if (!string.IsNullOrWhiteSpace(where))
+            {
                 sql = sql.Where(r => r.Room_nickname.Contains(where) || r.Room_vid.Contains(where) || r.Room_note.Contains(where));
             }
             return sql.OrderBy(r => r.Room_id, OrderByType.Desc).Select((r, b, d) => new Entity.VRoom

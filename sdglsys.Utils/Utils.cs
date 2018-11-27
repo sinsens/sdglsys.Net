@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace sdglsys.Utils
 {
@@ -30,7 +27,6 @@ namespace sdglsys.Utils
             return hash.ToString();
         }
 
-
         /// <summary>
         /// 不可逆加密密码或字符串
         /// </summary>
@@ -41,13 +37,13 @@ namespace sdglsys.Utils
             return BCrypt.Net.BCrypt.HashPassword(HashMD5(pwd), 4);
         }
 
-
         /// <summary>
         /// 使用Bcrypt加密
         /// </summary>
         /// <param name="pwd"></param>
         /// <returns></returns>
-        public string HashBcrypt(string pwd) {
+        public string HashBcrypt(string pwd)
+        {
             return BCrypt.Net.BCrypt.HashPassword(pwd, 4);
         }
 
@@ -83,6 +79,5 @@ namespace sdglsys.Utils
             var setting = new AppSettingsReader();
             return setting.GetValue(key, type);
         }
-
     }
 }

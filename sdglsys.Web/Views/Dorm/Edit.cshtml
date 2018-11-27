@@ -18,7 +18,6 @@
                 <div class="layui-input-block">
                     <input maxlength="20" name='name' type="text" required lay-verify="required" placeholder="园区名称" autocomplete="off" class="layui-input">
                 </div>
-
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">类型：</label>
@@ -93,7 +92,7 @@
                             layer.open({
                                 'icon': 0,
                                 'title': "发生错误",
-                                'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                                'content': "错误代码：" + e['status'] + "<br />错误提示信息：" + e["statusText"]
                             });
                         }
                     });
@@ -102,5 +101,4 @@
 			});
     </script>
 </body>
-
 </html>

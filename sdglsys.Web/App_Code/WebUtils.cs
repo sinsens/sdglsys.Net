@@ -6,7 +6,7 @@ namespace sdglsys.Web
     /// <summary>
     /// 常用工具集
     /// </summary>
-    public class WebUtils:Utils.Utils
+    public class WebUtils : Utils.Utils
     {
         public static bool IsTrial()
         {
@@ -14,7 +14,6 @@ namespace sdglsys.Web
             DateTime.TryParse("2019-12-30 23:59", out trial_end_date);
             return DateTime.Now < trial_end_date;
         }
-
 
         /// <summary>
         /// 检查是否为敏感操作
@@ -40,7 +39,8 @@ namespace sdglsys.Web
         /// 记录日志
         /// </summary>
         /// <param name="log"></param>
-        public void Log(Entity.T_Log log) {
+        public void Log(Entity.T_Log log)
+        {
             new DbHelper.Logs().Add(log);
         }
 
@@ -50,9 +50,13 @@ namespace sdglsys.Web
         /// <param name="login_name">用户名</param>
         /// <param name="ip">操作IP</param>
         /// <param name="info">日志信息</param>
-        public void Log(string login_name,string ip, string info) {
-            Log(new Entity.T_Log {
-                 Log_info = info, Log_ip = ip, Log_login_name = login_name
+        public void Log(string login_name, string ip, string info)
+        {
+            Log(new Entity.T_Log
+            {
+                Log_info = info,
+                Log_ip = ip,
+                Log_login_name = login_name
             });
         }
 
@@ -75,6 +79,5 @@ namespace sdglsys.Web
                 });
             }
         }
-
     }
 }

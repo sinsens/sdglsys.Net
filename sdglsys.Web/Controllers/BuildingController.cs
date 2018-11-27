@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using sdglsys.DbHelper;
+﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
-using sdglsys.Web;
+using System;
+using System.Web.Mvc;
+
 namespace sdglsys.Web.Controllers
 {
     [AutoLogin]
@@ -22,7 +19,6 @@ namespace sdglsys.Web.Controllers
             int count = 0;
             try
             {
-                
                 if (!string.IsNullOrWhiteSpace(Request["keyword"]))
                 {
                     keyword = Request["keyword"]; // 搜索关键词
@@ -40,7 +36,6 @@ namespace sdglsys.Web.Controllers
                     limit = limit > 0 ? limit : 10;
                 }
 
-
                 var vbuildings = new Buildings().GetByPages(page, limit, ref count, keyword, (int)Session["pid"]); // 获取列表
                 ViewBag.keyword = keyword;
                 ViewBag.count = count;  // 获取当前页数量
@@ -52,7 +47,6 @@ namespace sdglsys.Web.Controllers
             {
                 throw;
             }
-
         }
 
         // GET: Dorm/Details/5
@@ -131,7 +125,6 @@ namespace sdglsys.Web.Controllers
                 var b = buildings.FindById(id);
                 if (b == null)
                 {
-                    
                     throw new Exception("该宿舍楼不存在！");
                 }
                 else
@@ -151,7 +144,6 @@ namespace sdglsys.Web.Controllers
                         throw new Exception("发生未知错误，保存失败");
                     }
                 }
-
             }
             catch (Exception ex)
             {

@@ -63,7 +63,6 @@
                 </div>
             </div>
             <!--div class="layui-footer">
-
             </div-->
         </div>
     </div>
@@ -128,14 +127,14 @@
                             }
                         } else if (data_type === 3) {
 
-                        }    
+                        }
                         form.render('select'); // 重新渲染下拉列表
                     },
                     error: function (e) {
                         layer.open({
                             'icon': 0,
                             'title': "发生错误",
-                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            'content': "错误代码：" + e['status'] + "<br />错误提示信息：" + e["statusText"]
                         });
                     }
                 });
@@ -177,7 +176,7 @@
                         layer.open({
                             'icon': 0,
                             'title': "发生错误",
-                            'content': "错误代码：" + e['status'] + "<br/>错误提示信息：" + e["statusText"]
+                            'content': "错误代码：" + e['status'] + "<br />错误提示信息：" + e["statusText"]
                         });
                     }
                 });

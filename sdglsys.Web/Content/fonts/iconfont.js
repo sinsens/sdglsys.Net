@@ -1,5 +1,4 @@
 ;(function(window) {
-
   var svgSprite = '<svg>' +
     '' +
     '<symbol id="icon-shuaxin" viewBox="0 0 1024 1024">' +
@@ -247,6 +246,4 @@
   }
 
   ready(appendSvg)
-
-
 })(window)

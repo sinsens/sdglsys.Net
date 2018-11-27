@@ -97,7 +97,6 @@ namespace sdglsys.DbHelper
             return BuildingDb.Insert(Building);
         }
 
-
         /// <summary>
         /// 查找宿舍楼
         /// </summary>
@@ -107,10 +106,11 @@ namespace sdglsys.DbHelper
         /// <param name="where">关键词</param>
         /// <param name="pid">园区ID</param>
         /// <returns></returns>
-        public List<VBuilding> GetByPages(int page, int limit, ref int totalCount, string where = null, int pid=0)
+        public List<VBuilding> GetByPages(int page, int limit, ref int totalCount, string where = null, int pid = 0)
         {
             var sql = Db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state);
-            if (pid != 0) {
+            if (pid != 0)
+            {
                 sql = sql.Where(b => b.Building_dorm_id == pid);
             }
             if (where != null)

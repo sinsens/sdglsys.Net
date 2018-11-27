@@ -54,11 +54,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 			}
 		})
 		return false;
-
 	}).mouseenter(function() {
-
 		dialog.tips('批量排序', '.listOrderBtn');
-
 	})
 	//顶部批量删除
 	$('.delBtn').click(function() {
@@ -73,11 +70,8 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
 			}
 		})
 		return false;
-
 	}).mouseenter(function() {
-
 		dialog.tips('批量删除', '.delBtn');
-
 	})
 	//列表查看详情
 	$('#table-list').on('click', '.view-btn', function() {
@@ -133,7 +127,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'element']
             });
 		});
 	})
-	
+
 	//删除用量登记
 	$('#table-list').on('click', '.del-used', function() {
 		var url = $(this).attr('data-url');
@@ -307,7 +301,6 @@ function refresh() {
 	//根据传递的name值，获取子iframe窗口，执行刷新
 	if(window.frames[iframeObjName]) {
 		window.frames[iframeObjName].location.reload();
-
 	} else {
 		window.location.reload();
 	}

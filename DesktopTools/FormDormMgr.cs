@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DesktopTools
@@ -24,7 +17,7 @@ namespace DesktopTools
         {
             MessageBox.Show("功能尚未完善！");
             return;
-            Reload();
+            //Reload();
         }
 
         private void button2_Click(object sender, EventArgs e)

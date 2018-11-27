@@ -4,7 +4,6 @@ namespace sdglsys.DbHelper
 {
     public class Notices : DbContext
     {
-
         /// <summary>
         /// 通过ID查询
         /// </summary>
@@ -76,7 +75,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.T_Notice> GetListByPages(int page, int limit, ref int totalCount)
         {
-            return Db.Queryable<Entity.T_Notice>().Where(a=>a.Notice_model_state).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).Select(n => new Entity.T_Notice()
+            return Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).Select(n => new Entity.T_Notice()
             {
                 Notice_id = n.Notice_id,
                 Notice_login_name = n.Notice_login_name,

@@ -30,7 +30,6 @@ function log(times) {
 }
 
 function ChartLoadData(data, showtip) {
-
     if (data["info"] != null && showtip == true) {
         layer.msg(data["info"]);
         return;
