@@ -60,9 +60,10 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.T_Notice> GetByPages(int page, int limit, ref int totalCount, string where = null)
         {
-            if (where == null)
-                return Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
-            return Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state && a.Notice_title.Contains(where) || a.Notice_login_name.Contains(where)).OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
+            var sql = Db.Queryable<Entity.T_Notice>().Where(a => a.Notice_model_state);
+            if (!string.IsNullOrWhiteSpace(where))
+                sql = sql.Where(a => a.Notice_title.Contains(where) || a.Notice_login_name.Contains(where));
+            return sql.OrderBy(a => a.Notice_post_date, SqlSugar.OrderByType.Desc).ToPageList(page, limit, ref totalCount);
         }
 
         /// <summary>
