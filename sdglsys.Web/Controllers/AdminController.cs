@@ -222,7 +222,7 @@ namespace sdglsys.Web.Controllers
                     user.User_pwd = Utils.HashBcrypt(pwd_new);
                     if (User.Update(user))
                     {
-                        msg.Message = "修改密码成功";
+                        msg.Message = "修改密码成功，下次登录时请使用新密码登录";
                     }
                     else
                     {
@@ -524,7 +524,6 @@ namespace sdglsys.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [IsAdmin]
-        [OutputCache(Duration = 300)] // 设置缓存时间为300秒，5分钟
         public void GetLogList()
         {
             var msg = new ResponseData();
@@ -554,7 +553,6 @@ namespace sdglsys.Web.Controllers
 
                 msg.data = new DbHelper.Logs().GetByPages(page, limit, ref count, keyword); // 获取列表
                 msg.count = count;
-                Response.Cache.SetOmitVaryStar(true);
                 Response.Write(msg.ToJson());
                 Response.End();
             }

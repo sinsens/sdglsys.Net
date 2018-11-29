@@ -77,12 +77,12 @@ namespace sdglsys.DbHelper
         {
             var rooms = Db.Queryable<T_Used>().
                 Where(u => u.Used_model_state && SqlFunc.Between(SqlFunc.Substring(u.Used_post_date, 0, 7),
-                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Used_room_id).ToList();
-            if (dorm_id == 0)
-                return (short)Db.Queryable<T_Room>().Where(r => r.Room_model_state && r.Number > 0 && r.Room_is_active == true && !rooms.Contains(r.Room_id))
-                .OrderBy(r => r.Room_vid).Count();
-            return (short)Db.Queryable<T_Room>().Where((r) => r.Number > 0 && r.Room_dorm_id == dorm_id && r.Room_is_active == true && !rooms.Contains(r.Room_id))
-                .OrderBy(r => r.Room_vid).Count();
+                SqlFunc.Substring(DateTime.Now, 0, 7), SqlFunc.Substring(DateTime.Now, 0, 7))).Select(u => u.Used_room_id).ToList(); // 已登记的宿舍ID
+            var sql = Db.Queryable<T_Room>().Where(r => r.Room_model_state && r.Number > 0 && r.Room_is_active && !rooms.Contains(r.Room_id));
+            if (dorm_id != 0)
+                sql = sql.Where(r => r.Room_id == dorm_id);
+
+            return (short)sql.OrderBy(r => r.Room_vid).Count();
         }
 
         /// <summary>

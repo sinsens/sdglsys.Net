@@ -166,6 +166,10 @@ namespace sdglsys.Web.Controllers
                 {
                     throw new Exception("非系统管理员请选择所属园区");
                 }
+                else if (user.User_role >= 3)
+                {
+                    user.User_dorm_id = 0; // 如果角色是系统管理员，则指定园区ID为0
+                }
                 if ((int)Session["role"] < 3 && (int)Session["role"] < user.User_role + 1)
                 {
                     // 判断权限

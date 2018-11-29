@@ -91,9 +91,9 @@
                                     var Cold_water_cost = Math.Round(bill.Bill_Cold_water_cost, 2);
                                     var Hot_water_cost = Math.Round(bill.Bill_Hot_water_cost, 2);
                                     var Electric_cost = Math.Round(bill.Bill_Electric_cost, 2);
-                                    var Cold_water_value = Math.Round(bill.Bill_Cold_water_cost, 2);
-                                    var Hot_water_value = Math.Round(bill.Bill_Hot_water_cost, 2);
-                                    var Electric_value = Math.Round(bill.Bill_Electric_cost, 2);
+                                    var Cold_water_value = Math.Round(bill.Bill_Cold_water_value, 2);
+                                    var Hot_water_value = Math.Round(bill.Bill_Hot_water_value, 2);
+                                    var Electric_value = Math.Round(bill.Bill_Electric_value, 2);
                                     var total = Math.Round(bill.Bill_Hot_water_cost + bill.Bill_Cold_water_cost + bill.Bill_Electric_cost, 2);
                                 }
                                 <td class="hidden-xs">@Cold_water_cost ￥</td>
@@ -116,11 +116,12 @@
                                 </td>
                                 <td>
                                     <div class="layui-btn-group">
-                                        @if (bill.Bill_Is_active == 1) {
-                                        <button class="layui-btn layui-btn-sm layui-btn-primary pay-btn" data-id="@bill.Bill_Id"
-                                                data-url="/Bill/Pay/@bill.Bill_Id" data-text="结算该账单">
-                                            <i class="layui-icon">&#xe65e;</i>
-                                        </button>}
+                                        @if (bill.Bill_Is_active == 1)
+                                        {
+                                            <button class="layui-btn layui-btn-sm layui-btn-primary pay-btn" data-id="@bill.Bill_Id"
+                                                    data-url="/Bill/Pay/@bill.Bill_Id" data-text="结算该账单">
+                                                <i class="layui-icon">&#xe65e;</i>
+                                            </button>}
                                         <button class="layui-btn layui-btn-sm layui-btn-primary view-btn"
                                                 title="冷水用量:@Cold_water_value|热水用量:@Hot_water_value|用电量:@Electric_value|备注:@bill.Bill_Note">
                                             <i class="layui-icon">&#xe60e;</i>
