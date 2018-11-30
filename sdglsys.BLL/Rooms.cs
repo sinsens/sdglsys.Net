@@ -173,7 +173,7 @@ namespace sdglsys.DbHelper
         /// <returns></returns>
         public List<Entity.VRoom> GetVRoomByPages(int page, int limit, ref int count, string where = null, int dorm_id = 0)
         {
-            var sql = Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] { JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_model_state && b.Building_model_state && d.Dorm_model_state);
+            var sql = Db.Queryable<T_Room, T_Building, T_Dorm>((r, b, d) => new object[] { JoinType.Left, r.Room_building_id == b.Building_id, JoinType.Left, r.Room_dorm_id == d.Dorm_id }).Where((r, b, d) => r.Room_model_state && b.Building_model_state && d.Dorm_model_state);
 
             if (dorm_id != 0)
             {

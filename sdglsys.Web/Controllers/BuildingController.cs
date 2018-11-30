@@ -1,5 +1,6 @@
 ﻿using sdglsys.DbHelper;
 using sdglsys.Entity;
+using SqlSugar;
 using System;
 using System.Web.Mvc;
 
@@ -200,10 +201,29 @@ namespace sdglsys.Web.Controllers
             Delete(id);
         }
 
+        [NeedLogin]
         public void List()
         {
             var db = new Buildings().Db;
             Response.Write(db.Queryable<T_Building>().Where(d => d.Building_model_state && d.Building_is_active == true).ToJson());
+        }
+
+        [NeedLogin]
+        public void List2()
+        {
+            /// 返回的数据格式
+            /// {
+            ///     "Building_id", int,
+            ///     "Nickname": string
+            /// }
+            var db = new DbHelper.Buildings().Db;
+            var res = db.Queryable<sdglsys.Entity.T_Building, Entity.T_Dorm>((b, d) => new object[] { JoinType.Left, b.Building_dorm_id == d.Dorm_id }).Where(b => b.Building_model_state && b.Building_is_active && b.Building_is_active && b.Building_model_state).Select((b, d) => new
+            {
+                b.Building_id,
+                d.Dorm_nickname,
+                b.Building_nickname
+            }).ToJson();
+            Response.Write(res);
         }
     }
 }
