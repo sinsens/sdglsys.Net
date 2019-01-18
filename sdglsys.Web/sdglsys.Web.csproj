@@ -400,6 +400,7 @@
     <Content Include="Views\Notice\List2.cshtml" />
     <Content Include="Views\Notice\Create.cshtml" />
     <Content Include="Views\Building\Create.cshtml" />
+    <Content Include="Views\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
